@@ -4,6 +4,7 @@ __pycache__/
 .env
 khoa-gemini.txt
 khoa-groq.txt
+khoa-fred.txt
 cache/
 .server.pid
 .DS_Store

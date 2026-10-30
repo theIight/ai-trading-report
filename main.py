@@ -110,6 +110,31 @@ def lay_khoa_groq() -> str:
     return ""
 
 
+# Nạp khóa FRED từ biến môi trường, file .env hoặc khoa-fred.txt
+def lay_khoa_fred() -> str:
+    if os.environ.get("FRED_API_KEY"):
+        return os.environ["FRED_API_KEY"].strip()
+
+    env_file = GOC / ".env"
+    if env_file.exists():
+        for line in env_file.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line.startswith("FRED_API_KEY="):
+                key = line.split("=", 1)[1].strip().strip('"').strip("'")
+                if key:
+                    os.environ["FRED_API_KEY"] = key
+                    return key
+
+    khoa_file = GOC / "khoa-fred.txt"
+    if khoa_file.exists():
+        key = khoa_file.read_text(encoding="utf-8-sig").strip()
+        if key:
+            os.environ["FRED_API_KEY"] = key
+            return key
+
+    return ""
+
+
 os.environ.setdefault("PYTHONUTF8", "1")
 os.environ.setdefault("TRADINGAGENTS_LLM_MAX_RETRIES", "10")
 
@@ -141,11 +166,14 @@ def cau_hinh(ma: str, groq_key: str = "", gemini_key: str = ""):
 
     groq_k = (groq_key or lay_khoa_groq()).strip()
     gemini_k = (gemini_key or lay_khoa_gemini()).strip()
+    fred_k = lay_khoa_fred()
 
     if groq_k:
         os.environ["GROQ_API_KEY"] = groq_k
     if gemini_k:
         os.environ["GOOGLE_API_KEY"] = gemini_k
+    if fred_k:
+        os.environ["FRED_API_KEY"] = fred_k
 
     thu_muc = KQ / ten_sach(ma)
     thu_muc.mkdir(exist_ok=True)

@@ -54,60 +54,92 @@ GOC = Path(__file__).resolve().parent
 KQ = GOC / "results"
 KQ.mkdir(exist_ok=True)
 
-# Nạp khóa Gemini từ biến môi trường, file .env hoặc khoa-gemini.txt
-def lay_khoa_gemini() -> str:
-    # 1. Biến môi trường hiện tại
-    if os.environ.get("GOOGLE_API_KEY"):
-        return os.environ["GOOGLE_API_KEY"].strip()
+import threading
 
-    # 2. File .env
+class KeyRotator:
+    """Quản lý xoay tua danh sách nhiều API Key (Round-Robin & Tự động Failover khi chạm RateLimit 429)."""
+
+    def __init__(self, raw_input: str | list[str] = "", name: str = "Key"):
+        self.keys: list[str] = []
+        self.name = name
+        self.index = 0
+        self.lock = threading.Lock()
+        self.them(raw_input)
+
+    def them(self, raw_input: str | list[str]):
+        if isinstance(raw_input, str):
+            for part in raw_input.replace("\r", "\n").replace(";", "\n").replace(",", "\n").split("\n"):
+                k = part.strip().strip('"').strip("'")
+                if k and len(k) > 10 and not k.startswith("#"):
+                    if k not in self.keys:
+                        self.keys.append(k)
+        elif isinstance(raw_input, (list, tuple)):
+            for item in raw_input:
+                self.them(str(item))
+
+    def get_current(self) -> str:
+        with self.lock:
+            if not self.keys:
+                return ""
+            return self.keys[self.index % len(self.keys)]
+
+    def rotate(self, reason: str = "") -> str:
+        with self.lock:
+            if not self.keys:
+                return ""
+            if len(self.keys) == 1:
+                return self.keys[0]
+            old_idx = self.index % len(self.keys)
+            self.index = (self.index + 1) % len(self.keys)
+            new_key = self.keys[self.index]
+            tail = new_key[-4:] if len(new_key) >= 4 else "..."
+            ly_do_str = f" [{reason}]" if reason else ""
+            print(f"🔄 [KeyRotator] Xoay tua {self.name}: Tài khoản #{old_idx+1} ➔ #{self.index+1}/{len(self.keys)} (...{tail}){ly_do_str}", flush=True)
+            return new_key
+
+    def has_multiple(self) -> bool:
+        return len(self.keys) > 1
+
+    def count(self) -> int:
+        return len(self.keys)
+
+
+# Nạp danh sách khóa Gemini từ biến môi trường, file .env hoặc khoa-gemini.txt
+def lay_cac_khoa_gemini(extra: str = "") -> KeyRotator:
+    rot = KeyRotator(extra, "Gemini")
+    for env_var in ("GOOGLE_API_KEY", "GOOGLE_API_KEYS", "GEMINI_API_KEY"):
+        if os.environ.get(env_var):
+            rot.them(os.environ[env_var])
     env_file = GOC / ".env"
     if env_file.exists():
         for line in env_file.read_text(encoding="utf-8").splitlines():
             line = line.strip()
-            if line.startswith("GOOGLE_API_KEY="):
-                key = line.split("=", 1)[1].strip().strip('"').strip("'")
-                if key:
-                    os.environ["GOOGLE_API_KEY"] = key
-                    return key
-
-    # 3. File khoa-gemini.txt
+            for prefix in ("GOOGLE_API_KEY=", "GOOGLE_API_KEYS=", "GEMINI_API_KEY="):
+                if line.startswith(prefix):
+                    rot.them(line.split("=", 1)[1].strip())
     khoa_file = GOC / "khoa-gemini.txt"
     if khoa_file.exists():
-        key = khoa_file.read_text(encoding="utf-8-sig").strip()
-        if key:
-            os.environ["GOOGLE_API_KEY"] = key
-            return key
-
-    return ""
+        rot.them(khoa_file.read_text(encoding="utf-8-sig"))
+    return rot
 
 
-# Nạp khóa Groq từ biến môi trường, file .env hoặc khoa-groq.txt
-def lay_khoa_groq() -> str:
-    # 1. Biến môi trường hiện tại
-    if os.environ.get("GROQ_API_KEY"):
-        return os.environ["GROQ_API_KEY"].strip()
-
-    # 2. File .env
+# Nạp danh sách khóa Groq từ biến môi trường, file .env hoặc khoa-groq.txt
+def lay_cac_khoa_groq(extra: str = "") -> KeyRotator:
+    rot = KeyRotator(extra, "Groq")
+    for env_var in ("GROQ_API_KEY", "GROQ_API_KEYS"):
+        if os.environ.get(env_var):
+            rot.them(os.environ[env_var])
     env_file = GOC / ".env"
     if env_file.exists():
         for line in env_file.read_text(encoding="utf-8").splitlines():
             line = line.strip()
-            if line.startswith("GROQ_API_KEY="):
-                key = line.split("=", 1)[1].strip().strip('"').strip("'")
-                if key:
-                    os.environ["GROQ_API_KEY"] = key
-                    return key
-
-    # 3. File khoa-groq.txt
+            for prefix in ("GROQ_API_KEY=", "GROQ_API_KEYS="):
+                if line.startswith(prefix):
+                    rot.them(line.split("=", 1)[1].strip())
     khoa_file = GOC / "khoa-groq.txt"
     if khoa_file.exists():
-        key = khoa_file.read_text(encoding="utf-8-sig").strip()
-        if key:
-            os.environ["GROQ_API_KEY"] = key
-            return key
-
-    return ""
+        rot.them(khoa_file.read_text(encoding="utf-8-sig"))
+    return rot
 
 
 # Nạp khóa FRED từ biến môi trường, file .env hoặc khoa-fred.txt
@@ -133,6 +165,68 @@ def lay_khoa_fred() -> str:
             return key
 
     return ""
+
+
+def cai_dat_xoay_tua_he_thong(gemini_rotator: KeyRotator, groq_rotator: KeyRotator):
+    """Cài đặt hook xoay tua round-robin và failover tự động cho toàn bộ hệ thống LLM."""
+    if gemini_rotator.has_multiple():
+        from tradingagents.llm_clients.google_client import NormalizedChatGoogleGenerativeAI
+        from google.genai import Client
+
+        orig_gemini_invoke = NormalizedChatGoogleGenerativeAI.invoke
+
+        def wrapped_gemini_invoke(self, input, config=None, **kwargs):
+            cur_k = gemini_rotator.rotate("Lượt AI mới")
+            try:
+                self.client = Client(api_key=cur_k)
+            except Exception:
+                pass
+
+            max_retries = gemini_rotator.count()
+            for attempt in range(max_retries):
+                try:
+                    return orig_gemini_invoke(self, input, config=config, **kwargs)
+                except Exception as e:
+                    err = str(e)
+                    if ("429" in err or "RESOURCE_EXHAUSTED" in err or "quota" in err.lower() or "limit" in err.lower()) and attempt < max_retries - 1:
+                        next_k = gemini_rotator.rotate("Chạm RateLimit 429, đổi tài khoản Gemini khác")
+                        try:
+                            self.client = Client(api_key=next_k)
+                        except Exception:
+                            pass
+                        continue
+                    raise
+
+        NormalizedChatGoogleGenerativeAI.invoke = wrapped_gemini_invoke
+
+    if groq_rotator.has_multiple():
+        from tradingagents.llm_clients.openai_client import NormalizedChatOpenAI
+
+        orig_groq_invoke = NormalizedChatOpenAI.invoke
+
+        def wrapped_groq_invoke(self, input, config=None, **kwargs):
+            cur_k = groq_rotator.rotate("Lượt AI mới")
+            try:
+                self.root_client.api_key = cur_k
+            except Exception:
+                pass
+
+            max_retries = groq_rotator.count()
+            for attempt in range(max_retries):
+                try:
+                    return orig_groq_invoke(self, input, config=config, **kwargs)
+                except Exception as e:
+                    err = str(e)
+                    if ("429" in err or "rate_limit" in err.lower() or "quota" in err.lower() or "limit" in err.lower()) and attempt < max_retries - 1:
+                        next_k = groq_rotator.rotate("Chạm RateLimit 429/TPM, đổi tài khoản Groq khác")
+                        try:
+                            self.root_client.api_key = next_k
+                        except Exception:
+                            pass
+                        continue
+                    raise
+
+        NormalizedChatOpenAI.invoke = wrapped_groq_invoke
 
 
 os.environ.setdefault("PYTHONUTF8", "1")
@@ -191,18 +285,18 @@ def kiem_tra_groq_key(groq_key: str) -> tuple[bool, str]:
         return True, "openai/gpt-oss-120b"
 
 
-def cau_hinh(ma: str, groq_key: str = "", gemini_key: str = ""):
+def cau_hinh(ma: str, groq_rotator: KeyRotator | None = None, gemini_rotator: KeyRotator | None = None, groq_key: str = "", gemini_key: str = ""):
     from tradingagents.default_config import DEFAULT_CONFIG
     c = DEFAULT_CONFIG.copy()
 
-    groq_k = (groq_key or lay_khoa_groq()).strip()
-    gemini_k = (gemini_key or lay_khoa_gemini()).strip()
+    g_rot = gemini_rotator or lay_cac_khoa_gemini(gemini_key)
+    q_rot = groq_rotator or lay_cac_khoa_groq(groq_key)
     fred_k = lay_khoa_fred()
 
-    if groq_k:
-        os.environ["GROQ_API_KEY"] = groq_k
-    if gemini_k:
-        os.environ["GOOGLE_API_KEY"] = gemini_k
+    if q_rot.get_current():
+        os.environ["GROQ_API_KEY"] = q_rot.get_current()
+    if g_rot.get_current():
+        os.environ["GOOGLE_API_KEY"] = g_rot.get_current()
     if fred_k:
         os.environ["FRED_API_KEY"] = fred_k
 
@@ -214,41 +308,45 @@ def cau_hinh(ma: str, groq_key: str = "", gemini_key: str = ""):
     c["output_language"] = "English"
     c["max_tool_rounds"] = int(os.getenv("MAX_TOOL_ROUNDS", "10"))
 
+    # Cài đặt hook xoay tua đa tài khoản tự động
+    cai_dat_xoay_tua_he_thong(g_rot, q_rot)
+
     # Tự động phát hiện model Groq khả dụng hoặc tự động fallback về Gemini nếu Groq không khả dụng
     model_groq = ""
-    if groq_k:
-        hop_le, model_phat_hien = kiem_tra_groq_key(groq_k)
+    groq_co_san = bool(q_rot.get_current())
+    if groq_co_san:
+        hop_le, model_phat_hien = kiem_tra_groq_key(q_rot.get_current())
         if hop_le and model_phat_hien:
             model_groq = os.getenv("GROQ_QUICK", model_phat_hien)
-        elif gemini_k:
+        elif g_rot.get_current():
             print("⚠️ Khóa Groq không có model chat khả dụng hoặc không hợp lệ. Tự động chuyển sang dùng Google Gemini.")
-            groq_k = ""
+            groq_co_san = False
+
+    gemini_co_san = bool(g_rot.get_current())
 
     # Cấu hình đa tác tử thông minh:
     # 1. Chế độ Lai Hybrid (Groq + Gemini) - Tối ưu nhất:
-    #    Groq phụ trách các bước phân tích, lấy tin, lọc báo cáo (chiếm 80% số call, tốc độ ~500 tk/s, không tốn quota Gemini)
-    #    Gemini phụ trách tranh luận sâu và quyết định cuối cùng (chỉ tốn 2-4 call, không bao giờ lo chạm limit 15 RPM)
-    if groq_k and gemini_k:
+    if groq_co_san and gemini_co_san:
         c["llm_provider"] = "google"
         c["quick_think_provider"] = "groq"
         c["quick_think_llm"] = model_groq or "openai/gpt-oss-120b"
         c["deep_think_provider"] = "google"
         c["deep_think_llm"] = os.getenv("GEMINI_DEEP", "gemini-3.8-flash")
-        mo_ta_ai = f"Hybrid (Groq {c['quick_think_llm']} + Gemini {c['deep_think_llm']})"
+        mo_ta_ai = f"Hybrid (Groq {c['quick_think_llm']} [{q_rot.count()} keys] + Gemini {c['deep_think_llm']} [{g_rot.count()} keys])"
     # 2. Chế độ thuần Groq: Siêu nhanh, hoàn toàn miễn phí, không cần Gemini
-    elif groq_k:
+    elif groq_co_san:
         c["llm_provider"] = "groq"
         c["quick_think_provider"] = "groq"
         c["quick_think_llm"] = os.getenv("GROQ_QUICK", model_groq or "openai/gpt-oss-20b")
         c["deep_think_provider"] = "groq"
         c["deep_think_llm"] = os.getenv("GROQ_DEEP", model_groq or "openai/gpt-oss-120b")
-        mo_ta_ai = f"Groq ({c['deep_think_llm']})"
+        mo_ta_ai = f"Groq ({c['deep_think_llm']} [{q_rot.count()} keys])"
     # 3. Chế độ thuần Google Gemini
     else:
         c["llm_provider"] = "google"
         c["quick_think_llm"] = os.getenv("GEMINI_QUICK", "gemini-3.5-flash-lite")
         c["deep_think_llm"] = os.getenv("GEMINI_DEEP", "gemini-3.8-flash")
-        mo_ta_ai = f"Google Gemini ({c['deep_think_llm']})"
+        mo_ta_ai = f"Google Gemini ({c['deep_think_llm']} [{g_rot.count()} keys])"
 
     return c, thu_muc, mo_ta_ai
 
@@ -389,32 +487,38 @@ def main():
     parser.add_argument("--headless", action="store_true", help="Không tự động mở trình duyệt hoặc file viewer")
     args = parser.parse_args()
 
-    # 1. Lấy API Keys
-    gemini_key = args.api_key or lay_khoa_gemini()
-    groq_key = args.groq_key or lay_khoa_groq()
+    # 1. Lấy danh sách API Keys và thiết lập bể chứa xoay tua đa tài khoản
+    gemini_rotator = lay_cac_khoa_gemini(args.api_key or "")
+    groq_rotator = lay_cac_khoa_groq(args.groq_key or "")
 
-    if not gemini_key and not groq_key:
+    if not gemini_rotator.count() and not groq_rotator.count():
         print("\n" + "=" * 55)
         print(" CHƯA CÓ KHÓA API (GROQ hoặc GOOGLE GEMINI)")
         print(" Bạn có thể dùng 1 trong 2 hoặc kết hợp cả 2:")
         print("   1. Groq (Khuyên dùng - Siêu tốc, không lo chạm limit): https://console.groq.com/keys")
         print("   2. Google Gemini: https://aistudio.google.com/apikey")
+        print("   (Có thể dán nhiều khóa cách nhau bằng dấu phẩy để tự động xoay tua)")
         print("=" * 55)
         chon = input(" Nhập lựa chọn khóa bạn muốn thêm (1=Groq, 2=Gemini) [Mặc định 1]: ").strip()
         if chon == "2":
-            k = input(" Dán khóa Gemini API của bạn: ").strip()
+            k = input(" Dán khóa Gemini API (có thể dán nhiều khóa): ").strip()
             if len(k) >= 20:
                 (GOC / "khoa-gemini.txt").write_text(k, encoding="utf-8")
-                gemini_key = k
+                gemini_rotator.them(k)
         else:
-            k = input(" Dán khóa Groq API của bạn: ").strip()
+            k = input(" Dán khóa Groq API (có thể dán nhiều khóa): ").strip()
             if len(k) >= 20:
                 (GOC / "khoa-groq.txt").write_text(k, encoding="utf-8")
-                groq_key = k
+                groq_rotator.them(k)
 
-        if not gemini_key and not groq_key:
+        if not gemini_rotator.count() and not groq_rotator.count():
             print(" Khóa không hợp lệ. Thoát chương trình.")
             sys.exit(1)
+
+    if gemini_rotator.count() > 1:
+        print(f" 🔑 Bể chứa Gemini: Đã nạp {gemini_rotator.count()} tài khoản để xoay tua chống RateLimit.")
+    if groq_rotator.count() > 1:
+        print(f" 🔑 Bể chứa Groq: Đã nạp {groq_rotator.count()} tài khoản để xoay tua chống RateLimit.")
 
     # 2. Chọn mã tài sản
     ma = args.ma
@@ -448,7 +552,7 @@ def main():
         print(f" Lỗi: Ngày '{ngay}' không đúng định dạng YYYY-MM-DD.")
         sys.exit(2)
 
-    c, thu_muc, mo_ta_ai = cau_hinh(ma, groq_key=groq_key, gemini_key=gemini_key)
+    c, thu_muc, mo_ta_ai = cau_hinh(ma, groq_rotator=groq_rotator, gemini_rotator=gemini_rotator)
 
     print("\n" + "-" * 55)
     print(f" BẮT ĐẦU PHÂN TÍCH: Mã {ma} - Ngày {ngay}")

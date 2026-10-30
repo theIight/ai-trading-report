@@ -160,6 +160,37 @@ def ten_sach(ma: str) -> str:
     return "".join(ch if ch.isalnum() or ch in "-_." else "_" for ch in ma)
 
 
+def kiem_tra_groq_key(groq_key: str) -> tuple[bool, str]:
+    """Kiểm tra khóa Groq và tự động phát hiện model text khả dụng tốt nhất của tài khoản."""
+    import requests
+    uu_tien = [
+        "openai/gpt-oss-120b",
+        "openai/gpt-oss-20b",
+        "qwen/qwen3.6-27b",
+        "llama-3.3-70b-versatile",
+        "llama-3.1-8b-instant",
+    ]
+    try:
+        res = requests.get(
+            "https://api.groq.com/openai/v1/models",
+            headers={"Authorization": f"Bearer {groq_key}"},
+            timeout=8,
+        )
+        if res.status_code == 200:
+            danh_sach = {m.get("id") for m in res.json().get("data", [])}
+            for m in uu_tien:
+                if m in danh_sach:
+                    return True, m
+            for m in sorted(danh_sach):
+                if not any(x in m for x in ("whisper", "orpheus", "guard", "embed")):
+                    return True, m
+            return False, ""
+        else:
+            return False, ""
+    except Exception:
+        return True, "openai/gpt-oss-120b"
+
+
 def cau_hinh(ma: str, groq_key: str = "", gemini_key: str = ""):
     from tradingagents.default_config import DEFAULT_CONFIG
     c = DEFAULT_CONFIG.copy()
@@ -183,14 +214,24 @@ def cau_hinh(ma: str, groq_key: str = "", gemini_key: str = ""):
     c["output_language"] = "English"
     c["max_tool_rounds"] = int(os.getenv("MAX_TOOL_ROUNDS", "10"))
 
+    # Tự động phát hiện model Groq khả dụng hoặc tự động fallback về Gemini nếu Groq không khả dụng
+    model_groq = ""
+    if groq_k:
+        hop_le, model_phat_hien = kiem_tra_groq_key(groq_k)
+        if hop_le and model_phat_hien:
+            model_groq = os.getenv("GROQ_QUICK", model_phat_hien)
+        elif gemini_k:
+            print("⚠️ Khóa Groq không có model chat khả dụng hoặc không hợp lệ. Tự động chuyển sang dùng Google Gemini.")
+            groq_k = ""
+
     # Cấu hình đa tác tử thông minh:
     # 1. Chế độ Lai Hybrid (Groq + Gemini) - Tối ưu nhất:
-    #    Groq phụ trách các bước phân tích, lấy tin, lọc báo cáo (chiếm 80% số call, tốc độ ~300 tk/s, không tốn quota Gemini)
+    #    Groq phụ trách các bước phân tích, lấy tin, lọc báo cáo (chiếm 80% số call, tốc độ ~500 tk/s, không tốn quota Gemini)
     #    Gemini phụ trách tranh luận sâu và quyết định cuối cùng (chỉ tốn 2-4 call, không bao giờ lo chạm limit 15 RPM)
     if groq_k and gemini_k:
         c["llm_provider"] = "google"
         c["quick_think_provider"] = "groq"
-        c["quick_think_llm"] = os.getenv("GROQ_QUICK", "llama-3.3-70b-versatile")
+        c["quick_think_llm"] = model_groq or "openai/gpt-oss-120b"
         c["deep_think_provider"] = "google"
         c["deep_think_llm"] = os.getenv("GEMINI_DEEP", "gemini-3.8-flash")
         mo_ta_ai = f"Hybrid (Groq {c['quick_think_llm']} + Gemini {c['deep_think_llm']})"
@@ -198,10 +239,10 @@ def cau_hinh(ma: str, groq_key: str = "", gemini_key: str = ""):
     elif groq_k:
         c["llm_provider"] = "groq"
         c["quick_think_provider"] = "groq"
-        c["quick_think_llm"] = os.getenv("GROQ_QUICK", "llama-3.1-8b-instant")
+        c["quick_think_llm"] = os.getenv("GROQ_QUICK", model_groq or "openai/gpt-oss-20b")
         c["deep_think_provider"] = "groq"
-        c["deep_think_llm"] = os.getenv("GROQ_DEEP", "llama-3.3-70b-versatile")
-        mo_ta_ai = f"Groq Llama ({c['deep_think_llm']})"
+        c["deep_think_llm"] = os.getenv("GROQ_DEEP", model_groq or "openai/gpt-oss-120b")
+        mo_ta_ai = f"Groq ({c['deep_think_llm']})"
     # 3. Chế độ thuần Google Gemini
     else:
         c["llm_provider"] = "google"

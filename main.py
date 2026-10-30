@@ -168,65 +168,105 @@ def lay_khoa_fred() -> str:
 
 
 def cai_dat_xoay_tua_he_thong(gemini_rotator: KeyRotator, groq_rotator: KeyRotator):
-    """Cài đặt hook xoay tua round-robin và failover tự động cho toàn bộ hệ thống LLM."""
-    if gemini_rotator.has_multiple():
-        from tradingagents.llm_clients.google_client import NormalizedChatGoogleGenerativeAI
-        from google.genai import Client
+    """Cài đặt hook xoay tua round-robin, failover tự động và delay thông minh khi chạm RateLimit 429."""
+    import re
+    import time
 
-        orig_gemini_invoke = NormalizedChatGoogleGenerativeAI.invoke
+    # 1. Hook cho Gemini (luôn cài đặt để tự động delay + xoay tua chống sập)
+    from tradingagents.llm_clients.google_client import NormalizedChatGoogleGenerativeAI
+    from google.genai import Client
 
-        def wrapped_gemini_invoke(self, input, config=None, **kwargs):
+    orig_gemini_invoke = NormalizedChatGoogleGenerativeAI.invoke
+
+    def wrapped_gemini_invoke(self, input, config=None, **kwargs):
+        # Nếu có nhiều key: xoay round-robin trước mỗi lượt gọi
+        if gemini_rotator.has_multiple():
             cur_k = gemini_rotator.rotate("Lượt AI mới")
             try:
                 self.client = Client(api_key=cur_k)
             except Exception:
                 pass
 
-            max_retries = gemini_rotator.count()
-            for attempt in range(max_retries):
-                try:
-                    return orig_gemini_invoke(self, input, config=config, **kwargs)
-                except Exception as e:
-                    err = str(e)
-                    if ("429" in err or "RESOURCE_EXHAUSTED" in err or "quota" in err.lower() or "limit" in err.lower()) and attempt < max_retries - 1:
+        max_attempts = max(4, gemini_rotator.count() * 2)
+        for attempt in range(max_attempts):
+            try:
+                return orig_gemini_invoke(self, input, config=config, **kwargs)
+            except Exception as e:
+                err = str(e)
+                la_ratelimit = "429" in err or "RESOURCE_EXHAUSTED" in err or "quota" in err.lower() or "limit" in err.lower()
+                if la_ratelimit and attempt < max_attempts - 1:
+                    # Nếu có nhiều tài khoản: ưu tiên đổi tài khoản khác trước
+                    if gemini_rotator.has_multiple():
                         next_k = gemini_rotator.rotate("Chạm RateLimit 429, đổi tài khoản Gemini khác")
                         try:
                             self.client = Client(api_key=next_k)
                         except Exception:
                             pass
+                        # Nếu tất cả các tài khoản đều đang bận: tạm nghỉ 25s
+                        if (attempt + 1) % gemini_rotator.count() == 0:
+                            print(f"⏳ [RateLimit 429] Toàn bộ tài khoản Gemini đang bận. Tự động tạm nghỉ 25s để hồi hạn mức...", flush=True)
+                            time.sleep(25)
                         continue
-                    raise
+                    else:
+                        # Chỉ có 1 tài khoản: tự động tạm nghỉ 25s rồi thử lại
+                        print(f"⏳ [RateLimit 429] Chạm giới hạn Gemini (15 RPM). Tự động tạm nghỉ 25s rồi thử lại lần {attempt+1}/{max_attempts}...", flush=True)
+                        time.sleep(25)
+                        continue
+                raise
 
-        NormalizedChatGoogleGenerativeAI.invoke = wrapped_gemini_invoke
+    NormalizedChatGoogleGenerativeAI.invoke = wrapped_gemini_invoke
 
-    if groq_rotator.has_multiple():
-        from tradingagents.llm_clients.openai_client import NormalizedChatOpenAI
+    # 2. Hook cho Groq (luôn cài đặt để tự động delay + xoay tua chống sập)
+    from tradingagents.llm_clients.openai_client import NormalizedChatOpenAI
 
-        orig_groq_invoke = NormalizedChatOpenAI.invoke
+    orig_groq_invoke = NormalizedChatOpenAI.invoke
 
-        def wrapped_groq_invoke(self, input, config=None, **kwargs):
+    def wrapped_groq_invoke(self, input, config=None, **kwargs):
+        # Nếu có nhiều key: xoay round-robin trước mỗi lượt gọi
+        if groq_rotator.has_multiple():
             cur_k = groq_rotator.rotate("Lượt AI mới")
             try:
                 self.root_client.api_key = cur_k
             except Exception:
                 pass
 
-            max_retries = groq_rotator.count()
-            for attempt in range(max_retries):
-                try:
-                    return orig_groq_invoke(self, input, config=config, **kwargs)
-                except Exception as e:
-                    err = str(e)
-                    if ("429" in err or "rate_limit" in err.lower() or "quota" in err.lower() or "limit" in err.lower()) and attempt < max_retries - 1:
+        max_attempts = max(4, groq_rotator.count() * 2)
+        for attempt in range(max_attempts):
+            try:
+                return orig_groq_invoke(self, input, config=config, **kwargs)
+            except Exception as e:
+                err = str(e)
+                la_ratelimit = "429" in err or "rate_limit" in err.lower() or "quota" in err.lower() or "limit" in err.lower()
+                if la_ratelimit and attempt < max_attempts - 1:
+                    # Tự động đọc thời gian chờ chính xác từ Groq (ví dụ: "Please try again in 22.7025s.")
+                    cho_giay = 25.0
+                    m = re.search(r"try again in ([\d\.]+)s", err, re.IGNORECASE)
+                    if m:
+                        try:
+                            cho_giay = float(m.group(1)) + 1.5
+                        except Exception:
+                            pass
+
+                    # Nếu có nhiều tài khoản: ưu tiên đổi tài khoản Groq khác ngay lập tức
+                    if groq_rotator.has_multiple():
                         next_k = groq_rotator.rotate("Chạm RateLimit 429/TPM, đổi tài khoản Groq khác")
                         try:
                             self.root_client.api_key = next_k
                         except Exception:
                             pass
+                        # Nếu tất cả các tài khoản đều chạm trần: tạm nghỉ theo thời gian yêu cầu
+                        if (attempt + 1) % groq_rotator.count() == 0:
+                            print(f"⏳ [RateLimit 429] Toàn bộ tài khoản Groq đang chạm trần TPM. Tự động tạm nghỉ {round(cho_giay)}s...", flush=True)
+                            time.sleep(cho_giay)
                         continue
-                    raise
+                    else:
+                        # Chỉ có 1 tài khoản: tạm nghỉ đúng thời gian Groq yêu cầu rồi tự động thử lại
+                        print(f"⏳ [RateLimit 429] Chạm giới hạn TPM của Groq. Tự động tạm nghỉ {round(cho_giay)}s rồi thử lại lần {attempt+1}/{max_attempts}...", flush=True)
+                        time.sleep(cho_giay)
+                        continue
+                raise
 
-        NormalizedChatOpenAI.invoke = wrapped_groq_invoke
+    NormalizedChatOpenAI.invoke = wrapped_groq_invoke
 
 
 os.environ.setdefault("PYTHONUTF8", "1")

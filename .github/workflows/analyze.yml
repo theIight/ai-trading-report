@@ -41,6 +41,7 @@ jobs:
       - name: 🚀 Chạy phân tích Đa Tác tử (Multi-Agent Trading)
         env:
           GOOGLE_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           PYTHONUNBUFFERED: "1"
           PYTHONIOENCODING: "utf-8"
           PYTHONWARNINGS: "ignore"

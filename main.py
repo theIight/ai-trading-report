@@ -182,6 +182,7 @@ def cai_dat_xoay_tua_he_thong(gemini_rotator: KeyRotator, groq_rotator: KeyRotat
         # Nếu có nhiều key: xoay round-robin trước mỗi lượt gọi
         if gemini_rotator.has_multiple():
             cur_k = gemini_rotator.rotate("Lượt AI mới")
+            os.environ["GOOGLE_API_KEY"] = cur_k
             try:
                 self.client = Client(api_key=cur_k)
             except Exception:
@@ -198,6 +199,7 @@ def cai_dat_xoay_tua_he_thong(gemini_rotator: KeyRotator, groq_rotator: KeyRotat
                     # Nếu có nhiều tài khoản: ưu tiên đổi tài khoản khác trước
                     if gemini_rotator.has_multiple():
                         next_k = gemini_rotator.rotate("Chạm RateLimit 429, đổi tài khoản Gemini khác")
+                        os.environ["GOOGLE_API_KEY"] = next_k
                         try:
                             self.client = Client(api_key=next_k)
                         except Exception:
@@ -216,15 +218,31 @@ def cai_dat_xoay_tua_he_thong(gemini_rotator: KeyRotator, groq_rotator: KeyRotat
 
     NormalizedChatGoogleGenerativeAI.invoke = wrapped_gemini_invoke
 
-    # 2. Hook cho Groq (luôn cài đặt để tự động delay + xoay tua chống sập)
+    # 2. Hook cho Groq (luôn cài đặt để tự động delay + xoay tua + fallback 413 chống sập)
     from tradingagents.llm_clients.openai_client import NormalizedChatOpenAI
 
     orig_groq_invoke = NormalizedChatOpenAI.invoke
 
     def wrapped_groq_invoke(self, input, config=None, **kwargs):
+        # 0. Nếu prompt quá lớn (>24,000 ký tự ~ 7,500+ token) và có sẵn Google Gemini:
+        # Tự động chuyển thẳng sang Gemini (1M context) để tránh dính HTTP 413 trên Groq (trần 8K TPM)
+        text_len = len(input) if isinstance(input, str) else (len(getattr(input, "text", "")) if hasattr(input, "text") else 0)
+        if text_len > 24000 and gemini_rotator.get_current():
+            print(f"⏩ [Prompt dài {text_len:,} ký tự] Vượt trần 8K TPM của Groq. Tự động chuyển sang Google Gemini (1M context)...", flush=True)
+            try:
+                gemini_model = os.getenv("GEMINI_DEEP", "gemini-3.8-flash")
+                gemini_client = NormalizedChatGoogleGenerativeAI(
+                    model=gemini_model,
+                    google_api_key=gemini_rotator.get_current(),
+                )
+                return gemini_client.invoke(input, config=config, **kwargs)
+            except Exception as e:
+                print(f"⚠️ Chuyển tiếp trước sang Gemini thất bại ({e}). Sẽ thử gọi qua Groq...", flush=True)
+
         # Nếu có nhiều key: xoay round-robin trước mỗi lượt gọi
         if groq_rotator.has_multiple():
             cur_k = groq_rotator.rotate("Lượt AI mới")
+            os.environ["GROQ_API_KEY"] = cur_k
             try:
                 self.root_client.api_key = cur_k
             except Exception:
@@ -236,6 +254,30 @@ def cai_dat_xoay_tua_he_thong(gemini_rotator: KeyRotator, groq_rotator: KeyRotat
                 return orig_groq_invoke(self, input, config=config, **kwargs)
             except Exception as e:
                 err = str(e)
+                la_413 = "413" in err or "too large" in err.lower() or "reduce your message size" in err.lower()
+                if la_413:
+                    if gemini_rotator.get_current():
+                        print(f"⚠️ [Groq 413] Prompt quá dài ({err[-120:] if len(err)>120 else err}) vượt trần 8K TPM của Groq. Tự động chuyển lượt này sang Google Gemini (1M context)...", flush=True)
+                        try:
+                            gemini_model = os.getenv("GEMINI_DEEP", "gemini-3.8-flash")
+                            gemini_client = NormalizedChatGoogleGenerativeAI(
+                                model=gemini_model,
+                                google_api_key=gemini_rotator.get_current(),
+                            )
+                            return gemini_client.invoke(input, config=config, **kwargs)
+                        except Exception as gem_err:
+                            print(f"⚠️ Chuyển tiếp sang Gemini thất bại ({gem_err}). Thử phương án nén prompt...", flush=True)
+
+                    # Phương án cứu hộ: Cắt ngắn prompt để vừa trần Groq nếu không có Gemini hoặc Gemini lỗi
+                    if isinstance(input, str) and len(input) > 20000:
+                        print(f"✂️ [Nén Prompt] Đang rút gọn prompt từ {len(input):,} ký tự xuống ~18,000 ký tự để vừa trần Groq...", flush=True)
+                        input_rut_gon = input[:5000] + "\n\n...[Đã lược bớt một phần báo cáo cũ để vừa hạn mức Groq]...\n\n" + input[-13000:]
+                        try:
+                            return orig_groq_invoke(self, input_rut_gon, config=config, **kwargs)
+                        except Exception:
+                            pass
+                    raise
+
                 la_ratelimit = "429" in err or "rate_limit" in err.lower() or "quota" in err.lower() or "limit" in err.lower()
                 if la_ratelimit and attempt < max_attempts - 1:
                     # Tự động đọc thời gian chờ chính xác từ Groq (ví dụ: "Please try again in 22.7025s.")
@@ -250,6 +292,7 @@ def cai_dat_xoay_tua_he_thong(gemini_rotator: KeyRotator, groq_rotator: KeyRotat
                     # Nếu có nhiều tài khoản: ưu tiên đổi tài khoản Groq khác ngay lập tức
                     if groq_rotator.has_multiple():
                         next_k = groq_rotator.rotate("Chạm RateLimit 429/TPM, đổi tài khoản Groq khác")
+                        os.environ["GROQ_API_KEY"] = next_k
                         try:
                             self.root_client.api_key = next_k
                         except Exception:

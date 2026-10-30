@@ -30,9 +30,10 @@ import webbrowser
 from datetime import datetime, timedelta
 from pathlib import Path
 
-# Thư mục gốc dự án và thư mục Kết quả
+# Thư mục gốc dự án và thư mục results
 GOC = Path(__file__).resolve().parent
-THU_MUC_KQ = GOC / "Kết quả"
+THU_MUC_KQ = GOC / "results"
+THU_MUC_KQ.mkdir(exist_ok=True)
 PORT_MAC_DINH = 5050
 PID_FILE = GOC / ".server.pid"
 
@@ -42,13 +43,18 @@ def ten_sach(ma: str) -> str:
 
 
 def tim_file_bao_cao(duong_dan_hoac_ten: str) -> Path | None:
-    """Tìm file báo cáo trong thư mục Kết quả (hỗ trợ cả đường dẫn tương đối và tên file)."""
+    """Tìm file báo cáo trong thư mục results (hỗ trợ cả đường dẫn tương đối và tên file)."""
     duong_chuan = duong_dan_hoac_ten.strip().lstrip("/")
 
-    # 1. Thử đường dẫn chính xác trong Kết quả/
+    # 1. Thử đường dẫn chính xác trong results/
     truc_tiep = THU_MUC_KQ / duong_chuan
     if truc_tiep.is_file():
         return truc_tiep
+
+    # Fallback kiểm tra trong thư mục Kết quả cũ nếu có
+    cu = GOC / "Kết quả" / duong_chuan
+    if cu.is_file():
+        return cu
 
     # 2. Tìm theo tên file ở cấp gốc hoặc trong bất kỳ thư mục con nào
     ten_tep = Path(duong_chuan).name
@@ -1192,12 +1198,15 @@ class ReportHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             self._tra_ve_json(404, {"status": "error", "message": f"Không tìm thấy file: {ten_tep}"})
             return
 
-        # Kiểm tra an toàn: File bắt buộc phải nằm trong THU_MUC_KQ
+        # Kiểm tra an toàn: File bắt buộc phải nằm trong THU_MUC_KQ hoặc thư mục Kết quả cũ
         try:
             file_found.resolve().relative_to(THU_MUC_KQ.resolve())
         except ValueError:
-            self._tra_ve_json(403, {"status": "error", "message": "Từ chối truy cập: Không thể xoá file ngoài thư mục Kết quả"})
-            return
+            try:
+                file_found.resolve().relative_to((GOC / "Kết quả").resolve())
+            except ValueError:
+                self._tra_ve_json(403, {"status": "error", "message": "Từ chối truy cập: Không thể xoá file ngoài thư mục results"})
+                return
 
         deleted_files = []
         try:

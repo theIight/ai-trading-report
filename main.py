@@ -51,7 +51,7 @@ except Exception as e:
 # ------------------------------------------------------------------
 
 GOC = Path(__file__).resolve().parent
-KQ = GOC / "Kết quả"
+KQ = GOC / "results"
 KQ.mkdir(exist_ok=True)
 
 # Nạp khóa Gemini từ biến môi trường, file .env hoặc khoa-gemini.txt
@@ -209,7 +209,7 @@ small{{color:#888}}
 <div class="o">Bước hiện tại: <b class="v">{html.escape(self.buoc)}</b><br>
 Số lượt gọi AI: <b>{self.so_luot_ai}</b> · Đã chạy: <b>{phut:.1f} phút</b><br>
 <small>Trang tự làm mới mỗi 20 giây.</small></div>
-{f'<div class="o">Kết quả: <b class="v">{html.escape(self.ket_qua)}</b><br>Biên bản đã lưu trong thư mục Kết quả.</div>' if self.ket_qua else ''}
+{f'<div class="o">Kết quả: <b class="v">{html.escape(self.ket_qua)}</b><br>Biên bản đã lưu trong thư mục results.</div>' if self.ket_qua else ''}
 </body></html>"""
         (self.thu_muc / "Tiến độ.html").write_text(trang, encoding="utf-8")
 

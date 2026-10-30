@@ -682,10 +682,16 @@
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
       try {
-        // Quét thư mục Kết quả
-        const res = await fetch(`https://api.github.com/repos/${repo}/contents/Kết quả`, { headers });
+        // Quét thư mục docs/results (hoặc results)
+        let res = await fetch(`https://api.github.com/repos/${repo}/contents/docs/results`, { headers });
         if (res.status === 404) {
-          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--text-muted);">Chưa có thư mục "Kết quả" trên repo này. Hãy chạy phân tích đầu tiên!</td></tr>';
+          res = await fetch(`https://api.github.com/repos/${repo}/contents/results`, { headers });
+        }
+        if (res.status === 404) {
+          res = await fetch(`https://api.github.com/repos/${repo}/contents/docs/Kết quả`, { headers });
+        }
+        if (res.status === 404) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--text-muted);">Chưa có thư mục "results" trên repo này. Hãy chạy phân tích đầu tiên!</td></tr>';
           return;
         }
 
@@ -699,13 +705,14 @@
             const subItems = await subRes.json();
             for (const f of subItems) {
               if (f.name.endsWith('.html') && !f.name.includes('Tiến độ')) {
+                const relativePath = f.path.startsWith('docs/') ? f.path.substring(5) : f.path;
                 reports.push({
                   ma: item.name,
                   ten: f.name,
                   path: f.path,
                   html_url: f.html_url,
                   // Link xem trực tiếp trên GitHub Pages
-                  view_url: `./${encodeURIComponent(f.path)}`,
+                  view_url: `./${encodeURI(relativePath)}`,
                   sha: f.sha
                 });
               }
@@ -714,7 +721,7 @@
         }
 
         if (reports.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--text-muted);">Chưa có file báo cáo HTML nào trong thư mục Kết quả.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--text-muted);">Chưa có file báo cáo HTML nào trong thư mục results.</td></tr>';
           return;
         }
 

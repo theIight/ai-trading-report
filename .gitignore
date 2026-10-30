@@ -3,8 +3,11 @@ __pycache__/
 *.pyc
 .env
 khoa-gemini.txt
+khoa-groq.txt
 cache/
 .server.pid
 .DS_Store
+results/
 Kết\ quả/
+"Kết quả/"
 K\341\272\277t qu\341\272\243/

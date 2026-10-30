@@ -58,7 +58,7 @@ jobs:
           python -c "
           from pathlib import Path
           from report_generator import chuyen_doi_md_sang_html
-          kq = Path('Kết quả')
+          kq = Path('results')
           for md in kq.rglob('*.md'):
               html_file = md.with_suffix('.html')
               if not html_file.exists():
@@ -68,21 +68,21 @@ jobs:
 
       - name: 🌐 Đồng bộ báo cáo sang thư mục GitHub Pages (/docs)
         run: |
-          mkdir -p "docs/Kết quả"
-          cp -r Kết\ quả/* "docs/Kết quả/" || true
+          mkdir -p "docs/results"
+          cp -r results/* "docs/results/" || true
 
       - name: 📤 Lưu Artifact báo cáo (Tải về từ GitHub)
         uses: actions/upload-artifact@v4
         with:
           name: Bao-cao-${{ inputs.ma }}
-          path: Kết quả/
+          path: results/
           retention-days: 30
 
       - name: 🔄 Commit và Push báo cáo mới vào Repository
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add "Kết quả/" "docs/"
+          git add "docs/"
           if git diff --staged --quiet; then
             echo "Không có thay đổi mới để commit."
           else

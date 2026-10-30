@@ -24,8 +24,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY main.py .
 
 # Thư mục lưu kết quả và cache
-RUN mkdir -p /app/Kết\ quả /app/cache
+RUN mkdir -p /app/results /app/cache
 
-VOLUME ["/app/Kết quả", "/app/cache"]
+VOLUME ["/app/results", "/app/cache"]
 
 ENTRYPOINT ["python", "main.py", "--headless"]

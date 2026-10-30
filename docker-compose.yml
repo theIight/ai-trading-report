@@ -15,6 +15,6 @@ services:
       - GEMINI_QUICK=${GEMINI_QUICK:-gemini-3.5-flash-lite}
       - GEMINI_DEEP=${GEMINI_DEEP:-gemini-3.8-flash}
     volumes:
-      - ./Kết quả:/app/Kết quả
+      - ./results:/app/results
       - ./cache:/app/cache
       - ./khoa-gemini.txt:/app/khoa-gemini.txt:ro

@@ -35,7 +35,7 @@ import yfinance as yf
 from stockstats import wrap
 
 GOC = Path(__file__).resolve().parent
-KQ = GOC / "Kết quả"
+KQ = GOC / "results"
 KQ.mkdir(exist_ok=True)
 
 TEN_BUOC = {

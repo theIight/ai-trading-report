@@ -8,7 +8,7 @@ khoa-fred.txt
 cache/
 .server.pid
 .DS_Store
-results/
-Kết\ quả/
+/results/
+!docs/results/
+/Kết quả/
 "Kết quả/"
-K\341\272\277t qu\341\272\243/

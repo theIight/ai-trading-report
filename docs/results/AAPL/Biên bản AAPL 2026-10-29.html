@@ -1,0 +1,1220 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Báo cáo Phân tích AAPL (2026-10-29) · AI Trading</title>
+  <style>
+:root {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-hover: #f1f5f9;
+  --border-color: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --accent-gold: #d97706;
+  --accent-blue: #0284c7;
+  --accent-green: #059669;
+  --accent-red: #dc2626;
+  --accent-purple: #9333ea;
+  --code-bg: #f8fafc;
+  --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0b0e14;
+  --bg-secondary: #121722;
+  --bg-card: #182030;
+  --bg-hover: #222d42;
+  --border-color: #273349;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b9bb4;
+  --text-muted: #5d6e87;
+  --accent-gold: #f59e0b;
+  --accent-blue: #38bdf8;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --accent-purple: #a855f7;
+  --code-bg: #0d1117;
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.65;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header & Top Bar */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+[data-theme="dark"] .topbar {
+  background: rgba(18, 23, 34, 0.92);
+  box-shadow: none;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-logo {
+  font-size: 22px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.brand-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  transition: all 0.15s ease;
+}
+.btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-blue);
+}
+.btn-primary {
+  background: #2563eb;
+  border-color: #1d4ed8;
+  color: #fff;
+  font-weight: 600;
+}
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+.btn-danger {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: #dc2626;
+  font-weight: 500;
+}
+.btn-danger:hover {
+  background: #dc2626;
+  border-color: #b91c1c;
+  color: #fff;
+}
+[data-theme="dark"] .btn-danger {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.badge-buy {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+.badge-sell {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+.badge-hold {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+.badge-info {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+[data-theme="dark"] .badge-buy {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+[data-theme="dark"] .badge-sell {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+[data-theme="dark"] .badge-hold {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+/* Layout */
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 32px 20px 80px 20px;
+}
+
+/* Hero Section */
+.hero-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 24px;
+  box-shadow: var(--card-shadow);
+}
+[data-theme="dark"] .hero-card {
+  background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+}
+
+.hero-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.hero-title-group h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.hero-subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-color);
+}
+.stat-box {
+  background: var(--bg-secondary);
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Table of Contents */
+.toc-bar {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+  white-space: nowrap;
+  box-shadow: var(--card-shadow);
+}
+.toc-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+.toc-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.toc-link:hover {
+  background: var(--bg-hover);
+  color: var(--accent-blue);
+}
+
+/* Article Body */
+.report-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 36px 40px;
+  box-shadow: var(--card-shadow);
+}
+@media (max-width: 768px) {
+  .report-content { padding: 20px; }
+}
+
+.report-content h1,
+.report-content h2,
+.report-content h3,
+.report-content h4 {
+  color: var(--text-primary);
+  margin-top: 36px;
+  margin-bottom: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.report-content h1 { font-size: 26px; border-bottom: 2px solid var(--border-color); padding-bottom: 12px; }
+.report-content h2 {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent-blue);
+  background: linear-gradient(90deg, rgba(2, 132, 199, 0.08) 0%, transparent 100%);
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border-radius: 0 8px 8px 0;
+}
+.report-content h3 { font-size: 17px; color: var(--accent-gold); }
+.report-content p { margin-bottom: 16px; }
+.report-content ul, .report-content ol {
+  margin-bottom: 18px;
+  padding-left: 24px;
+}
+.report-content li { margin-bottom: 6px; }
+.report-content strong { color: var(--text-primary); font-weight: 700; }
+
+.report-content hr {
+  border: 0;
+  height: 1px;
+  background: var(--border-color);
+  margin: 32px 0;
+}
+
+/* Tables */
+.report-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 14px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+.report-content th {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 2px solid var(--border-color);
+}
+.report-content td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+.report-content tr:nth-child(even) td {
+  background: rgba(0, 0, 0, 0.02);
+}
+[data-theme="dark"] .report-content tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.02);
+}
+.report-content tr:hover td {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* Code & Pre */
+.report-content code {
+  background: var(--code-bg);
+  color: #e11d48;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  border: 1px solid var(--border-color);
+}
+[data-theme="dark"] .report-content code {
+  color: #ff7b72;
+}
+
+.report-content pre {
+  background: var(--code-bg);
+  padding: 16px;
+  border-radius: 10px;
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  margin: 18px 0;
+}
+.report-content pre code {
+  background: transparent;
+  padding: 0;
+  border: none;
+  color: inherit;
+}
+
+/* Alert Callouts */
+.alert {
+  padding: 14px 18px;
+  border-radius: 10px;
+  margin: 20px 0;
+  border-left: 4px solid;
+  line-height: 1.6;
+}
+.alert p:last-child { margin-bottom: 0; }
+.alert-note {
+  background: #eff6ff;
+  border-color: var(--accent-blue);
+  color: #1e40af;
+}
+[data-theme="dark"] .alert-note {
+  background: rgba(56, 189, 248, 0.1);
+  color: #bae6fd;
+}
+.alert-important {
+  background: #faf5ff;
+  border-color: var(--accent-purple);
+  color: #6b21a8;
+}
+[data-theme="dark"] .alert-important {
+  background: rgba(168, 85, 247, 0.12);
+  color: #e9d5ff;
+}
+.alert-warning {
+  background: #fffbeb;
+  border-color: var(--accent-gold);
+  color: #92400e;
+}
+[data-theme="dark"] .alert-warning {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fde68a;
+}
+.alert-caution {
+  background: #fef2f2;
+  border-color: var(--accent-red);
+  color: #991b1b;
+}
+[data-theme="dark"] .alert-caution {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Toast */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #10b981;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  display: none;
+  z-index: 1000;
+}
+
+@media print {
+  .topbar, .toc-bar, .top-actions, .footer, #toast { display: none !important; }
+  body { background: #fff !important; color: #000 !important; }
+  .report-content, .hero-card { border: none !important; box-shadow: none !important; padding: 0 !important; }
+}
+</style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="topbar">
+    <div class="brand-section">
+      <a href="/" class="brand-logo" style="text-decoration:none;">⚡ AI TRADING</a>
+      <div class="brand-meta">
+        <span class="badge badge-info">⚪ - Thời gian chạy: 4.2 phút</span>
+        <span class="badge badge-info">📅 2026-10-29</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a href="/" class="btn" title="Về trang tổng hợp">🏠 Danh sách</a>
+      <button class="btn" onclick="copyReportLink()" title="Sao chép link mở trên trình duyệt">📋 Sao chép link</button>
+      <button class="btn btn-primary" onclick="window.print()" title="In ra giấy hoặc lưu thành PDF">🖨️ Xuất PDF</button>
+      <button class="btn" onclick="toggleTheme()" title="Đổi giao diện Sáng / Tối">🌓 Giao diện</button>
+      <button class="btn btn-danger" onclick="xoaBaoCaoHienTai()" title="Xoá vĩnh viễn báo cáo này">🗑️ Xoá</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Hero Summary Card -->
+    <div class="hero-card">
+      <div class="hero-header">
+        <div class="hero-title-group">
+          <h1>Báo Cáo Phân Tích: AAPL</h1>
+          <div class="hero-subtitle">
+            Hệ sinh thái Đa Tác tử (Multi-Agent System) · Thẩm định tự động & Toàn diện
+          </div>
+        </div>
+        <div>
+          <span class="badge badge-info" style="font-size:14px; padding: 6px 14px;">⚪ - Thời gian chạy: 4.2 phút</span>
+        </div>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-box">
+          <div class="stat-label">Mã tài sản</div>
+          <div class="stat-value">AAPL</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Ngày phân tích</div>
+          <div class="stat-value">2026-10-29</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Bộ não AI</div>
+          <div class="stat-value" style="font-size:14px; word-break:break-all;">gemini-3.8-flash-high</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Thời gian phân tích</div>
+          <div class="stat-value">4.2 phút</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table of Contents -->
+    
+        <div class="toc-bar">
+          <span class="toc-title">Điều hướng:</span>
+          <a class="toc-link" href="#muc_1">🏆 1. PHÁN QUYẾT CUỐI CÙNG CỦA GIÁM ĐỐC QUỸ</a><a class="toc-link" href="#muc_2">📊 2. BÁO CÁO PHÒNG KỸ THUẬT (MARKET TECHNICIAN)</a><a class="toc-link" href="#muc_3">📰 3. BÁO CÁO PHÒNG TIN TỨC &amp; TÂM LÝ (SENTIMENT &amp; NEWS)</a><a class="toc-link" href="#muc_4">🏢 4. BÁO CÁO PHÒNG PHÂN TÍCH CƠ BẢN (FUNDAMENTALS)</a><a class="toc-link" href="#muc_5">⚔️ 5. TRANH BIỆN PHE MUA VS PHE BÁN (BULL VS BEAR DEBATE)</a><a class="toc-link" href="#muc_6">🛡️ 6. HỘI ĐỒNG QUẢN LÝ RỦI RO (RISK COMMITTEE)</a>
+        </div>
+        
+
+    <!-- Main Content -->
+    <article class="report-content">
+      <h1>BIÊN BẢN PHÂN TÍCH ĐA TÁC TỬ: AAPL</h1>
+<ul>
+<li><strong>Ngày phân tích:</strong> 2026-10-29</li>
+<li><strong>Bộ não AI:</strong> <code>gemini-3.8-flash-high</code> (Antigravity Native Session - Không tốn API key)</li>
+<li><strong>Xếp hạng khuyến nghị:</strong> ****</li>
+<li><strong>Thời gian chạy:</strong> 4.2 phút</li>
+</ul>
+<div class="alert alert-important">Biên bản do hệ sinh thái Antigravity Multi-Agent tổng hợp dựa trên dữ liệu giá thực tế từ Yahoo Finance. Báo cáo chỉ nhằm mục đích nghiên cứu học tập, **KHÔNG PHẢI LỜI KHUYÊN ĐẦU TƯ TÀI CHÍNH**.</div>
+<hr />
+<h2 id="muc_1">🏆 1. PHÁN QUYẾT CUỐI CÙNG CỦA GIÁM ĐỐC QUỸ</h2>
+<p>Trên cương vị <strong>Giám đốc Quỹ Đầu tư (Chief Investment Officer / Portfolio Manager)</strong>, sau khi cân nhắc và tổng hợp báo cáo kỹ thuật từ Trưởng phòng Phân tích Kỹ thuật cùng các cảnh báo rủi ro về bẫy phân phối thanh khoản từ Hội đồng Quản trị Rủi ro, tôi xin ban hành <strong>PHÁN QUYẾT CUỐI CÙNG</strong> đối với mã <strong>AAPL</strong> tại ngày 2026-10-29 như sau:</p>
+<hr />
+<h3>1. QUYẾT ĐỊNH HÀNH ĐỘNG:</h3>
+<p><strong>ĐỨNG NGOÀI QUAN SÁT (HOLD)</strong><br />
+<em>(Tuyệt đối KHÔNG mua đuổi ở thị giá 348.91 USD; nhà đầu tư đang nắm giữ tiếp tục giữ vị thế và nâng trailing stop; kiên nhẫn chờ nhịp kéo lùi/pullback để giải ngân mới).</em></p>
+<hr />
+<h3>2. XẾP HẠNG KHUYẾN NGHỊ:</h3>
+<p><strong>TRUNG LẬP (3/5 sao)</strong></p>
+<hr />
+<h3>3. KẾ HOẠCH GIAO DỊCH CỤ THỂ:</h3>
+<ul>
+<li><strong>Vùng giá mua khuyến nghị (Entry Zone):</strong> <strong>341.50 – 344.50 USD</strong> <em>(Vùng hội tụ giữa trục giữa Bollinger Band 20 và đường SMA 10; chỉ giải ngân khi có tín hiệu rút chân xác nhận lực cầu hấp thụ).</em></li>
+<li><strong>Mức cắt lỗ tuyệt đối (Stop Loss):</strong> <strong>331.00 USD</strong> <em>(Thủng dải dưới Bollinger Band 331.85 USD và hỗ trợ trung hạn then chốt SMA 50 tại 332.37 USD – xác nhận gãy cấu trúc tăng giá).</em></li>
+<li><strong>Mục tiêu giá 1 (TP1):</strong> <strong>355.00 USD</strong> <em>(Kiểm định lại và phá vỡ cản đỉnh 351.43 USD).</em></li>
+<li><strong>Mục tiêu giá 2 (TP2):</strong> <strong>370.00 USD</strong> <em>(Mở rộng xu hướng tăng trưởng khi mốc vốn hóa lịch sử được hấp thụ hoàn tất).</em></li>
+<li><strong>Tỷ lệ phân bổ vốn khuyến nghị:</strong> <strong>5% quy mô danh mục</strong> <em>(Chỉ giải ngân thăm dò khi giá điều chỉnh về đúng Entry Zone; nâng lên 10% nếu giá bứt phá dứt khoát 352.00 USD với khối lượng lớn).</em></li>
+</ul>
+<hr />
+<h3>4. 3 LÝ DO CỐT LÕI CỦA PHÁN QUYẾT:</h3>
+<ol>
+<li><strong>Rủi ro bẫy phân phối tại vùng cản tâm lý cực hạn:</strong> Thị giá 348.91 USD đã chạm sát biên trên dải Bollinger (351.22 USD) và để lại bóng nến trên phản ánh áp lực bán mạnh tại 351.43 USD. Đi kèm với chỉ báo MACD bắt đầu xuất hiện giao cắt giảm (-0.00) ngay tại ngưỡng nhạy cảm 5.000 tỷ USD vốn hóa, rủi ro các tay to (Smart Money) thực hiện hoạt động sang tay/churning cho dòng tiền FOMO là hiện hữu.</li>
+<li><strong>Tỷ lệ Lợi nhuận/Rủi ro (R:R) tại giá hiện tại hoàn toàn bất lợi:</strong> Dư địa tăng lên đỉnh cũ chỉ còn chưa đầy 1%, trong khi giá đang kéo dãn gần 5% so với SMA 50 (332.37 USD). Việc giải ngân mua mới ở mức 348.91 USD vi phạm nghiêm trọng nguyên tắc quản trị rủi ro của Quỹ.</li>
+<li><strong>Cấu trúc xu hướng lớn vẫn tích cực, chưa đủ cơ sở để Bán tháo (Short):</strong> Mặc dù ngắn hạn có rủi ro rung lắc, cấu trúc trung hạn vẫn duy trì thế Golden Cross (SMA 10 &gt; SMA 50) và RSI ở mức 61.39 cho thấy phe mua vẫn giữ thế chủ động. Lựa chọn tối ưu của Quỹ lúc này là kỷ luật &quot;rình mồi&quot;, kiên nhẫn chờ đợt rũ bỏ lành mạnh về các ngưỡng hỗ trợ cân bằng trước khi triển khai dòng tiền.</li>
+</ol>
+<hr />
+<h2 id="muc_2">📊 2. BÁO CÁO PHÒNG KỸ THUẬT (MARKET TECHNICIAN)</h2>
+<h3>Dữ liệu thị trường &amp; Chỉ báo kỹ thuật (AAPL tại ngày 2026-10-29):</h3>
+<ul>
+<li><strong>Giá đóng cửa (Close):</strong> 348.91 USD (Biến động ngày: +1.48%)</li>
+<li><strong>Biên độ trong ngày:</strong> Thấp nhất = 347.30 USD | Cao nhất = 351.43 USD</li>
+<li><strong>Khối lượng giao dịch (Volume):</strong> 42,382,900</li>
+<li><strong>RSI (14 ngày):</strong> 61.39 (Trung tính)</li>
+<li><strong>MACD:</strong> 4.06 | <strong>Signal Line:</strong> 4.07 | <strong>Histogram:</strong> -0.00 (Cắt xuống (Bearish Cross))</li>
+<li><strong>Đường trung bình (SMA):</strong>
+<ul>
+<li>SMA 10 (Ngắn hạn): 344.96 USD (Trên SMA 10)</li>
+<li>SMA 50 (Trung hạn): 332.37 USD (Trên SMA 50)</li>
+<li>SMA 200 (Dài hạn): Chưa đủ 200 phiên</li>
+</ul>
+</li>
+<li><strong>Dải Bollinger Bands:</strong>
+<ul>
+<li>Dải trên (Upper Band): 351.22 USD</li>
+<li>Dải giữa (Middle Band): 341.54 USD</li>
+<li>Dải dưới (Lower Band): 331.85 USD</li>
+</ul>
+</li>
+<li><strong>Độ biến động ATR (14):</strong> 6.27 USD</li>
+</ul>
+<h1>BÁO CÁO PHÂN TÍCH KỸ THUẬT CHUYÊN SÂU: CỔ PHIẾU APPLE INC. (AAPL)</h1>
+<p><strong>Ngày phân tích:</strong> 2026-10-29<br />
+<strong>Người thực hiện:</strong> Trưởng phòng Phân tích Kỹ thuật (Senior Market Technician)<br />
+<strong>Tài sản:</strong> Apple Inc. (Ticker: AAPL)<br />
+<strong>Thị giá đóng cửa:</strong> 348.91 USD (+1.48%)</p>
+<hr />
+<h3>BẢNG TỔNG HỢP DỮ LIỆU KỸ THUẬT</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Thông số / Chỉ báo</th>
+<th style="text-align:left">Giá trị</th>
+<th style="text-align:left">Trạng thái kỹ thuật</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Giá đóng cửa (Close)</strong></td>
+<td style="text-align:left"><strong>348.91 USD</strong></td>
+<td style="text-align:left">Tăng +1.48% so với phiên trước</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Biên độ trong ngày</strong></td>
+<td style="text-align:left">347.30 – 351.43 USD</td>
+<td style="text-align:left">Xuất hiện bóng nến trên (Upper Shadow)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Khối lượng (Volume)</strong></td>
+<td style="text-align:left">42,382,900</td>
+<td style="text-align:left">Thanh khoản ở mức khá, hấp thụ tốt</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>RSI (14)</strong></td>
+<td style="text-align:left">61.39</td>
+<td style="text-align:left">Xu hướng tăng chủ đạo, chưa quá mua</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>MACD / Signal / Hist</strong></td>
+<td style="text-align:left">4.06 / 4.07 / -0.00</td>
+<td style="text-align:left">Giao cắt giảm nhẹ (Chớm Bearish Cross)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>SMA 10 / SMA 50</strong></td>
+<td style="text-align:left">344.96 / 332.37 USD</td>
+<td style="text-align:left">Cấu trúc Golden Cross / Xu hướng tăng</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Bollinger Bands (20,2)</strong></td>
+<td style="text-align:left">331.85 – 341.54 – 351.22 USD</td>
+<td style="text-align:left">Chạm biên trên dải Bollinger (Upper Band)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>ATR (14)</strong></td>
+<td style="text-align:left">6.27 USD</td>
+<td style="text-align:left">Biên độ dao động bình quân ~1.8%</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>1. Đánh giá Xu hướng Hiện tại (Trend Analysis)</h3>
+<ul>
+<li><strong>Ngắn hạn (Short-term): Xu hướng TĂNG (Bullish) kèm tín hiệu chững lại.</strong>
+<ul>
+<li>Thị giá (348.91 USD) đang vận động vững chắc trên đường trung bình động ngắn hạn <strong>SMA 10 (344.96 USD)</strong>, phản ánh bên mua (Bulls) vẫn giữ quyền kiểm soát nhịp đẩy giá.</li>
+<li>Cấu trúc nến ngày ghi nhận mức cao nhất đạt <strong>351.43 USD</strong>, nhưng đóng cửa thoái lui về <strong>348.91 USD</strong>. Việc tạo bóng nến trên dài khoảng 2.52 USD cho thấy áp lực chốt lời ngắn hạn đã xuất hiện ngay khi giá chạm kháng cự động của dải Bollinger trên.</li>
+</ul>
+</li>
+<li><strong>Trung hạn (Medium-term): Xu hướng TĂNG MẠNH (Strong Bullish).</strong>
+<ul>
+<li>Giá hiện tại vượt trội hơn đáng kể so với <strong>SMA 50 (332.37 USD)</strong> (cách biệt +4.97%).</li>
+<li>Sự sắp xếp thứ bậc chuẩn tắc: <strong>Giá &gt; SMA 10 &gt; SMA 50</strong> khẳng định cấu trúc tăng trung hạn được bảo toàn nguyên vẹn, các nhịp chỉnh (nếu có) đóng vai trò là nhịp tái tích lũy (consolidation).</li>
+</ul>
+</li>
+<li><strong>Dài hạn (Long-term): Tạm thời KHUYẾT (Data Incomplete).</strong>
+<ul>
+<li>Đường <strong>SMA 200</strong> chưa đủ 200 phiên dữ liệu để đưa ra xác nhận định lượng. Tuy nhiên, quán tính tăng giá từ ngắn hạn và trung hạn đang tạo nền tảng vững chắc cho việc thiết lập chu kỳ tăng trưởng dài hạn.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>2. Đọc vị Động lượng &amp; Xung lượng (Momentum &amp; Volume)</h3>
+<ul>
+<li><strong>RSI (14) = 61.39 (Phe Bò kiểm soát tốt):</strong>
+<ul>
+<li>Chỉ báo nằm vững trên ngưỡng trung tính 50 và duy trì trong vùng kiểm soát tăng (Bullish Control Zone: 55–65).</li>
+<li>RSI chưa chạm ngưỡng quá mua (Overbought &gt; 70), cho thấy cổ phiếu vẫn còn dư địa mở rộng đà tăng, chưa đối mặt với nguy cơ kiệt sức mua tức thì.</li>
+</ul>
+</li>
+<li><strong>MACD &amp; Histogram = Chớm giao cắt giảm (-0.00):</strong>
+<ul>
+<li>Đường MACD (4.06) vừa cắt nhẹ xuống dưới đường Signal Line (4.07), đưa Histogram về mức <strong>-0.00</strong>.</li>
+<li><strong>Ý nghĩa:</strong> Đây là tín hiệu cảnh báo sớm (Early Warning) về sự suy giảm gia tốc tăng (Momentum Deceleration). Mặc dù giá hôm nay tăng +1.48%, xung lượng nội tại lại bắt đầu có độ phân kỳ nhẹ, dự báo cổ phiếu có thể chuyển từ trạng thái bứt phá (breakout) sang trạng thái tích lũy đi ngang (range-bound) trong 1–3 phiên tới.</li>
+</ul>
+</li>
+<li><strong>Khối lượng giao dịch (Volume = 42.38 triệu):</strong>
+<ul>
+<li>Lực cầu trong phiên đẩy giá lên vượt 351 USD rất chủ động, tuy nhiên khối lượng này đi kèm bóng nến rút râu thể hiện đã có sự trao tay mạnh mẽ giữa phe chốt lời ngắn hạn và phe mua đuổi quanh mốc 350 USD.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>3. Đánh giá Biến động &amp; Độ nén (Volatility Dynamics: Bollinger Bands &amp; ATR)</h3>
+<ul>
+<li><strong>Dải Bollinger Bands (Mean Reversion Risk):</strong>
+<ul>
+<li><strong>Dải trên (Upper Band):</strong> 351.22 USD</li>
+<li><strong>Dải giữa (Middle Band / SMA 20):</strong> 341.54 USD</li>
+<li><strong>Dải dưới (Lower Band):</strong> 331.85 USD</li>
+<li>Đỉnh phiên chạm 351.43 USD đã xuyên thủng dải trên (Upper Band) trước khi giá bị ép đóng cửa bên trong (348.91 USD). Theo lý thuyết Bollinger, hành động giá &quot;Band Tag&quot; kèm rút chân vào trong thường kích hoạt xu hướng hồi quy về vùng cân bằng (Mean Reversion).</li>
+</ul>
+</li>
+<li><strong>Chỉ số biên độ biến động ATR (14) = 6.27 USD:</strong>
+<ul>
+<li>Biên độ dao động thực tế trong phiên là <strong>4.13 USD</strong> (351.43 - 347.30), thấp hơn mức biến động trung bình ngày ATR (6.27 USD).</li>
+<li>Điều này xác nhận rằng phiên tăng điểm hôm nay chưa phải là một phiên bùng nổ biến động cực đại (Volatility Expansion), mà chủ yếu là nhịp kiểm tra giới hạn trên của dải giao dịch.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>4. Bản đồ Hỗ trợ &amp; Kháng cự Trọng yếu (Key Levels Mapping)</h3>
+<p>Dựa trên dữ liệu giá hiện tại <strong>348.91 USD</strong>, các mốc kỹ thuật định hướng giao dịch được xác lập như sau:</p>
+<h4>Các ngưỡng Kháng cự (Resistance):</h4>
+<ol>
+<li><strong>Kháng cự R1 (351.22 – 351.43 USD):</strong> Vùng hợp lưu giữa dải trên Bollinger Bands và mức đỉnh cao nhất phiên hôm nay. Đây là &quot;chốt chặn&quot; ngắn hạn cần vượt qua để mở rộng đà tăng.</li>
+<li><strong>Kháng cự R2 (355.00 – 358.00 USD):</strong> Vùng kháng cự tâm lý và mục tiêu mở rộng kỹ thuật tiếp theo nếu AAPL breakout thành công khỏi ngưỡng 351.50 USD với thanh khoản đột biến.</li>
+</ol>
+<h4>Các ngưỡng Hỗ trợ (Support):</h4>
+<ol>
+<li><strong>Hỗ trợ S1 (344.96 – 347.30 USD):</strong> Hỗ trợ động ngắn hạn bao gồm đáy thấp nhất trong ngày (347.30 USD) và đường <strong>SMA 10 (344.96 USD)</strong>.</li>
+<li><strong>Hỗ trợ S2 (341.54 USD):</strong> Đường dải giữa Bollinger Bands (SMA 20) – Trục cân bằng xu hướng quan trọng nhất trong nhịp tăng hiện tại.</li>
+<li><strong>Hỗ trợ S3 (331.85 – 332.37 USD):</strong> Vùng đệm chiến lược trung hạn, nơi hợp lưu giữa <strong>SMA 50 (332.37 USD)</strong> và <strong>Dải dưới Bollinger (331.85 USD)</strong>.</li>
+</ol>
+<hr />
+<h3>5. Tổng kết Nhận định Kỹ thuật (Executive Summary &amp; Strategy)</h3>
+<ul>
+<li><strong>Thiết lập kỹ thuật:</strong> <strong>TÍCH CỰC CÓ ĐIỀU KIỆN (Cautiously Bullish / Sideway-Up).</strong><br />
+AAPL đang trong xu hướng tăng rõ ràng ở cả khung ngắn và trung hạn. Tuy nhiên, sự xuất hiện của bóng nến trên tại dải Bollinger Upper (351.22 USD) kết hợp với tín hiệu chớm cắt xuống của MACD Histogram (-0.00) cảnh báo đà tăng có thể tạm thời chững lại để hấp thụ lực cung quanh mốc 350 USD.</li>
+<li><strong>Kịch bản vận động khả dĩ:</strong>
+<ul>
+<li><em>Kịch bản chính (65% xác suất):</em> Giá sẽ đi ngang tích lũy hoặc kiểm định nhẹ về vùng hỗ trợ <strong>345.00 – 347.00 USD (quanh SMA 10)</strong> để giải tỏa áp lực bán trước khi tích lũy đủ lực công phá dứt khoát mốc 351.50 USD.</li>
+<li><em>Kịch bản phụ (35% xác suất):</em> Dòng tiền phái sinh/thể chế tiếp tục đẩy mạnh, bứt phá ngay qua 351.50 USD, đưa RSI tiệm cận vùng quá mua 70 (hướng tới mốc 355 USD).</li>
+</ul>
+</li>
+<li><strong>Định hướng hành động:</strong>
+<ul>
+<li><strong>Vị thế nắm giữ (Long Positions):</strong> Tiếp tục nắm giữ, nâng mức dừng lỗ bảo toàn lợi nhuận (Trailing Stop) lên dưới mốc SMA 10 (quanh <strong>344.00 USD</strong>).</li>
+<li><strong>Vị thế giải ngân mới:</strong> Hạn chế mua đuổi (FOMO) khi giá tiếp cận vùng kháng cự 351 USD; kiên nhẫn chờ nhịp kéo ngược (pullback/retest) về vùng <strong>344.00 – 346.00 USD</strong> với thanh khoản giảm dần để tối ưu tỷ lệ Rủi ro : Lợi nhuận (R:R).</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="muc_3">📰 3. BÁO CÁO PHÒNG TIN TỨC &amp; TÂM LÝ (SENTIMENT &amp; NEWS)</h2>
+<h1>BÁO CÁO PHÂN TÍCH TÂM LÝ THỊ TRƯỜNG &amp; TIN TỨC (SENTIMENT &amp; NEWS ANALYSIS)</h1>
+<ul>
+<li><strong>Mã tài sản:</strong> AAPL (Apple Inc.)</li>
+<li><strong>Ngày phân tích:</strong> 29/10/2026</li>
+<li><strong>Bộ phận:</strong> Phân tích Dữ liệu Vĩ mô &amp; Tâm lý Thị trường</li>
+</ul>
+<hr />
+<h3>TỔNG QUAN CHỈ SỐ ĐỊNH GIÁ &amp; DỮ LIỆU ĐẦU VÀO</h3>
+<ul>
+<li><strong>Vốn hóa thị trường:</strong> ~5,092 tỷ USD (Đạt cột mốc kỷ lục lịch sử 5.000 tỷ USD).</li>
+<li><strong>P/E Trailing:</strong> 40.01 (Mức định giá cao đáng kể so với trung bình 5 năm gần nhất là 28x – 32x).</li>
+<li><strong>Biên định giá mục tiêu của Wall Street:</strong> 245.0 – 405.0 USD (Mức độ phân hóa lên tới ~65% giữa phe Bò và phe Gấu).</li>
+<li><strong>Đồng thuận của các định chế tài chính:</strong> BUY (Mua tích cực).</li>
+</ul>
+<hr />
+<h3>1. Tâm lý chung của đám đông hiện tại: <strong>Tham lam tột độ (Extreme Greed) pha lẫn Thận trọng định giá (Valuation Fatigue)</strong></h3>
+<ul>
+<li><strong>Tâm lý thống trị – Lạc quan &amp; FOMO:</strong> Việc vốn hóa vượt ngưỡng lịch sử 5.000 tỷ USD tạo ra hiệu ứng lan tỏa tâm lý rất mạnh trong cộng đồng nhà đầu tư cá nhân (Retail Investors). Đám đông đang bị dẫn dắt bởi kỳ vọng lớn vào chu kỳ siêu tăng trưởng (Supercycle) từ hệ sinh thái Apple Intelligence, các dòng thiết bị tích hợp AI thế hệ mới và mảng Dịch vụ (Services).</li>
+<li><strong>Sự xuất hiện của tâm lý e ngại định giá:</strong> Chỉ số P/E Trailing chạm mốc <strong>40.01</strong> cho thấy cổ phiếu đang được giao dịch ở kịch bản &quot;định giá cho sự hoàn hảo&quot; (priced for perfection). Một bộ phận nhà đầu tư bắt đầu xuất hiện tâm lý do dự, lo ngại dư địa tăng trưởng ngắn hạn không còn nhiều so với rủi ro điều chỉnh.</li>
+<li><strong>Đánh giá chung:</strong> Đám đông đang ở trạng thái <strong>Tham lam chiếm ưu thế</strong>, dễ bị cuốn theo các nhịp bứt phá (breakout) nhưng cũng cực kỳ nhạy cảm nếu có tin tức tiêu cực xuất hiện.</li>
+</ul>
+<hr />
+<h3>2. Các sự kiện vĩ mô và tin tức ngành đang tác động trực tiếp tới AAPL</h3>
+<ul>
+<li><strong>Môi trường vĩ mô và chính sách tiền tệ:</strong>
+<ul>
+<li>Xu hướng nới lỏng chính sách lãi suất toàn cầu giúp định giá của các cổ phiếu Big Tech vốn hóa siêu lớn (Mega-cap) được duy trì ở mức cao.</li>
+<li>Chi tiêu tiêu dùng cá nhân (PCE) đối với các sản phẩm công nghệ cao cấp vẫn bền bỉ, dù tỷ giá USD biến động có thể ảnh hưởng nhẹ đến doanh thu thị trường quốc tế.</li>
+</ul>
+</li>
+<li><strong>Thời điểm mùa báo cáo tài chính (Cuối tháng 10):</strong>
+<ul>
+<li>Ngày 29/10 là giai đoạn cận kề công bố Báo cáo Tài chính Quý 4 (Niên độ tài chính của Apple). Mọi sự chú ý đổ dồn vào:
+<ol>
+<li>Doanh số mở bán đợt đầu của thế hệ iPhone mới tích hợp sâu phần cứng AI.</li>
+<li>Tốc độ tăng trưởng doanh thu định kỳ từ các gói dịch vụ AI cao cấp.</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><strong>Tái cấu trúc chuỗi cung ứng công nghệ:</strong>
+<ul>
+<li>Tiến trình đa dạng hóa sản xuất ra ngoài Trung Quốc (tăng tỷ trọng lắp ráp tại Ấn Độ và Việt Nam) đang bước vào giai đoạn vận hành ổn định, giúp biên lợi nhuận được cải thiện nhưng vẫn đối mặt với chi phí chuyển giao công nghệ.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>3. Động thái của dòng tiền lớn (Whale / Smart Money): <strong>Gom thụ động – Phân phối chiến thuật &amp; Phòng vệ (Hedging)</strong></h3>
+<p>Mặc dù khuyến nghị đồng thuận của các quỹ là <strong>BUY</strong>, hành vi thực tế của dòng tiền thông minh có sự phân hóa tinh tế:</p>
+<ul>
+<li><strong>Dòng tiền ETF thụ động (Passive Funds):</strong> Bắt buộc phải duy trì việc giải ngân và nắm giữ tỷ trọng tối đa do quy mô vốn hóa 5.000 tỷ USD của AAPL chiếm tỷ trọng chi phối trong các chỉ số S&amp;P 500 và Nasdaq 100.</li>
+<li><strong>Dòng tiền chủ động (Hedge Funds &amp; Institutional Active Managers):</strong>
+<ul>
+<li><strong>Phân phối chiến thuật (Tactical Distribution):</strong> Với việc P/E lên tới 40x và biên giá mục tiêu có khoảng sàn rất thấp (<strong>245.0 USD</strong>, thấp hơn đáng kể so với thị giá hiện tại), các &quot;tay to&quot; có xu hướng <strong>chốt lời từng phần</strong> vào những phiên thị trường hưng phấn để tái cân bằng danh mục.</li>
+<li><strong>Gia tăng vị thế phòng hộ (Options Hedging):</strong> Smart Money không bán tháo tháo chạy nhưng đang mua mạnh các hợp đồng quyền chọn bán (Put Options) để bảo vệ lợi nhuận trước thềm công bố báo cáo tài chính và sự kiện bầu cử/vĩ mô cuối năm.</li>
+</ul>
+</li>
+<li><strong>Kết luận dòng tiền:</strong> Dòng tiền lớn <strong>không còn gom hàng quyết liệt ở vùng giá này</strong>, mà chuyển sang trạng thái <strong>giữ vị thế (Holding) kết hợp chốt lời phân phối cuốn chiếu cho dòng tiền nhỏ lẻ (Retail FOMO)</strong>.</li>
+</ul>
+<hr />
+<h3>4. Đánh giá rủi ro Thiên nga đen (Black Swan) &amp; Tin tức bất ngờ</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Rủi ro tiềm ẩn</th>
+<th style="text-align:center">Mức độ tác động</th>
+<th style="text-align:left">Kịch bản chi tiết</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Phán quyết chống độc quyền (Antitrust Shock)</strong></td>
+<td style="text-align:center"><strong>Rất cao</strong></td>
+<td style="text-align:left">Các vụ kiện từ Bộ Tư pháp Mỹ (DOJ) và Liên minh Châu Âu (DMA) liên quan đến phí hoa hồng App Store hoặc lệnh hủy bỏ thỏa thuận chia sẻ doanh thu tìm kiếm độc quyền của Google với Apple (trị giá hàng chục tỷ USD doanh thu ròng mỗi năm).</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Hụt kỳ vọng kiếm tiền từ AI (AI Monetization Miss)</strong></td>
+<td style="text-align:center"><strong>Cao</strong></td>
+<td style="text-align:left">Người dùng không sẵn sàng chi trả gói thuê bao trả phí cho Apple Intelligence, hoặc tính năng AI chưa tạo ra chu kỳ đổi máy vượt bậc như kỳ vọng, dẫn tới việc hạ dự phóng tăng trưởng P/E từ 40x về 28x – 30x (tương ứng vùng giá sàn <strong>245 USD</strong>).</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Đứt gãy địa chính trị tại chuỗi cung ứng bán dẫn</strong></td>
+<td style="text-align:center"><strong>Nghiêm trọng</strong></td>
+<td style="text-align:left">Bất ổn địa chính trị ảnh hưởng đến năng lực cung ứng chip bán dẫn tiên tiến (tiến trình 2nm/3nm), gây gián đoạn dây chuyền lắp ráp thiết bị chủ lực trước thềm mùa mua sắm cuối năm (Holiday Season).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>TỔNG KẾT KHUYẾN NGHỊ DƯỚI GÓC NHÌN TÂM LÝ THỊ TRƯỜNG</h3>
+<ul>
+<li><strong>Trạng thái hành động:</strong> <strong>GIẢM MUA MỚI – CÂN NHẮC CHỐT LỜI TỪNG PHẦN (Reduce / Take Profit)</strong>.</li>
+<li>Thị trường đang ở pha hưng phấn cực đại khi tôn vinh cột mốc 5.000 tỷ USD. Đối với nhà đầu tư lướt sóng, việc đua lệnh mua mới khi P/E = 40.01 tiềm ẩn rủi ro tỷ lệ Risk/Reward không hấp dẫn. Nên kiên nhẫn chờ đợi các nhịp điều chỉnh kỹ thuật (về sát vùng cân bằng hoặc sau khi rủi ro báo cáo tài chính đi qua) trước khi mở vị thế mới.</li>
+</ul>
+<hr />
+<h2 id="muc_4">🏢 4. BÁO CÁO PHÒNG PHÂN TÍCH CƠ BẢN (FUNDAMENTALS)</h2>
+<h3>Báo cáo Phân tích Cơ bản &amp; Định giá: Apple Inc. (AAPL)</h3>
+<p><strong>Ngày phân tích:</strong> 29/10/2026<br />
+<strong>Chuyên viên:</strong> Fundamentals &amp; Valuation Analyst</p>
+<hr />
+<h3>1. Đánh giá Mức Định giá Hiện tại: Đắt hay Rẻ?</h3>
+<ul>
+<li><strong>Vốn hóa thị trường ($5,092 tỷ USD):</strong> Mức vốn hóa vượt mốc 5.000 tỷ USD phản ánh kỳ vọng khổng lồ của thị trường về vị thế dẫn đầu tuyệt đối của Apple trong kỷ nguyên điện toán cá nhân và trí tuệ nhân tạo biên (Edge AI).</li>
+<li><strong>P/E Trailing (40.01x):</strong>
+<ul>
+<li><strong>Định giá ở mức CAO (Premium/Rich Valuation):</strong> Trong quá khứ 5 năm, P/E trung bình của Apple thường dao động trong biên độ 26x – 32x. Mức P/E 40x đặt Apple ngang hàng với các công ty phần mềm tăng trưởng cao (SaaS) thay vì một tập đoàn phần cứng công nghệ hỗn hợp.</li>
+<li><strong>So với tiềm năng tăng trưởng (PEG):</strong> Để hợp lý hóa mức P/E 40x, Apple cần duy trì tốc độ tăng trưởng EPS từ 14% – 18%/năm liên tục. Nếu tăng trưởng doanh thu chỉ dừng lại ở mức 1 chữ số (6% – 9%), cổ phiếu đang đối mặt với rủi ro nén bội số định giá (<em>Multiple Compression</em>) khi tăng trưởng không đạt kỳ vọng.</li>
+</ul>
+</li>
+<li><strong>Biên độ mục tiêu của các chuyên gia ($245.0 - $405.0 USD):</strong>
+<ul>
+<li>Cho thấy sự phân hóa rõ rệt: Phe bi quan ($245) lo ngại về rủi ro bão hòa chu kỳ phần cứng và pháp lý; trong khi phe lạc quan ($405) đặt cược vào siêu chu kỳ nâng cấp thiết bị tích hợp AI và khả năng kiếm tiền từ mảng Dịch vụ (<em>Services</em>).</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>Kết luận Định giá:</strong> <strong>ĐẮT</strong> xét trên góc độ định giá truyền thống và biên an toàn (<em>Margin of Safety</em>). Giá thị trường hiện tại đã phản ánh phần lớn câu chuyện thành công của chu kỳ AI và tăng trưởng dịch vụ trong 2–3 năm tới.</p>
+</blockquote>
+<hr />
+<h3>2. Sức khỏe Tài chính, Lợi thế Cạnh tranh Cốt lõi (Moat) &amp; Triển vọng</h3>
+<h4>a. Sức khỏe tài chính: Hạng AAA trên thực tế</h4>
+<ul>
+<li><strong>Dòng tiền tự do (FCF) dồi dào:</strong> Apple là một &quot;cỗ máy in tiền&quot; với dòng tiền tự do khổng lồ, cho phép doanh nghiệp liên tục thực hiện chương trình mua lại cổ phiếu (<em>Share Buybacks</em>) trị giá hàng chục tỷ USD mỗi năm, trực tiếp hỗ trợ tăng trưởng EPS kể cả khi tăng trưởng doanh thu chậm lại.</li>
+<li><strong>Cấu trúc vốn tối ưu:</strong> Đòn bẩy tài chính ở mức rất an toàn, thanh khoản cao, chi phí vốn thấp và khả năng vượt qua suy thoái kinh tế vượt trội so với hầu hết các doanh nghiệp S&amp;P 500.</li>
+</ul>
+<h4>b. Hào kinh tế cốt lõi (Economic Moat) – Rất rộng (<em>Wide Moat</em>)</h4>
+<ul>
+<li><strong>Chi phí chuyển đổi cao (High Switching Costs):</strong> Hệ sinh thái khép kín giữa phần cứng (iPhone, Mac, Apple Watch), phần mềm (iOS, macOS) và dữ liệu (iCloud) tạo rào cản rời đi cực lớn đối với người dùng.</li>
+<li><strong>Cơ sở thiết bị cài đặt khổng lồ (Installed Base):</strong> Hơn 2.2+ tỷ thiết bị đang hoạt động trên toàn cầu là kênh phân phối độc quyền vô giá, giảm thiểu tối đa chi phí thu hút khách hàng mới (<em>CAC</em>).</li>
+<li><strong>Quyền định giá và Sức mạnh thương hiệu (Pricing Power):</strong> Khách hàng sẵn sàng trả mức giá cao cho các dòng máy cao cấp (Pro/Pro Max), giúp Apple duy trì biên lợi nhuận gộp toàn tập đoàn ở mức kỷ lục (&gt;45%).</li>
+</ul>
+<h4>c. Triển vọng kinh doanh</h4>
+<ul>
+<li><strong>Động lực tăng trưởng chính:</strong>
+<ol>
+<li><strong>Siêu chu kỳ nâng cấp thiết bị (Edge AI):</strong> Nhu cầu nâng cấp phần cứng để xử lý các mô hình AI trực tiếp trên thiết bị (Apple Intelligence).</li>
+<li><strong>Tỷ trọng mảng Dịch vụ (Services):</strong> App Store, Cloud, Apple Pay, Apple Music... với biên lợi nhuận gộp trên 70% tiếp tục đóng góp tỷ trọng lớn hơn vào tổng lợi nhuận.</li>
+</ol>
+</li>
+<li><strong>Rủi ro trọng yếu:</strong>
+<ul>
+<li>Áp lực chống độc quyền toàn cầu (vụ kiện DOJ tại Mỹ, Đạo luật DMA tại EU liên quan đến chia sẻ doanh thu App Store và tìm kiếm).</li>
+<li>Chu kỳ thay thế thiết bị của người tiêu dùng ngày càng kéo dài.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>3. Nhận định Đầu tư Giá trị Dài hạn</h3>
+<ul>
+<li>
+<p><strong>Góc nhìn Value Investing:</strong> <em>&quot;Một doanh nghiệp tuyệt vời ở mức giá không còn rẻ&quot;</em> (Buffett philosophy). Apple hội tụ đầy đủ các tiêu chí của một khoản đầu tư bền vững: Đội ngũ quản trị xuất sắc, ROIC cực cao, dòng tiền vững chắc và hào kinh tế kiên cố. Tuy nhiên, mức P/E ~40x đã thu hẹp đáng kể <strong>Biên an toàn (Margin of Safety)</strong>.</p>
+</li>
+<li>
+<p><strong>Khuyến nghị hành động:</strong></p>
+<ul>
+<li><strong>Nhà đầu tư đang nắm giữ:</strong> <strong>TIẾP TỤC NẮM GIỮ (HOLD)</strong>. Không có lý do cơ bản nào để bán ra một doanh nghiệp chất lượng hàng đầu, hưởng lợi từ dòng tiền mua lại cổ phiếu và cổ tức tăng đều đặn.</li>
+<li><strong>Nhà đầu tư mở vị thế mới:</strong> <strong>THẬN TRỌNG / TÍCH LŨY TỪNG PHẦN (ACCUMULATE ON DIPS)</strong>. Không nên giải ngân một lần (<em>Lump-sum</em>) ở vùng định giá P/E 40x. Chiến lược tối ưu là chia nhỏ vốn mua tích lũy định kỳ (DCA) hoặc kiên nhẫn chờ các nhịp điều chỉnh của thị trường về vùng P/E 30x – 33x để có mức giá gia nhập an toàn hơn.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="muc_5">⚔️ 5. TRANH BIỆN PHE MUA VS PHE BÁN (BULL VS BEAR DEBATE)</h2>
+<h3>CUỘC TRANH BIỆN ĐỈNH CAO: HỘI ĐỒNG ĐẦU TƯ ĐỨNG TRƯỚC LỊCH SỬ AAPL (348.91 USD)</h3>
+<ul>
+<li><strong>Bối cảnh:</strong> Phòng họp chiến lược của một quỹ phòng hộ (Hedge Fund) hàng đầu. Thị giá AAPL vừa đóng cửa ở <strong>348.91 USD</strong>, chính thức đưa vốn hóa Apple vượt mốc <strong>5.000 tỷ USD</strong>.</li>
+<li><strong>Nhân vật:</strong>
+<ul>
+<li>🐂 <strong>Alex Vance – Trưởng nhóm Nghiên cứu Tăng trưởng (Bull Researcher):</strong> Quyết liệt, theo trường phái đà tăng trưởng (Momentum &amp; Re-rating).</li>
+<li>🐻 <strong>Marcus Reed – Trưởng nhóm Quản trị Rủi ro &amp; Bán khống (Bear Researcher):</strong> Thực dụng, săn lùng rủi ro đảo chiều và bong bóng định giá.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>HIỆP 1: TÍN HIỆU KỸ THUẬT – SỨC MẠNH TIẾP DIỄN HAY ĐỈNH KIỆT SỨC?</h3>
+<h4>🐂 Luận điểm 1 của Phe Mua (Alex):</h4>
+<blockquote>
+<p><em>&quot;Xu hướng tăng vững chắc chưa hề quá nhiệt, dòng tiền lớn hấp thụ hoàn hảo mọi nhịp rung lắc!&quot;</em></p>
+</blockquote>
+<p><strong>Alex Vance:</strong></p>
+<blockquote>
+<p>&quot;Marcus, hãy nhìn bảng điện tử đi! Cổ phiếu vừa tăng <strong>+1.48%</strong> đóng cửa tại <strong>348.91 USD</strong>, nằm hiên ngang trên toàn bộ hệ thống đường trung bình động: <strong>SMA 10 (344.96 USD)</strong> và <strong>SMA 50 (332.37 USD)</strong> với cấu trúc Golden Cross kinh điển.</p>
+<p>Quan trọng nhất: <strong>RSI (14) hiện tại chỉ ở mức 61.39</strong> – con số này chứng minh xung lực tăng giá đang cực kỳ khỏe mạnh nhưng <strong>hoàn toàn chưa chạm vùng quá mua (&gt;70)</strong>. Dư địa để rướn lên vùng 365 – 380 USD là thênh thang. Khối lượng đạt hơn <strong>42,38 triệu cổ phiếu</strong> cho thấy dòng tiền thông minh sẵn sàng nuốt trọn toàn bộ lượng hàng chốt lời trong phiên. Xu hướng là bạn, và xu hướng này đang gầm vang!&quot;</p>
+</blockquote>
+<h4>🐻 Phản biện 1 của Phe Bán (Marcus):</h4>
+<blockquote>
+<p><em>&quot;Ảo tưởng! Đó là một cây nến kiệt sức (Exhaustion Candle) với phân kỳ âm và chạm trần Bollinger Bands!&quot;</em></p>
+</blockquote>
+<p><strong>Marcus Reed:</strong></p>
+<blockquote>
+<p>&quot;Alex, cậu đang say men chiến thắng mà phớt lờ cái bẫy chết người ngay trước mắt! Nhìn kỹ hành động giá trong phiên đi: Phe Mua đã cố rướn lên <strong>351.43 USD</strong> nhưng bị phe Bán đập ngược dập mặt về <strong>348.91 USD</strong>, để lại một <strong>bóng nến trên (Upper Shadow) dài tới 2.52 USD</strong>.</p>
+<p>Tại sao lại rút râu? Vì giá đã đâm thủng dải trên <strong>Bollinger Bands (351.22 USD)</strong> – đây là giới hạn độ lệch chuẩn thống kê, báo hiệu giá đã giãn nở cực độ. Tệ hơn nữa, chỉ báo <strong>MACD vừa xuất hiện tín hiệu Bearish Cross</strong> (Histogram chuyển âm -0.00, đường MACD 4.06 cắt xuống dưới Signal 4.07). Khi giá cố vượt đỉnh nhưng MACD cắt xuống, đó là định nghĩa sách giáo khoa của <strong>Phân kỳ kiệt sức</strong>. Một cú thoái lui kiểm tra lại SMA 50 ở vùng <strong>332 USD</strong> là điều tất yếu!&quot;</p>
+</blockquote>
+<hr />
+<h3>HIỆP 2: BÀI TOÁN ĐỊNH GIÁ &amp; CỘT MỐC 5.000 TỶ USD</h3>
+<h4>🐻 Luận điểm 2 của Phe Bán (Marcus):</h4>
+<blockquote>
+<p><em>&quot;Cơn điên P/E 40x và cột mốc 5.000 tỷ USD – Điểm uốn tâm lý của một quả bong bóng vĩ đại!&quot;</em></p>
+</blockquote>
+<p><strong>Marcus Reed:</strong></p>
+<blockquote>
+<p>&quot;Hãy nói về sự thật trần trụi: <strong>P/E Trailing của Apple đã vọt lên 40.01!</strong> Lịch sử 5 năm qua, Apple chỉ giao dịch ở dải P/E 28x – 32x. Cậu đang trả mức định giá của một startup phần mềm tăng trưởng 50%/năm cho một tập đoàn phần cứng có quy mô doanh thu khổng lồ đang chịu sự bão hòa.</p>
+<p>Cột mốc <strong>5.000 tỷ USD</strong> không phải là bàn đạp, mà là <strong>bia mộ tâm lý</strong>! Báo cáo khảo sát đã chỉ rõ hiện tượng 'Kiệt sức định giá' (Valuation Fatigue). Ngay cả các ngân hàng đầu tư Wall Street cũng đang hoang mang tột độ khi dải mục tiêu phân hóa tới <strong>65%</strong>, với mức sàn mục tiêu chỉ là <strong>245.0 USD</strong> — tức là nguy cơ <strong>sụt giảm tới 30%</strong> từ vùng giá hiện tại. Mua ở mức P/E 40x này chẳng khác nào chơi trò 'Ai là kẻ ngốc hơn' (Greater Fool Theory)!&quot;</p>
+</blockquote>
+<h4>🐂 Phản biện 2 của Phe Mua (Alex):</h4>
+<blockquote>
+<p><em>&quot;Đừng dùng thước đo quá khứ cho một kỷ nguyên Siêu chu kỳ! Định giá 40x là hoàn toàn xứng đáng cho vị thế độc tôn.&quot;</em></p>
+</blockquote>
+<p><strong>Alex Vance:</strong></p>
+<blockquote>
+<p>&quot;Marcus, cậu lúc nào cũng định giá Apple như một công ty bán iPhone đơn thuần! Mức vốn hóa 5.000 tỷ USD và P/E 40x phản ánh sự <strong>Tái định giá toàn diện (Multiple Expansion)</strong> khi Apple kích hoạt siêu chu kỳ AI và monet hóa hệ sinh thái 2,5 tỷ thiết bị đang hoạt động.</p>
+<p>Tại sao đồng thuận của toàn bộ các định chế tài chính lớn vẫn duy trì xếp hạng <strong>BUY</strong>? Mức giá mục tiêu cao nhất của Wall Street là <strong>405.0 USD</strong> – tương đương tiềm năng tăng thêm gần <strong>+16%</strong>. Trong một thế giới vĩ mô đầy bất ổn, Apple là 'nơi trú ẩn an toàn tối thượng' (Flight to Quality) sở hữu dòng tiền tự do vô địch. P/E 40x là 'khoản phí bảo hiểm' mà thị trường sẵn sàng trả cho sự độc quyền và an toàn!&quot;</p>
+</blockquote>
+<hr />
+<h3>HIỆP 3: TÂM LÝ THỊ TRƯỜNG – CHẠY NƯỚC RÚT (BLOW-OFF TOP) HAY PHÂN PHỐI THOÁT HÀNG?</h3>
+<h4>🐂 Luận điểm 3 của Phe Mua (Alex):</h4>
+<blockquote>
+<p><em>&quot;Tâm lý FOMO cực đại sẽ kích hoạt nhịp 'Short Squeeze' – Đứng ngoài lúc này là tự sát!&quot;</em></p>
+</blockquote>
+<p><strong>Alex Vance:</strong></p>
+<blockquote>
+<p>&quot;Báo cáo tâm lý nêu rõ thị trường đang ở trạng thái <strong>Tham lam tột độ (Extreme Greed)</strong>. Trong các thị trường giá lên vĩ đại, giai đoạn 'Extreme Greed' không bao giờ kết thúc bằng một cú sụp đổ ngay lập tức, mà luôn tạo ra một <strong>pha chạy nước rút điên cuồng (Blow-off Rally)</strong>.</p>
+<p>Đám đông nhỏ lẻ đang FOMO, các quỹ chỉ số (ETF) buộc phải mua thêm theo tỷ trọng vốn hóa để không bị lệch benchmark, và hàng loạt lệnh bán khống của những kẻ bi quan như cậu sẽ bị quét sạch (Short Squeeze). Đừng cố đứng chặn đầu một đoàn tàu cao tốc đang tăng tốc xé gió. Xu hướng này sẽ thổi bay mốc 350 USD để thẳng tiến tới 400 USD!&quot;</p>
+</blockquote>
+<h4>🐻 Phản biện 3 của Phe Bán (Marcus):</h4>
+<blockquote>
+<p><em>&quot;Tham lam tột độ là thời điểm Smart Money úp sọt nhỏ lẻ – Mồi ngon cho một cú Flash Crash!&quot;</em></p>
+</blockquote>
+<p><strong>Marcus Reed:</strong></p>
+<blockquote>
+<p>&quot;Cậu vừa tự nói ra câu trả lời cho thất bại của mình đấy, Alex! 'Nhỏ lẻ đang FOMO' và 'Extreme Greed' chính là kịch bản kinh điển mà dòng tiền thông minh (Smart Money) mong chờ để <strong>phân phối hàng (Distribution)</strong>.</p>
+<p>Khối lượng 42 triệu cổ phiếu phiên hôm nay không phải là tích lũy, mà là dòng tiền lớn đang chốt lời từng phần vào tay những nhà đầu tư cá nhân đu đỉnh ở vùng 351 USD. Biên độ dao động <strong>ATR đạt 6.27 USD</strong> cho thấy sự bất ổn đang gia tăng. Khi sự hưng phấn đạt đỉnh và không còn người mua mới ở vùng giá 350+, thanh khoản bên dưới sẽ mỏng đi nhanh chóng. Chỉ cần một tia lửa tiêu cực về chuỗi cung ứng hoặc kết quả kinh doanh không 'hoàn hảo tuyệt đối', cái bẫy thanh khoản sẽ sập xuống, kích hoạt chuỗi bán tháo giải chấp đưa AAPL rơi thẳng đứng về vùng hỗ trợ <strong>332 USD</strong>!&quot;</p>
+</blockquote>
+<hr />
+<h3>TỔNG KẾT TRANH BIỆN: 3 CẶP LUẬN ĐIỂM ĐỐI ĐẦU</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Trọng tâm</th>
+<th style="text-align:left">🐂 Phe Mua (Bull Case)</th>
+<th style="text-align:left">🐻 Phe Bán (Bear Case)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>1. Kỹ thuật</strong></td>
+<td style="text-align:left">Cấu trúc Golden Cross (SMA10 &gt; SMA50), RSI 61.39 chưa quá mua, thanh khoản hấp thụ 42.4M cp.</td>
+<td style="text-align:left">Nến rút râu cản 351.43 USD, chạm mép trên Bollinger Bands, MACD chớm cắt xuống (Bearish Cross).</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>2. Định giá</strong></td>
+<td style="text-align:left">Vốn hóa 5T USD &amp; P/E 40x là định giá lại cho siêu chu kỳ AI; Wall St đồng thuận BUY, target $405.</td>
+<td style="text-align:left">P/E 40.01x quá đắt đỏ so với lịch sử 28-32x; hiện tượng 'kiệt sức định giá', rủi ro sập về $245.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>3. Dòng tiền &amp; Tâm lý</strong></td>
+<td style="text-align:left">'Extreme Greed' là động lực mở ra pha chạy nước rút (Blow-off Top), ép cháy phe Short.</td>
+<td style="text-align:left">FOMO nhỏ lẻ tạo cơ hội cho tay to 'thoát hàng' (Distribution); rủi ro Bull Trap cực lớn tại ngưỡng 350 USD.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>PHÁN QUYẾT CỦA HỘI ĐỒNG (THE VERDICT):</h3>
+<ul>
+<li><strong>Vùng ranh giới sinh tử:</strong> <strong>344.96 USD (SMA 10)</strong>.</li>
+<li>Nếu AAPL giữ vững trên 345 USD và bứt phá dứt khoát qua <strong>351.50 USD</strong>, Phe Mua sẽ toàn thắng để tiến tới mốc <strong>365 - 380 USD</strong>.</li>
+<li>Nếu AAPL đánh mất mốc <strong>344.96 USD</strong>, cây nến rút râu ngày 29/10 sẽ chính thức xác nhận là đỉnh bẫy giá (Bull Trap), kích hoạt đợt điều chỉnh sâu về vùng <strong>332 USD (SMA 50)</strong>.</li>
+</ul>
+<hr />
+<h2 id="muc_6">🛡️ 6. HỘI ĐỒNG QUẢN LÝ RỦI RO (RISK COMMITTEE)</h2>
+<p>Dưới góc độ <strong>Hội đồng Quản trị Rủi ro của Quỹ Đầu tư</strong>, trước hết xin hoàn tất phần phản biện của Trưởng nhóm Quản trị Rủi ro &amp; Bán khống (<strong>Marcus Reed</strong>) để làm rõ bức tranh hai chiều, sau đó là đánh giá độc lập của 3 chuyên viên rủi ro.</p>
+<hr />
+<h3>🐻 Phản biện 1 của Phe Bán (Marcus Reed)</h3>
+<blockquote>
+<p><em>&quot;Alex, cậu đang say men chiến thắng mà quên mất mốc 5.000 tỷ USD chính là 'hố đen thanh khoản' và cái bẫy phân phối kinh điển!&quot;</em></p>
+<p>&quot;Cột mốc vốn hóa 5.000 tỷ USD là ngưỡng cản tâm lý cực hạn của toàn bộ thị trường tài chính toàn cầu. Khối lượng 42,38 triệu cổ phiếu tại vùng đỉnh cao nhất mọi thời đại không chỉ đại diện cho lực mua, mà nó tố cáo một lượng hàng khổng lồ từ các tổ chức lớn (Smart Money) đang được trao tay âm thầm cho dòng tiền nhỏ lẻ FOMO (hiện tượng <em>Churning/Distribution</em>).</p>
+<p>Giá 348.91 USD hiện đã kéo dãn gần 5% so với SMA 50 (332.37 USD). SMA 10 ở mức 344.96 USD quá mỏng manh để làm điểm tựa nếu xảy ra hiện tượng 'Buy the rumor, sell the news'. RSI ở mức 61.39 tuy chưa quá mua, nhưng đà tăng đã bắt đầu xuất hiện phân kỳ ẩn trên khung thời gian ngắn. Lao vào đu đỉnh ở đây chẳng khác nào nhặt tiền lẻ trước đầu xe lu!&quot;</p>
+</blockquote>
+<hr />
+<h3>BÁO CÁO ĐÁNH GIÁ CỦA HỘI ĐỒNG QUẢN TRỊ RỦI RO</h3>
+<hr />
+<h3>1. ⚡ Chuyên viên Liều (Aggressive Risk Officer)</h3>
+<ul>
+<li><strong>Triết lý:</strong> <em>&quot;Xu hướng là bạn, dòng tiền đang cuộn trào – Không thể bỏ lỡ con sóng lịch sử (Blow-off Top).&quot;</em></li>
+<li><strong>Nhận định:</strong>
+<ul>
+<li>Cấu trúc kỹ thuật hoàn hảo: Giá đóng cửa cao nhất phiên (+1.48%), nằm trên toàn bộ các đường MA ngắn và trung hạn.</li>
+<li>RSI ở mức 61.39 là vùng &quot;ngọt ngào&quot; nhất của xu hướng tăng (Sweet Spot): xung lực mạnh mẽ nhưng chưa bị quá nhiệt (chưa chạm ngưỡng 70). Dư địa tăng trưởng để chạm ngưỡng 365 – 375 USD là hoàn toàn khả thi.</li>
+<li>Mốc 5.000 tỷ USD khi bị phá vỡ dứt khoát sẽ kích hoạt làn sóng Short Squeeze (ép phe bán khống cắt lỗ), đẩy giá tăng vọt.</li>
+</ul>
+</li>
+<li><strong>Khuyến nghị hành động:</strong> <strong>MUA MẠNH (LONG)</strong> – Giải ngân 70% – 100% hạn mức danh mục cho AAPL.</li>
+<li><strong>Thông số giao dịch đề xuất:</strong>
+<ul>
+<li><strong>Entry:</strong> 348.91 USD</li>
+<li><strong>Stop Loss (Cắt lỗ):</strong> <strong>342.50 USD</strong> <em>(Cách -1.84% ~ 6.41 USD. Đặt ngay dưới SMA 10 và vùng đệm rung lắc trong phiên, chấp nhận biên độ dao động để tránh bị quét lệnh).</em></li>
+<li><strong>Take Profit (Chốt lời):</strong> <strong>375.00 USD</strong> <em>(Kỳ vọng +7.48% ~ 26.09 USD, vùng rướn cực đại trước khi RSI chạm 75).</em></li>
+<li><strong>Tỷ lệ Risk : Reward (R:R):</strong> <strong>1 : 4.07</strong> <em>(Cược 1 đồng lỗ để đổi lấy hơn 4 đồng lãi).</em></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>2. 🛡️ Chuyên viên Thận trọng (Conservative Risk Officer)</h3>
+<ul>
+<li><strong>Triết lý:</strong> <em>&quot;Bảo toàn vốn là sinh mệnh. Mua đuổi tại đỉnh lịch sử khi không có nền giá tích lũy là hành vi tự sát.&quot;</em></li>
+<li><strong>Nhận định:</strong>
+<ul>
+<li>Cột mốc 5.000 tỷ USD là ngưỡng cản tâm lý cực lớn. Việc thị giá giãn cách xa đường SMA 50 (332.37 USD) báo hiệu một nhịp điều chỉnh kỹ thuật (Mean Reversion) hồi quy về vùng cân bằng có thể xảy ra bất cứ lúc nào.</li>
+<li>Thanh khoản 42,38 triệu cổ phiếu tại đỉnh tiềm ẩn rủi ro bẫy tăng giá (Bull Trap) hoặc nến đảo chiều rút chân trên.</li>
+<li>Biên an toàn (Margin of Safety) tại thị giá 348.91 USD gần như bằng 0. Nếu vào lệnh Mua ở đây, điểm cắt lỗ logic buộc phải nằm dưới SMA 10 (344.96 USD), khoảng cách quá hẹp rất dễ dính nhiễu (noise) của thị trường.</li>
+</ul>
+</li>
+<li><strong>Khuyến nghị hành động:</strong> <strong>ĐỨNG NGOÀI (NO-TRADE) / CHỐT LỜI TỪNG PHẦN</strong>.
+<ul>
+<li>Không mở vị thế Mua mới tại vùng giá này.</li>
+<li>Nếu Quỹ đang nắm giữ vị thế cũ từ vùng giá thấp: <strong>Chốt lời chủ động 40% - 50%</strong> vị thế quanh 349 – 350 USD để khóa lợi nhuận. Chỉ xem xét mua lại khi giá điều chỉnh tích lũy lành mạnh quanh SMA 10 hoặc SMA 50.</li>
+</ul>
+</li>
+<li><strong>Thông số giao dịch (Trong trường hợp bắt buộc phải duy trì lệnh thăm dò tối thiểu 10 - 20% vốn):</strong>
+<ul>
+<li><strong>Entry:</strong> 348.91 USD</li>
+<li><strong>Stop Loss (Cắt lỗ):</strong> <strong>344.00 USD</strong> <em>(Cách -1.41% ~ 4.91 USD. Cắt lỗ tuyệt đối ngay khi gãy đường SMA 10 – 344.96 USD).</em></li>
+<li><strong>Take Profit (Chốt lời):</strong> <strong>358.00 USD</strong> <em>(Kỳ vọng +2.60% ~ 9.09 USD. Chốt non trước khi gặp rung lắc mạnh tại vùng số tròn 360 USD).</em></li>
+<li><strong>Tỷ lệ Risk : Reward (R:R):</strong> <strong>1 : 1.85</strong> <em>(Không đạt chuẩn tối thiểu 1:2 của trường phái thận trọng -&gt; Củng cố khuyến nghị đứng ngoài).</em></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>3. ⚖️ Chuyên viên Trung lập (Neutral Risk Officer)</h3>
+<ul>
+<li><strong>Triết lý:</strong> <em>&quot;Tôn trọng xu hướng nhưng kiểm soát chặt quy mô vị thế (Position Sizing) – Đặt cược dựa trên xác suất và tỷ lệ R:R chuẩn mực.&quot;</em></li>
+<li><strong>Nhận định:</strong>
+<ul>
+<li>Đồng thuận với Phe Mua rằng động lượng tăng (Momentum) đang chiếm ưu thế nhờ Golden Cross và RSI 61.39 còn dư địa.</li>
+<li>Tuy nhiên, đồng thuận với Phe Bán rằng mốc 5.000 tỷ USD sẽ tạo ra sự rung lắc dữ dội. Do đó, không mua đuổi toàn bộ (All-in), mà cần chiến lược <strong>giải ngân theo từng phần (Scale-in)</strong>.</li>
+</ul>
+</li>
+<li><strong>Khuyến nghị hành động:</strong> <strong>MUA THĂM DÒ CÓ KIỂM SOÁT TỶ TRỌNG (30% – 40% vốn)</strong>.
+<ul>
+<li>Mở 30% vị thế tại 348.91 USD.</li>
+<li>Nếu giá nhúng kiểm tra thành công SMA 10 (vùng 345 USD) bật lên: Gia tăng thêm 30%.</li>
+<li>Nếu giá vượt dứt khoát mốc 352 USD với vol lớn: Gia tăng 40% còn lại.</li>
+</ul>
+</li>
+<li><strong>Thông số giao dịch đề xuất:</strong>
+<ul>
+<li><strong>Entry:</strong> 348.91 USD</li>
+<li><strong>Stop Loss (Cắt lỗ):</strong> <strong>341.00 USD</strong> <em>(Cách -2.27% ~ 7.91 USD. Đặt dưới SMA 10 khoảng 1%, có vùng đệm để tránh bẫy quét thanh khoản).</em></li>
+<li><strong>Take Profit (Chốt lời) chia làm 2 giai đoạn:</strong>
+<ul>
+<li><em>TP1 (50% vị thế):</em> <strong>365.00 USD</strong> (Mục tiêu 1 của Alex: +16.09 USD | Lợi nhuận: +4.61%). Đạt TP1 lập tức dời Stop Loss của phần còn lại về giá hòa vốn (Breakeven).</li>
+<li><em>TP2 (50% vị thế còn lại):</em> <strong>375.00 USD</strong> (Mục tiêu rướn: +26.09 USD | Lợi nhuận: +7.48%).</li>
+<li><em>Mức Take Profit bình quân:</em> <strong>370.00 USD</strong> (Biên lợi nhuận trung bình: +21.09 USD | +6.04%).</li>
+</ul>
+</li>
+<li><strong>Tỷ lệ Risk : Reward (R:R):</strong> <strong>1 : 2.67</strong> <em>(Mức rủi ro 7.91 USD đổi lấy lợi nhuận bình quân 21.09 USD – Hoàn toàn thỏa mãn tiêu chuẩn khắt khe của Quỹ: R:R &gt; 1:2).</em></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>BẢNG TỔNG HỢP QUYẾT NGHỊ HỘI ĐỒNG RỦI RO</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Tiêu chí</th>
+<th style="text-align:left">⚡ Chuyên viên Liều</th>
+<th style="text-align:left">🛡️ Chuyên viên Thận trọng</th>
+<th style="text-align:left">⚖️ Chuyên viên Trung lập (Khuyến nghị chuẩn)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Vị thế khuyến nghị</strong></td>
+<td style="text-align:left"><strong>LONG (70 - 100% vốn)</strong></td>
+<td style="text-align:left"><strong>HOLD TIỀN / CHỐT LỜI 50%</strong></td>
+<td style="text-align:left"><strong>LONG TỪNG PHẦN (30 - 40% vốn)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Giá vào (Entry)</strong></td>
+<td style="text-align:left">348.91 USD</td>
+<td style="text-align:left">Đứng ngoài (Hoặc 348.91)</td>
+<td style="text-align:left">348.91 USD</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Stop Loss (Cắt lỗ)</strong></td>
+<td style="text-align:left"><strong>342.50 USD</strong> (-1.84%)</td>
+<td style="text-align:left"><strong>344.00 USD</strong> (-1.41%)</td>
+<td style="text-align:left"><strong>341.00 USD</strong> (-2.27%)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Take Profit (Mục tiêu)</strong></td>
+<td style="text-align:left"><strong>375.00 USD</strong> (+7.48%)</td>
+<td style="text-align:left"><strong>358.00 USD</strong> (+2.60%)</td>
+<td style="text-align:left"><strong>TP1: 365.00 / TP2: 375.00 USD</strong> (TB: 370.00 USD)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Tỷ lệ Risk : Reward</strong></td>
+<td style="text-align:left"><strong>1 : 4.07</strong></td>
+<td style="text-align:left"><strong>1 : 1.85</strong></td>
+<td style="text-align:left"><strong>1 : 2.67</strong></td>
+</tr>
+</tbody>
+</table>
+
+    </article>
+
+    <footer class="footer">
+      <p>Báo cáo được khởi tạo tự động bởi <b>AI Trading Multi-Agent</b> · Cổng máy chủ cục bộ <code>localhost:5050</code></p>
+      <p style="margin-top:6px; font-size:12px;">Dữ liệu phân tích chỉ nhằm mục đích nghiên cứu học tập, không cấu thành lời khuyên đầu tư tài chính.</p>
+    </footer>
+  </main>
+
+  <div id="toast">✅ Đã sao chép link báo cáo vào bộ nhớ tạm!</div>
+
+  <script>
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const target = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', target);
+  localStorage.setItem('ai_trading_theme', target);
+}
+
+function copyReportLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    const toast = document.getElementById('toast');
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 2500);
+  });
+}
+
+function xoaBaoCaoHienTai() {
+  const parts = window.location.pathname.split('/');
+  const tenFile = decodeURIComponent(parts[parts.length - 1] || '');
+  if (!confirm(`Bạn có chắc chắn muốn xoá vĩnh viễn báo cáo này?\n"${tenFile}"?\n\n(Thao tác này sẽ xoá cả file HTML và Markdown tương ứng)`)) {
+    return;
+  }
+  fetch('/api/delete?file=' + encodeURIComponent(tenFile), {
+    method: 'POST'
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      alert('Đã xoá báo cáo thành công. Hệ thống sẽ quay về trang danh sách.');
+      window.location.href = '/';
+    } else {
+      alert('Lỗi: ' + (data.message || 'Không thể xoá báo cáo'));
+    }
+  })
+  .catch(err => {
+    alert('Lỗi kết nối tới máy chủ: ' + err);
+  });
+}
+
+// Khởi tạo theme: Mặc định Light nếu chưa chọn
+(function() {
+  const saved = localStorage.getItem('ai_trading_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+})();
+</script>
+</body>
+</html>

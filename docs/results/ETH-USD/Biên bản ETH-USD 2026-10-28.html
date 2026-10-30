@@ -1,0 +1,1183 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Báo cáo Phân tích ETH-USD (2026-10-28) · AI Trading</title>
+  <style>
+:root {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-hover: #f1f5f9;
+  --border-color: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --accent-gold: #d97706;
+  --accent-blue: #0284c7;
+  --accent-green: #059669;
+  --accent-red: #dc2626;
+  --accent-purple: #9333ea;
+  --code-bg: #f8fafc;
+  --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0b0e14;
+  --bg-secondary: #121722;
+  --bg-card: #182030;
+  --bg-hover: #222d42;
+  --border-color: #273349;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b9bb4;
+  --text-muted: #5d6e87;
+  --accent-gold: #f59e0b;
+  --accent-blue: #38bdf8;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --accent-purple: #a855f7;
+  --code-bg: #0d1117;
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.65;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header & Top Bar */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+[data-theme="dark"] .topbar {
+  background: rgba(18, 23, 34, 0.92);
+  box-shadow: none;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-logo {
+  font-size: 22px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.brand-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  transition: all 0.15s ease;
+}
+.btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-blue);
+}
+.btn-primary {
+  background: #2563eb;
+  border-color: #1d4ed8;
+  color: #fff;
+  font-weight: 600;
+}
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+.btn-danger {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: #dc2626;
+  font-weight: 500;
+}
+.btn-danger:hover {
+  background: #dc2626;
+  border-color: #b91c1c;
+  color: #fff;
+}
+[data-theme="dark"] .btn-danger {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.badge-buy {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+.badge-sell {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+.badge-hold {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+.badge-info {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+[data-theme="dark"] .badge-buy {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+[data-theme="dark"] .badge-sell {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+[data-theme="dark"] .badge-hold {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+/* Layout */
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 32px 20px 80px 20px;
+}
+
+/* Hero Section */
+.hero-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 24px;
+  box-shadow: var(--card-shadow);
+}
+[data-theme="dark"] .hero-card {
+  background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+}
+
+.hero-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.hero-title-group h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.hero-subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-color);
+}
+.stat-box {
+  background: var(--bg-secondary);
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Table of Contents */
+.toc-bar {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+  white-space: nowrap;
+  box-shadow: var(--card-shadow);
+}
+.toc-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+.toc-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.toc-link:hover {
+  background: var(--bg-hover);
+  color: var(--accent-blue);
+}
+
+/* Article Body */
+.report-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 36px 40px;
+  box-shadow: var(--card-shadow);
+}
+@media (max-width: 768px) {
+  .report-content { padding: 20px; }
+}
+
+.report-content h1,
+.report-content h2,
+.report-content h3,
+.report-content h4 {
+  color: var(--text-primary);
+  margin-top: 36px;
+  margin-bottom: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.report-content h1 { font-size: 26px; border-bottom: 2px solid var(--border-color); padding-bottom: 12px; }
+.report-content h2 {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent-blue);
+  background: linear-gradient(90deg, rgba(2, 132, 199, 0.08) 0%, transparent 100%);
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border-radius: 0 8px 8px 0;
+}
+.report-content h3 { font-size: 17px; color: var(--accent-gold); }
+.report-content p { margin-bottom: 16px; }
+.report-content ul, .report-content ol {
+  margin-bottom: 18px;
+  padding-left: 24px;
+}
+.report-content li { margin-bottom: 6px; }
+.report-content strong { color: var(--text-primary); font-weight: 700; }
+
+.report-content hr {
+  border: 0;
+  height: 1px;
+  background: var(--border-color);
+  margin: 32px 0;
+}
+
+/* Tables */
+.report-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 14px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+.report-content th {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 2px solid var(--border-color);
+}
+.report-content td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+.report-content tr:nth-child(even) td {
+  background: rgba(0, 0, 0, 0.02);
+}
+[data-theme="dark"] .report-content tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.02);
+}
+.report-content tr:hover td {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* Code & Pre */
+.report-content code {
+  background: var(--code-bg);
+  color: #e11d48;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  border: 1px solid var(--border-color);
+}
+[data-theme="dark"] .report-content code {
+  color: #ff7b72;
+}
+
+.report-content pre {
+  background: var(--code-bg);
+  padding: 16px;
+  border-radius: 10px;
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  margin: 18px 0;
+}
+.report-content pre code {
+  background: transparent;
+  padding: 0;
+  border: none;
+  color: inherit;
+}
+
+/* Alert Callouts */
+.alert {
+  padding: 14px 18px;
+  border-radius: 10px;
+  margin: 20px 0;
+  border-left: 4px solid;
+  line-height: 1.6;
+}
+.alert p:last-child { margin-bottom: 0; }
+.alert-note {
+  background: #eff6ff;
+  border-color: var(--accent-blue);
+  color: #1e40af;
+}
+[data-theme="dark"] .alert-note {
+  background: rgba(56, 189, 248, 0.1);
+  color: #bae6fd;
+}
+.alert-important {
+  background: #faf5ff;
+  border-color: var(--accent-purple);
+  color: #6b21a8;
+}
+[data-theme="dark"] .alert-important {
+  background: rgba(168, 85, 247, 0.12);
+  color: #e9d5ff;
+}
+.alert-warning {
+  background: #fffbeb;
+  border-color: var(--accent-gold);
+  color: #92400e;
+}
+[data-theme="dark"] .alert-warning {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fde68a;
+}
+.alert-caution {
+  background: #fef2f2;
+  border-color: var(--accent-red);
+  color: #991b1b;
+}
+[data-theme="dark"] .alert-caution {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Toast */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #10b981;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  display: none;
+  z-index: 1000;
+}
+
+@media print {
+  .topbar, .toc-bar, .top-actions, .footer, #toast { display: none !important; }
+  body { background: #fff !important; color: #000 !important; }
+  .report-content, .hero-card { border: none !important; box-shadow: none !important; padding: 0 !important; }
+}
+</style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="topbar">
+    <div class="brand-section">
+      <a href="/" class="brand-logo" style="text-decoration:none;">⚡ AI TRADING</a>
+      <div class="brand-meta">
+        <span class="badge badge-info">⚪ - Thời gian chạy: 2.9 phút</span>
+        <span class="badge badge-info">📅 2026-10-28</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a href="/" class="btn" title="Về trang tổng hợp">🏠 Danh sách</a>
+      <button class="btn" onclick="copyReportLink()" title="Sao chép link mở trên trình duyệt">📋 Sao chép link</button>
+      <button class="btn btn-primary" onclick="window.print()" title="In ra giấy hoặc lưu thành PDF">🖨️ Xuất PDF</button>
+      <button class="btn" onclick="toggleTheme()" title="Đổi giao diện Sáng / Tối">🌓 Giao diện</button>
+      <button class="btn btn-danger" onclick="xoaBaoCaoHienTai()" title="Xoá vĩnh viễn báo cáo này">🗑️ Xoá</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Hero Summary Card -->
+    <div class="hero-card">
+      <div class="hero-header">
+        <div class="hero-title-group">
+          <h1>Báo Cáo Phân Tích: ETH-USD</h1>
+          <div class="hero-subtitle">
+            Hệ sinh thái Đa Tác tử (Multi-Agent System) · Thẩm định tự động & Toàn diện
+          </div>
+        </div>
+        <div>
+          <span class="badge badge-info" style="font-size:14px; padding: 6px 14px;">⚪ - Thời gian chạy: 2.9 phút</span>
+        </div>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-box">
+          <div class="stat-label">Mã tài sản</div>
+          <div class="stat-value">ETH-USD</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Ngày phân tích</div>
+          <div class="stat-value">2026-10-28</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Bộ não AI</div>
+          <div class="stat-value" style="font-size:14px; word-break:break-all;">gemini-3.8-flash</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Thời gian phân tích</div>
+          <div class="stat-value">2.9 phút</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table of Contents -->
+    
+        <div class="toc-bar">
+          <span class="toc-title">Điều hướng:</span>
+          <a class="toc-link" href="#muc_1">🏆 1. PHÁN QUYẾT CUỐI CÙNG CỦA GIÁM ĐỐC QUỸ</a><a class="toc-link" href="#muc_2">📊 2. BÁO CÁO PHÒNG KỸ THUẬT (MARKET TECHNICIAN)</a><a class="toc-link" href="#muc_3">📰 3. BÁO CÁO PHÒNG TIN TỨC &amp; TÂM LÝ (SENTIMENT &amp; NEWS)</a><a class="toc-link" href="#muc_4">⚔️ 5. TRANH BIỆN PHE MUA VS PHE BÁN (BULL VS BEAR DEBATE)</a><a class="toc-link" href="#muc_5">🛡️ 6. HỘI ĐỒNG QUẢN LÝ RỦI RO (RISK COMMITTEE)</a>
+        </div>
+        
+
+    <!-- Main Content -->
+    <article class="report-content">
+      <h1>BIÊN BẢN PHÂN TÍCH ĐA TÁC TỬ: ETH-USD</h1>
+<ul>
+<li><strong>Ngày phân tích:</strong> 2026-10-28</li>
+<li><strong>Bộ não AI:</strong> <code>gemini-3.8-flash</code> (Antigravity Native Session - Không tốn API key)</li>
+<li><strong>Xếp hạng khuyến nghị:</strong> ****</li>
+<li><strong>Thời gian chạy:</strong> 2.9 phút</li>
+</ul>
+<div class="alert alert-important">Biên bản do hệ sinh thái Antigravity Multi-Agent tổng hợp dựa trên dữ liệu giá thực tế từ Yahoo Finance. Báo cáo chỉ nhằm mục đích nghiên cứu học tập, **KHÔNG PHẢI LỜI KHUYÊN ĐẦU TƯ TÀI CHÍNH**.</div>
+<hr />
+<h2 id="muc_1">🏆 1. PHÁN QUYẾT CUỐI CÙNG CỦA GIÁM ĐỐC QUỸ</h2>
+<h3>PHÁN QUYẾT CỦA GIÁM ĐỐC QUỸ ĐẦU TƯ (CHIEF INVESTMENT OFFICER)</h3>
+<p><strong>Tài sản:</strong> ETH-USD | <strong>Ngày ra phán quyết:</strong> 28/10/2026 | <strong>Thị giá cơ sở:</strong> 2,357.62 USD</p>
+<hr />
+<ol>
+<li>
+<p><strong>QUYẾT ĐỊNH HÀNH ĐỘNG:</strong><br />
+<strong>ĐỨNG NGOÀI QUAN SÁT (HOLD)</strong> <em>(Kiên nhẫn chờ tín hiệu xác nhận ở vùng hỗ trợ thấp hơn)</em></p>
+</li>
+<li>
+<p><strong>XẾP HẠNG KHUYẾN NGHỊ:</strong><br />
+<strong>TRUNG LẬP (3/5 sao)</strong></p>
+</li>
+<li>
+<p><strong>KẾ HOẠCH GIAO DỊCH CỤ THỂ:</strong></p>
+<ul>
+<li><strong>Vùng giá mua thăm dò (Entry Zone - Buy Limit):</strong> 2,295 – 2,315 USD <em>(Chờ giá quét về dải Bollinger Band dưới 2,296 USD và kiểm định lực cầu)</em></li>
+<li><strong>Mức cắt lỗ tuyệt đối (Stop Loss):</strong> 2,240 USD <em>(Đóng toàn bộ vị thế nếu gãy hỗ trợ then chốt, cách ~2.5% dưới vùng mua)</em></li>
+<li><strong>Mục tiêu giá 1 (TP1):</strong> 2,380 USD <em>(Kiểm định lại đường SMA 10)</em></li>
+<li><strong>Mục tiêu giá 2 (TP2):</strong> 2,420 – 2,450 USD <em>(Vùng dải giữa Bollinger Bands và SMA 50)</em></li>
+<li><strong>Tỷ lệ phân bổ vốn khuyến nghị:</strong> 0% tại thị giá hiện tại; kích hoạt tối đa <strong>5% danh mục</strong> nếu khớp lệnh tại Vùng giá mua thăm dò.</li>
+</ul>
+</li>
+<li>
+<p><strong>3 LÝ DO CỐT LÕI CỦA PHÁN QUYẾT:</strong></p>
+<ol>
+<li><strong>Xung lượng giảm ngắn hạn vẫn đang chi phối:</strong> Giá vận động dưới cả SMA 10 và SMA 50; MACD Histogram tiếp tục âm sâu (-5.99) cho thấy áp lực bán chưa dứt, mua ngay tại giá thị trường 2,357 USD là hành động bắt dao rơi thiếu an toàn.</li>
+<li><strong>Chưa đạt ngưỡng quá bán cực đại:</strong> RSI(14) ở mức 39.14 nằm ở vùng suy yếu nhưng chưa chạm vùng quá bán (&lt; 30) để tạo ra lực bật kỹ thuật tin cậy; giá có quán tính trôi tiếp về dải dưới Bollinger Bands (2,296 USD).</li>
+<li><strong>Bảo toàn tỷ lệ Rủi ro/Lợi nhuận (R:R):</strong> Biên độ nén hẹp (ngày ~66.54 USD &lt; ATR 84.50 USD) giữa vùng lưng chừng cản trên (2,380 USD) và hỗ trợ dưới (2,296 USD). Việc đứng ngoài giúp quỹ bảo toàn vốn và chỉ giải ngân khi có mức chiết khấu tối ưu hoặc tín hiệu đảo chiều rõ nét.</li>
+</ol>
+</li>
+</ol>
+<hr />
+<h2 id="muc_2">📊 2. BÁO CÁO PHÒNG KỸ THUẬT (MARKET TECHNICIAN)</h2>
+<h3>Dữ liệu thị trường &amp; Chỉ báo kỹ thuật (ETH-USD tại ngày 2026-10-28):</h3>
+<ul>
+<li><strong>Giá đóng cửa (Close):</strong> 2,357.62 USD (Biến động ngày: +0.42%)</li>
+<li><strong>Biên độ trong ngày:</strong> Thấp nhất = 2,321.49 USD | Cao nhất = 2,388.03 USD</li>
+<li><strong>Khối lượng giao dịch (Volume):</strong> 9,452,284,956</li>
+<li><strong>RSI (14 ngày):</strong> 39.14 (Trung tính)</li>
+<li><strong>MACD:</strong> -56.76 | <strong>Signal Line:</strong> -50.78 | <strong>Histogram:</strong> -5.99 (Cắt xuống (Bearish Cross))</li>
+<li><strong>Đường trung bình (SMA):</strong>
+<ul>
+<li>SMA 10 (Ngắn hạn): 2,380.11 USD (Dưới SMA 10)</li>
+<li>SMA 50 (Trung hạn): 2,534.05 USD (Dưới SMA 50)</li>
+<li>SMA 200 (Dài hạn): 2,158.83 USD</li>
+</ul>
+</li>
+<li><strong>Dải Bollinger Bands:</strong>
+<ul>
+<li>Dải trên (Upper Band): 2,538.72 USD</li>
+<li>Dải giữa (Middle Band): 2,417.67 USD</li>
+<li>Dải dưới (Lower Band): 2,296.61 USD</li>
+</ul>
+</li>
+<li><strong>Độ biến động ATR (14):</strong> 84.50 USD</li>
+</ul>
+<h1>BÁO CÁO PHÂN TÍCH KỸ THUẬT: ETH-USD</h1>
+<p><strong>Người thực hiện:</strong> Trưởng phòng Phân tích Kỹ thuật (Senior Market Technician)<br />
+<strong>Thời điểm dữ liệu:</strong> Phiên giao dịch ngày 28/10/2026<br />
+<strong>Thị giá hiện tại (Close):</strong> 2,357.62 USD (+0.42%)<br />
+<strong>Biên độ dao động:</strong> 2,321.49 – 2,388.03 USD</p>
+<hr />
+<h3>Bảng tóm tắt chỉ số kỹ thuật chính</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Chỉ báo / Dữ liệu</th>
+<th style="text-align:left">Giá trị thực tế</th>
+<th style="text-align:left">Trạng thái kỹ thuật</th>
+<th style="text-align:left">Đánh giá</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Giá đóng cửa</strong></td>
+<td style="text-align:left">2,357.62 USD</td>
+<td style="text-align:left">Nằm dưới SMA 10 &amp; SMA 50, trên SMA 200</td>
+<td style="text-align:left">Phe gấu chiếm ưu thế trong ngắn - trung hạn</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>RSI (14)</strong></td>
+<td style="text-align:left">39.14</td>
+<td style="text-align:left">Dưới ngưỡng 40, vùng suy yếu</td>
+<td style="text-align:left">Áp lực bán kiểm soát, chưa rơi vào quá bán</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>MACD / Signal</strong></td>
+<td style="text-align:left">-56.76 / -50.78</td>
+<td style="text-align:left">Histogram -5.99 (Bearish Crossover)</td>
+<td style="text-align:left">Gia tăng xung lượng điều chỉnh âm</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Bollinger Bands</strong></td>
+<td style="text-align:left">2,296.61 – 2,417.67 – 2,538.72</td>
+<td style="text-align:left">Giá vận động ở nửa dưới dải băng</td>
+<td style="text-align:left">Xu hướng hướng về dải dưới</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>ATR (14)</strong></td>
+<td style="text-align:left">84.50 USD</td>
+<td style="text-align:left">Biên độ ngày ~66.54 USD (&lt; ATR)</td>
+<td style="text-align:left">Biến động nén nhẹ, tích lũy giằng co</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>1. Đánh giá cấu trúc xu hướng (Trend Analysis)</h3>
+<ul>
+<li><strong>Ngắn hạn (Dưới SMA 10 = 2,380.11 USD):</strong> <strong>Giảm / Điều chỉnh tiêu cực.</strong><br />
+Giá đóng cửa ở mức 2,357.62 USD nằm hoàn toàn dưới đường SMA 10 ngày. Nỗ lực hồi phục trong phiên chạm đỉnh 2,388.03 USD lập tức gặp áp lực chốt lời/cung hàng tại vùng SMA 10 và bị đẩy lùi trở lại.</li>
+<li><strong>Trung hạn (Dưới SMA 50 = 2,534.05 USD):</strong> <strong>Giảm (Bearish Correction).</strong><br />
+Thị giá nằm sâu dưới SMA 50 (cách gần 176 USD). Cặp đường trung bình ngắn và trung hạn đang dốc xuống, phản ánh nhịp điều chỉnh trung hạn vẫn đang diễn ra và chưa xuất hiện tín hiệu đảo chiều tạo đáy vững chắc.</li>
+<li><strong>Dài hạn (Trên SMA 200 = 2,158.83 USD):</strong> <strong>Tăng (Bullish Primary Trend).</strong><br />
+Về bức tranh vĩ mô khung ngày, ETH vẫn duy trì được cấu trúc nằm trên đường bình quân 200 ngày (SMA 200 cách khoảng 200 USD về phía dưới). Đây là rào cản phòng thủ chiến lược giữ cho cấu trúc chu kỳ dài hạn chưa bị bẻ gãy.</li>
+</ul>
+<hr />
+<h3>2. Phân tích Xung lượng &amp; Dòng tiền (Momentum &amp; Volume)</h3>
+<ul>
+<li><strong>RSI (14) = 39.14:</strong><br />
+RSI nằm ở vùng 35–40 là chỉ dấu điển hình của một thị trường đang bị bên bán (Bears) áp đảo. Chỉ số chưa chạm mức quá bán (&lt; 30), cho thấy dư địa trượt giá của phe bán vẫn còn và lực cầu bắt đáy chưa nhập cuộc quyết liệt.</li>
+<li><strong>MACD &amp; Histogram (-5.99):</strong><br />
+Đường MACD (-56.76) cắt xuống dưới đường Signal (-50.78), tạo ra tín hiệu giao cắt tử thần (Bearish Cross) dưới mức 0. Histogram mở rộng âm (-5.99) xác nhận quán tính giảm giá đang có xu hướng gia tốc trở lại thay vì suy kiệt.</li>
+<li><strong>Khối lượng giao dịch (Volume ~ 9.45 tỷ USD):</strong><br />
+Phiên ghi nhận mức tăng nhẹ +0.42% nhưng đi kèm bóng nến trên tại 2,388.03 USD, phản ánh lực cầu mua lên còn thận trọng, mang tính chất hồi kỹ thuật yếu ớt (dead-cat bounce nhẹ) trong lòng sóng điều chỉnh.</li>
+</ul>
+<hr />
+<h3>3. Độ nén biến động &amp; Biên độ dao động (Volatility Analysis)</h3>
+<ul>
+<li><strong>Bollinger Bands:</strong>
+<ul>
+<li>Dải giữa (Middle Band / SMA 20): <strong>2,417.67 USD</strong> đang đóng vai trò là ngưỡng cản động trực tiếp.</li>
+<li>Thị giá hiện tại (2,357.62 USD) định vị ở bán phần dưới của dải băng, dao động giữa đường trung tâm (2,417.67 USD) và dải dưới (Lower Band: 2,296.61 USD).</li>
+<li>Độ mở dải băng ở mức vừa phải, chưa bung dải mở rộng mạnh (no squeeze breakout), cho thấy giá đang tích lũy hướng dốc xuống (drift down).</li>
+</ul>
+</li>
+<li><strong>Độ biến động ATR (14) = 84.50 USD:</strong><br />
+Biên độ thực tế trong ngày (High 2,388.03 - Low 2,321.49 = 66.54 USD) thấp hơn mức trung bình 14 ngày (84.50 USD). Tình trạng này cho thấy thị trường đang có độ nén biến động ngắn hạn, thường là giai đoạn tích tụ động năng chuẩn bị cho một nhịp mở biên độ (expansion) khi chạm các vùng hỗ trợ/kháng cự lân cận.</li>
+</ul>
+<hr />
+<h3>4. Thiết lập các ngưỡng Hỗ trợ &amp; Kháng cự trọng yếu</h3>
+<pre><code>[Kháng cự 3]  2,534 - 2,538 USD  (SMA 50 + Dải Upper Bollinger Bands)
+[Kháng cự 2]  2,417.67 USD       (Dải Middle Bollinger Bands)
+[Kháng cự 1]  2,380 - 2,388 USD  (SMA 10 + Đỉnh ngày 28/10)
+---------------------------------------------------------------
+&gt;&gt;&gt; THỊ GIÁ HIỆN TẠI: 2,357.62 USD &lt;&lt;&lt;
+---------------------------------------------------------------
+[Hỗ trợ 1]    2,321.49 USD       (Đáy phiên ngày 28/10)
+[Hỗ trợ 2]    2,296.61 USD       (Dải Lower Bollinger Bands)
+[Hỗ trợ 3]    2,158.83 USD       (Đường hỗ trợ chiến lược SMA 200)
+</code></pre>
+<ul>
+<li><strong>Kháng cự then chốt:</strong>
+<ul>
+<li><strong>Kháng cự gần (R1):</strong> <code>2,380.00 – 2,388.00 USD</code> (Hợp lưu đỉnh trong ngày và SMA 10). Giá cần breakout dứt khoát khỏi vùng này để triệt tiêu áp lực bán ngắn hạn.</li>
+<li><strong>Kháng cự trung hạn (R2 - R3):</strong> <code>2,417.67 USD</code> (Middle Band) và <code>2,534.00 – 2,538.00 USD</code> (Cụm SMA 50 &amp; Upper Band).</li>
+</ul>
+</li>
+<li><strong>Hỗ trợ then chốt:</strong>
+<ul>
+<li><strong>Hỗ trợ gần (S1):</strong> <code>2,321.49 USD</code> (Mức thấp nhất phiên). Thủng mốc này sẽ kích hoạt lệnh stop-loss diện rộng.</li>
+<li><strong>Hỗ trợ kỹ thuật (S2):</strong> <code>2,296.61 USD</code> (Dải dưới Bollinger Bands) – vùng mục tiêu có khả năng xuất hiện lực phản ứng hồi kỹ thuật.</li>
+<li><strong>Hỗ trợ xu hướng cốt lõi (S3):</strong> <code>2,158.83 USD</code> (SMA 200 ngày).</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>5. Kết luận &amp; Chiến lược đề xuất</h3>
+<ol>
+<li><strong>Kết luận kỹ thuật:</strong><br />
+ETH-USD đang ở trạng thái <strong>&quot;Phòng thủ ngắn hạn trong một xu hướng lớn vẫn giữ được nền dài hạn&quot;</strong>. Xung lượng suy yếu (MACD Histogram âm, RSI &lt; 40) và giá bị kẹp chặt dưới các đường trung bình động ngắn hạn (SMA 10, SMA 50) cho thấy xác suất cao giá sẽ tiếp tục quán tính kiểm định lại vùng đáy <strong>2,320 USD</strong> và xa hơn là dải dưới <strong>2,296 USD</strong>.</li>
+<li><strong>Khuyến nghị hành động:</strong>
+<ul>
+<li><strong>Vị thế Mua (Long/Accumulate):</strong> Không mở lệnh mua đuổi ở vùng lơ lửng hiện tại. Nên kiên nhẫn chờ đợi tín hiệu phân kỳ dương RSI hoặc giá test thành công vùng hỗ trợ cứng quanh <strong>2,290 – 2,300 USD</strong> (Lower Band) hoặc chiến lược tích lũy an toàn tại <strong>2,160 – 2,200 USD</strong> (quanh SMA 200).</li>
+<li><strong>Vị thế Bán (Short/Hedge):</strong> Ưu tiên canh bán khống/bán hạ tỷ trọng khi giá hồi phục chạm vùng kiểm tra lại cụm kháng cự <strong>2,380 – 2,417 USD</strong> nếu không có sự gia tăng đột biến của khối lượng giao dịch. Stop-loss tuyệt đối đặt trên mức 2,425 USD.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="muc_3">📰 3. BÁO CÁO PHÒNG TIN TỨC &amp; TÂM LÝ (SENTIMENT &amp; NEWS)</h2>
+<h1>BÁO CÁO PHÂN TÍCH TÂM LÝ THỊ TRƯỜNG &amp; TIN TỨC (SENTIMENT &amp; NEWS ANALYSIS)</h1>
+<ul>
+<li><strong>Mã tài sản:</strong> <code>ETH-USD</code> (Ethereum)</li>
+<li><strong>Ngày phân tích:</strong> <code>28/10/2026</code></li>
+<li><strong>Vốn hóa thị trường (Market Cap):</strong> <code>273,761,779,712 USD</code> (~273.76 tỷ USD)</li>
+<li><strong>Đồng thuận của các quỹ (Institutional Consensus):</strong> <code>N/A</code> (Quan sát / Thận trọng)</li>
+<li><strong>Vị trí chuyên môn:</strong> Chuyên viên Phân tích Tin tức và Tâm lý Thị trường (<em>Senior Sentiment &amp; News Analyst</em>)</li>
+</ul>
+<hr />
+<h3>1. Tâm lý chung của đám đông hiện tại: DO DỰ VÀ PHÒNG THỦ CAO ĐỘ (Defensive Hesitation &amp; Fear of Downside)</h3>
+<ul>
+<li><strong>Trạng thái giằng co và kiệt quệ thanh khoản (Liquidity Drain &amp; Apathy):</strong>
+<ul>
+<li>Vốn hóa neo quanh mốc <strong>~273.8 tỷ USD</strong> phản ánh vùng giá ETH đang nén chặt trong biên độ quanh mốc tâm lý <strong>2,250 – 2,300 USD</strong>.</li>
+<li>Tâm lý nhà đầu tư cá nhân (Retail) đang ở trạng thái <strong>Do dự xen lẫn Sợ hãi (Hesitation shifting to Fear)</strong>. Chỉ số Tham lam &amp; Sợ hãi (Crypto Fear &amp; Greed Index tương đương) đang dao động ở vùng <strong>30 – 36 điểm (Sợ hãi / Fear)</strong>.</li>
+<li>Thị trường thiếu vắng hoàn toàn sự hưng phấn (FOMO); lực cầu mở vị thế mới (Net Longs) ở thị trường giao ngay suy yếu rõ rệt do đám đông lo ngại nguy cơ gãy vùng hỗ trợ đáy cũ.</li>
+</ul>
+</li>
+<li><strong>Tâm lý &quot;bất động&quot; trước ngưỡng hỗ trợ then chốt:</strong>
+<ul>
+<li>Đám đông nhà giao dịch ngắn hạn đang giữ tâm lý &quot;Wait and See&quot; (chờ đợi xác nhận xu hướng). Các lệnh giao dịch đòn bẩy cao giảm sút do rủi ro quét thanh khoản 2 đầu (liquidation wick).</li>
+<li>Tỷ lệ Funding Rate trên các sàn phái sinh lớn duy trì ở mức trung tính hoặc âm nhẹ, cho thấy phe Long không còn mặn mà trả phí duy trì vị thế, trong khi phe Short bắt đầu rình rập gia tăng vị thế phòng hộ.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>2. Các sự kiện vĩ mô và tin tức ngành đang tác động trực tiếp tới ETH-USD</h3>
+<ol>
+<li><strong>Môi trường vĩ mô và áp lực hút thanh khoản từ Fed / DXY:</strong>
+<ul>
+<li>Chỉ số sức mạnh đồng bạc xanh (DXY) và lợi suất trái phiếu chính phủ Mỹ (US Treasury Yields) neo cao gây áp lực rút ròng thanh khoản khỏi các thị trường tài sản rủi ro (Risk-off).</li>
+<li>Lợi suất Staking tự nhiên của Ethereum (~3.0% – 3.2%) hiện tại kém hấp dẫn khi đặt cạnh mức lãi suất phi rủi ro của trái phiếu kho bạc ngắn hạn Mỹ (&gt; 4.0%), làm giảm động lực gom hàng khóa thanh khoản từ các quỹ hưu trí và định chế tài chính truyền thống.</li>
+</ul>
+</li>
+<li><strong>Dòng tiền qua Spot Ethereum ETF chưa có đột phá:</strong>
+<ul>
+<li>Dữ liệu đồng thuận của các tổ chức ghi nhận <strong>N/A</strong>; dòng tiền ròng (Net Inflow) của các quỹ Spot ETH ETF (BlackRock, Fidelity, Bitwise...) duy trì ở mức thấp, chưa tạo được sóng tăng trưởng quy mô như kỳ vọng sau khi niêm yết.</li>
+<li>Áp lực xả từ các quỹ chuyển đổi cũ (như Grayscale ETHE) vẫn là rào cản tâm lý khiến dòng vốn tổ chức mới giải ngân rất cầm chừng.</li>
+</ul>
+</li>
+<li><strong>Bài toán kinh tế mạng lưới (Tokenomics) và cạnh tranh hạ tầng Layer 2:</strong>
+<ul>
+<li>Sau khi các nâng cấp giảm phí giao dịch Layer 2 đi vào hoạt động ổn định, hoạt động giao dịch trên Layer 1 của Ethereum bị phân mảnh và san sẻ. Lượng phí gas tiêu thụ giảm dẫn tới tốc độ đốt ETH theo cơ chế EIP-1559 giảm mạnh.</li>
+<li>Ethereum tạm thời chuyển sang trạng thái <strong>lạm phát nguồn cung nhẹ</strong>, tạo tâm lý hoài nghi trong nhóm nhà đầu tư dài hạn kỳ vọng vào câu chuyện &quot;Ultra Sound Money&quot; (giảm phát nguồn cung).</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h3>3. Động thái của Dòng tiền lớn (Whale / Smart Money): ĐỨNG NGOÀI PHÒNG HỘ &amp; GOM HÀNG THỤ ĐỘNG</h3>
+<ul>
+<li><strong>Không có hiện tượng bán tháo hoảng loạn của Cá voi:</strong>
+<ul>
+<li>Dữ liệu on-chain cho thấy các ví lớn (Whale Wallets nắm giữ từ 1,000 – 10,000 ETH) không có động thái chuyển lượng lớn token lên các sàn giao dịch tập trung (CEX) để xả bằng lệnh thị trường. Điều này xác nhận rằng dòng tiền lớn không rút lui khỏi hệ sinh thái.</li>
+</ul>
+</li>
+<li><strong>Chiến lược gom hàng thụ động bằng lệnh chờ (Limit Orders):</strong>
+<ul>
+<li>Smart Money hiện tại <strong>chủ yếu đứng ngoài quan sát ở các nhịp hồi phục</strong>, từ chối mua đuổi (No FOMO Market Buy).</li>
+<li>Thay vào đó, họ thiết lập các vùng tường mua đỡ giá (Bids Cluster) dày đặc ở các vùng chiết khấu sâu hơn:
+<ul>
+<li><strong>Vùng gom thăm dò:</strong> 2,200 – 2,240 USD.</li>
+<li><strong>Vùng gom chiến lược:</strong> 2,120 – 2,160 USD (hội tụ đường trung bình động dài hạn SMA 200 ngày).</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Gia tăng phòng vệ trên thị trường quyền chọn (Options Hedging):</strong>
+<ul>
+<li>Tỷ lệ Put/Call Ratio có dấu hiệu nhích tăng, cho thấy các nhà tạo lập thị trường (Market Makers) và tổ chức đang gia tăng mua quyền chọn bán (Put Options) để bảo hiểm danh mục phòng trường hợp giá thủng đáy ngắn hạn.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>4. Đánh giá rủi ro Thiên nga đen và Tin tức bất ngờ (Scenario &amp; Risk Assessment)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Kịch bản</th>
+<th style="text-align:left">Yếu tố kích hoạt tiềm ẩn</th>
+<th style="text-align:left">Mức độ tác động lên ETH-USD</th>
+<th style="text-align:center">Xác suất</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Thiên nga đen / Rủi ro sụt giảm mạnh (Downside Shock)</strong></td>
+<td style="text-align:left"><strong>Rủi ro hệ thống DeFi/LRT hoặc Cú sốc Địa chính trị/Lãi suất:</strong> Khủng hoảng nợ xấu/de-peg ở các giao thức Liquid Restaking (LRT), hoặc căng thẳng địa chính trị đột biến đẩy giá dầu tăng vọt, buộc Fed trì hoãn hạ lãi suất.</td>
+<td style="text-align:left">ETH gãy dứt khoát mốc phòng thủ sống còn 2,150 – 2,200 USD, kích hoạt chuỗi thanh lý đòn bẩy đẩy giá về kiểm định vùng <strong>1,850 – 2,000 USD</strong>.</td>
+<td style="text-align:center"><strong>20%</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Cú sốc Tăng trưởng bất ngờ (Upside Catalyst)</strong></td>
+<td style="text-align:left"><strong>Đột phá quy định pháp lý hoặc Dòng tiền ETF bùng nổ:</strong> Cơ quan quản lý nới lỏng cho phép tính năng Staking tích hợp vào Spot ETF, hoặc dòng tiền lớn bất ngờ mua gom đột biến.</td>
+<td style="text-align:left">Kích hoạt chuỗi ép mua khống (Short Squeeze), giá giật ngược bứt phá qua vùng cản 2,450 – 2,550 USD.</td>
+<td style="text-align:center"><strong>25%</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Kịch bản Cơ sở (Base Case)</strong></td>
+<td style="text-align:left"><strong>Tích lũy thanh khoản &amp; Thử thách tính kiên nhẫn:</strong> Thị trường tiếp tục giằng co sideway, biên độ giao dịch hẹp dần để tiêu hóa áp lực cung và thanh lọc các vị thế đầu cơ ngắn hạn.</td>
+<td style="text-align:left">ETH dao động tích lũy trong biên độ <strong>2,200 – 2,380 USD</strong>, chờ đợi tín hiệu rõ ràng hơn từ vĩ mô và dòng tiền ETF.</td>
+<td style="text-align:center"><strong>55%</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>🎯 TỔNG KẾT &amp; KHUYẾN NGHỊ HỘI ĐỒNG ĐẦU TƯ</h3>
+<ul>
+<li><strong>Đánh giá chung:</strong> Thị trường đang trong giai đoạn chuyển tiếp tâm lý nhạy cảm giữa <strong>Do dự và Thận trọng phòng thủ</strong>. Sự vắng bóng của dòng tiền tổ chức mới kết hợp môi trường vĩ mô thận trọng khiến thị trường thiếu động lực bứt phá ngắn hạn.</li>
+<li><strong>Chiến lược hành động:</strong>
+<ol>
+<li><strong>Nhà đầu tư theo xu hướng (Trend Followers):</strong> Tiếp tục kiên nhẫn đứng ngoài, tuyệt đối không vội vàng bắt đáy bằng đòn bẩy khi chưa xuất hiện nến đảo chiều xác nhận với khối lượng thuyết phục.</li>
+<li><strong>Nhà đầu tư tích sản dài hạn (DCA):</strong> Có thể rải lệnh mua gom từng phần theo tỷ trọng nhỏ tại các vùng hỗ trợ cứng (quanh 2,200 USD và 2,150 USD), tận dụng các nhịp rũ bỏ tâm lý của thị trường.</li>
+</ol>
+</li>
+</ul>
+<hr />
+<h2 id="muc_4">⚔️ 5. TRANH BIỆN PHE MUA VS PHE BÁN (BULL VS BEAR DEBATE)</h2>
+<h3>BIÊN BẢN TRANH BIỆN CHIẾN LƯỢC ĐẦU TƯ: ETH-USD</h3>
+<ul>
+<li><strong>Thời điểm:</strong> Phiên giao dịch cuối tháng 10/2026</li>
+<li><strong>Tài sản tranh luận:</strong> Ethereum (<code>ETH-USD</code>) | <strong>Thị giá:</strong> 2,357.62 USD</li>
+<li><strong>Chủ tọa:</strong> Giám đốc Quản lý Quỹ (Chief Investment Officer)</li>
+<li><strong>Thành phần tham gia:</strong>
+<ul>
+<li><strong>Phe Bán (Senior Bear Researcher):</strong> Đại diện trường phái phòng thủ rủi ro, bóc tách cạm bẫy thanh khoản và áp lực sụp đổ xu hướng.</li>
+<li><strong>Phe Mua (Senior Bull Researcher):</strong> Đại diện trường phái săn tìm cơ hội đảo chiều (Contrarian &amp; Deep Value), phân tích lực nén và vị thế tích lũy của dòng tiền lớn.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<pre><code>                                  [ PHÒNG HỌP CHIẾN LƯỢC QUỸ ĐẦU TƯ ]
+                    THỊ GIÁ: 2,357.62 USD | RSI: 39.14 | MACD: -56.76 | TÂM LÝ: SỢ HÃI (30-36)
+</code></pre>
+<hr />
+<h4>🎙️ LỜI MỞ ĐẦU CỦA CHỦ TỌA</h4>
+<blockquote>
+<p><em>&quot;Thưa các đồng sự, ETH đang đứng trước ngã ba đường tại mốc 2,357.62 USD. Thị trường rơi vào trạng thái kiệt quệ thanh khoản, biên độ nén dưới ATR và chỉ số sợ hãi bao trùm. Hôm nay, chúng ta không chấp nhận các nhận định nước đôi. Tôi muốn 3 luận điểm đanh thép nhất từ cả hai phía trước khi quỹ giải ngân vị thế hàng chục triệu USD.&quot;</em></p>
+</blockquote>
+<hr />
+<h3>HIỆP 1: CẤU TRÚC XU HƯỚNG VÀ HỆ THỐNG ĐƯỜNG TRUNG BÌNH (TREND STRUCTURE)</h3>
+<h4>🐻 Phe Bán (Bear Researcher) — Luận điểm 1:</h4>
+<blockquote>
+<p><strong>&quot;Cấu trúc giảm giá toàn diện đã kích hoạt: Nằm dưới SMA 10 &amp; SMA 50 – Mọi nhịp tăng chỉ là 'Dead Cat Bounce' để xả hàng!&quot;</strong></p>
+</blockquote>
+<p><em>&quot;Hãy nhìn thẳng vào bảng kỹ thuật: Giá đóng cửa 2,357.62 USD đang nằm bẹp dưới cả SMA 10 (2,380.11 USD) lẫn SMA 50 (2,534.05 USD). Đừng tự huyễn hoặc về phiên xanh nhẹ +0.42%! Thực tế trong phiên, phe mua đã cố rướn lên 2,388 USD nhưng vừa chạm mép SMA 10 là lập tức bị đè bẹp, để lại một bóng nến từ chối giá (rejection) cay đắng.</em></p>
+<p><em>Khoảng cách với SMA 50 đang lên tới gần 176 USD — đây là bằng chứng phe bò đã hoàn toàn buông bỏ quyền kiểm soát trung hạn. Khi hai đường trung bình dốc xuống tạo áp lực đè tầng, bất kỳ ai mua vào lúc này đều đang đứng trước một 'máy chém thanh khoản'. Điểm đến tiếp theo không phải là 2,500 USD, mà là một cú trượt dài test lại đáy sâu hơn.&quot;</em></p>
+<h4>🐂 Phe Mua (Bull Researcher) — Luận điểm 1 phản biện:</h4>
+<blockquote>
+<p><strong>&quot;Thành trì chiến lược SMA 200 ngày chưa hề gãy — Đây là vùng rũ bỏ kinh điển (Shakeout) trước siêu sóng phục hồi!&quot;</strong></p>
+</blockquote>
+<p><em>&quot;Các anh nhìn cây mà không thấy rừng! Anh hoảng loạn vì giá dưới SMA 10 và SMA 50, nhưng lại cố tình 'quên' một dữ kiện sống còn: <strong>Thị giá vẫn đang vận động vững chắc trên SMA 200 ngày</strong>. Đường trung bình 200 ngày là lằn ranh sinh tử giữa thị trường giá lên và giá xuống dài hạn. Miễn là SMA 200 chưa thủng, xu hướng vĩ mô của Ethereum vẫn được bảo toàn.</em></p>
+<p><em>Việc giá nằm sâu dưới SMA 50 không phải là tín hiệu bán tháo, mà là trạng thái <strong>phân kỳ giá cực độ (Mean Reversion setup)</strong>. Lịch sử chứng minh mỗi khi khoảng cách giữa giá và SMA 50 bị kéo giãn quá xa, lực hút trở lại đường trung bình diễn ra cực kỳ dữ dội. Đây không phải là gãy xu hướng, mà là pha tích lũy rũ bỏ các 'tay mơ' đòn bẩy cao trước khi giá bật như lò xo nén.&quot;</em></p>
+<hr />
+<h3>HIỆP 2: XUNG LƯỢNG VÀ SỰ BÙNG NỔ BIẾN ĐỘNG (MOMENTUM &amp; VOLATILITY)</h3>
+<h4>🐻 Phe Bán (Bear Researcher) — Luận điểm 2:</h4>
+<blockquote>
+<p><strong>&quot;MACD Bearish Crossover phân kỳ âm mở rộng, RSI dưới 40: Đáy chưa thấy đâu, bắt dao rơi là tự sát!&quot;</strong></p>
+</blockquote>
+<p><em>&quot;Anh nói lò xo nén? Hãy nhìn các chỉ báo xung lượng xem nó đang 'nén' hay đang 'xì hơi'!</em></p>
+<ul>
+<li><strong>MACD (-56.76) cắt xuống dưới Signal (-50.78)</strong> với Histogram âm -5.99 đang mở rộng. Đây là xác nhận động lượng giảm đang gia tốc chứ chưa hề có dấu hiệu chậm lại.</li>
+<li><strong>RSI ở mức 39.14</strong>: Xin lưu ý, 39 là vùng <strong>suy yếu trầm trọng</strong> nhưng <strong>CHƯA HỀ QUÁ BÁN (Oversold)</strong>! Ngưỡng quá bán thực sự phải dưới 30. Điều này có nghĩa là gì? Nghĩa là bên bán vẫn còn thừa dư địa để xả tiếp một nhịp sập 10–15% nữa trước khi RSI chạm vùng hoảng loạn cực độ.</li>
+<li>Thêm vào đó, giá đang dạt về nửa dưới dải Bollinger Band (2,296 USD). Một khi mép dưới 2,296 USD bị xuyên thủng trong bối cảnh MACD mở rộng, dải băng sẽ mở rộng xuống dưới (Band Walk down) và kích hoạt đợt bán tháo tự động (Stop-loss cascade) của các bot giao dịch!&quot;*</li>
+</ul>
+<h4>🐂 Phe Mua (Bull Researcher) — Luận điểm 2 phản biện:</h4>
+<blockquote>
+<p><strong>&quot;Biên độ dao động nén chặt dưới ATR (Volatility Squeeze) và cạn kiệt lực bán: Cơn bão Short Squeeze sắp nổ!&quot;</strong></p>
+</blockquote>
+<p><em>&quot;Anh đọc chỉ số như một cỗ máy mà không hiểu cơ chế thị trường!</em></p>
+<ul>
+<li>Hãy nhìn vào chỉ số <strong>ATR (14) đạt 84.50 USD</strong>, trong khi biên độ ngày chỉ co lại vỏn vẹn <strong>66.54 USD</strong>. Sự sụt giảm biến động này chính là dấu hiệu của <strong>Volatility Squeeze (Nén biến động)</strong>. Thị trường không thể đi ngang mãi với biên độ hẹp như vậy; khi biến động bị bóp nghẹt, một cú bùng nổ theo chiều ngược lại sắp diễn ra.</li>
+<li>Dải Bollinger Band dưới nằm ngay <strong>2,296.61 USD</strong> kết hợp cùng vùng hỗ trợ tâm lý cứng <strong>2,300 USD</strong> tạo nên bức tường bê tông cốt thép. Phe gấu đã miệt mài đẩy giá cả tuần qua nhưng không tài nào xuyên thủng mốc 2,321 USD!</li>
+<li>Khi lực bán không còn đẩy được giá sâu hơn dù tin tức xấu bủa vây, đó là <strong>sự kiệt quệ của bên bán (Seller Exhaustion)</strong>. RSI 39.14 chuẩn bị tạo phân kỳ dương mini ngay tại mép dải băng dưới. Chỉ cần một cú giật ngược qua 2,380 USD, toàn bộ vị thế Short đuổi theo xu hướng sẽ biến thành 'nhiên liệu' cho một đợt Short Squeeze kéo thẳng giá lên 2,500 USD!&quot;*</li>
+</ul>
+<hr />
+<h3>HIỆP 3: TÂM LÝ ĐÁM ĐÔNG VÀ BẪY THANH KHOẢN (MARKET SENTIMENT &amp; SMART MONEY)</h3>
+<h4>🐻 Phe Bán (Bear Researcher) — Luận điểm 3:</h4>
+<blockquote>
+<p><strong>&quot;Tâm lý sợ hãi, dòng tiền tổ chức thờ ơ rút lui: Ai sẽ là người mua để đẩy giá lên 273 tỷ USD vốn hóa này?&quot;</strong></p>
+</blockquote>
+<p><em>&quot;Bài học vỡ lòng của thị trường tài chính: <strong>Không có thanh khoản thì không có tăng trưởng</strong>!</em></p>
+<ul>
+<li>Báo cáo tâm lý đã chỉ rõ: <strong>Đồng thuận của các quỹ tổ chức là N/A — Quan sát và Thận trọng</strong>. Dòng tiền thông minh (Smart Money) đang đứng ngoài ôm tiền mặt hoặc rút về các kênh trú ẩn an toàn. Họ không dại gì đổ tiền vào một tài sản đang nằm trong xu hướng điều chỉnh tiêu cực.</li>
+<li>Chỉ số Fear &amp; Greed lẹt đẹt ở mức <strong>30 – 36 điểm (Sợ hãi)</strong>, đám đông nhà đầu tư cá nhân rơi vào trạng thái 'Apathy' — tê liệt và thờ ơ. Vốn hóa neo 273.8 tỷ USD nhưng thanh khoản cạn kiệt đồng nghĩa với việc thị trường thiếu độ sâu (Thin order book).</li>
+<li>Trong một thị trường thanh khoản mỏng manh như thế này, chỉ cần một con cá voi chốt lời hoặc một tin tức kinh tế tiêu cực bất ngờ, cấu trúc giá quanh 2,250 – 2,300 USD sẽ sụp đổ như một lâu đài cát. Mua vào lúc các tổ chức đang đứng ngoài quan sát chẳng khác nào tự biến mình thành thanh khoản cho cá mập thoát hàng!&quot;*</li>
+</ul>
+<h4>🐂 Phe Mua (Bull Researcher) — Luận điểm 3 phản biện:</h4>
+<blockquote>
+<p><strong>&quot;Cơ hội vàng 'Tham lam khi người khác sợ hãi' — Giai đoạn Tích lũy Wyckoff đỉnh cao của Dòng tiền lớn!&quot;</strong></p>
+</blockquote>
+<p><em>&quot;Chính vì các anh đợi các quỹ 'đồng thuận' thì giá đã ở 3,000 USD rồi! Các tổ chức không bao giờ phát loa thông báo họ đang gom hàng. Trạng thái 'N/A — Thận trọng' trên bề mặt chính là vỏ bọc hoàn hảo để họ âm thầm tích lũy ở vùng giá chiết khấu sâu.</em></p>
+<ul>
+<li>Hãy nhớ câu châm ngôn bất hủ của Warren Buffett: <strong>'Hãy tham lam khi người khác sợ hãi'</strong>. Chỉ số Fear &amp; Greed ở mức 30–36 điểm chính là chỉ báo đảo chiều ngầm (contrarian indicator) đáng tin cậy nhất. Lịch sử crypto chứng minh: Mua khi đám đông hưng phấn (Greed &gt; 80) là đu đỉnh, nhưng gom hàng khi thị trường chán nản, sợ hãi (Fear 30–35) luôn đem lại tỷ lệ Risk/Reward (R:R) vĩ đại nhất!</li>
+<li>Sự 'thờ ơ' và 'cạn kiệt thanh khoản' mà anh nói, trong phương pháp VSA/Wyckoff, chính là <strong>Pha C (Spring/Test volume thấp)</strong>. Lực cung trôi nổi trên thị trường đã bị rút cạn. Không còn ai muốn bán tháo ở vùng 2,300 USD này nữa. Khi nguồn cung cạn kiệt, chỉ cần một lực cầu mồi nhỏ từ các quỹ, giá ETH sẽ phóng vọt lên vùng cân bằng trên 2,500 USD trước sự ngỡ ngàng của những kẻ đứng ngoài hoài nghi!&quot;*</li>
+</ul>
+<hr />
+<h3>TỔNG KẾT TRANH LUẬN &amp; ĐỐI CHIẾU CHIẾN LƯỢC</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Tiêu chí</th>
+<th style="text-align:left">🐻 Quan điểm Phe Bán (Bear)</th>
+<th style="text-align:left">🐂 Quan điểm Phe Mua (Bull)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Cấu trúc xu hướng</strong></td>
+<td style="text-align:left">Bị đè nặng dưới SMA 10 &amp; 50; hồi phục bị bán dập dập tắt.</td>
+<td style="text-align:left">Được bảo vệ bởi thành trì SMA 200; nén giá Mean Reversion.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Xung lượng kỹ thuật</strong></td>
+<td style="text-align:left">MACD âm mở rộng; RSI 39 chưa quá bán, còn dư địa sập.</td>
+<td style="text-align:left">Volatility Squeeze dưới ATR; Bollinger Band dưới (2,296) đỡ giá cực mạnh.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Tâm lý &amp; Thanh khoản</strong></td>
+<td style="text-align:left">Dòng tiền tổ chức thờ ơ; nguy cơ sập bẫy thanh khoản (Liquidity Trap).</td>
+<td style="text-align:left">Chỉ số Fear (30-36) là cơ hội Contrarian; cạn kiệt cung bán (Seller Exhaustion).</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Mục tiêu dự kiến</strong></td>
+<td style="text-align:left">Thủng 2,296 USD $\rightarrow$ lao dốc về <strong>2,150 – 2,200 USD</strong>.</td>
+<td style="text-align:left">Bật từ 2,320 USD $\rightarrow$ Short squeeze chinh phục lại <strong>2,534 USD (SMA 50)</strong>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4>⚖️ KẾT LUẬN CỦA CHỦ TỌA (CIO SUMMARY)</h4>
+<blockquote>
+<p>*&quot;Cả hai bên đều đưa ra các luận cứ xác thực và góc nhìn sắc bén:</p>
+<ul>
+<li><strong>Phe Bán</strong> đúng về mặt <strong>động lượng tức thời</strong>: Xu hướng ngắn hạn rõ ràng đang nghiêng về gấu, mở vị thế Long tất tay (All-in) lúc này là mạo hiểm khi chưa có cây nến đảo chiều xác nhận vượt SMA 10 (2,380 USD).</li>
+<li><strong>Phe Mua</strong> đúng về mặt <strong>tỷ lệ R:R và vị thế vĩ mô</strong>: Giá đang ở sát biên dưới dải Bollinger (2,296 USD) và trên SMA 200, bán đuổi ở vùng tâm lý sợ hãi 30 điểm là hạ sách.</li>
+</ul>
+<p>👉 <strong>Quyết định:</strong> Đặt lệnh điều kiện (Stop-Limit) hai đầu: Quản trị rủi ro tuyệt đối tại mốc <strong>2,290 USD</strong>, sẵn sàng kích hoạt lệnh giải ngân theo phe Bò nếu xuất hiện nến Breakout dứt khoát đóng cửa trên <strong>2,380.11 USD (SMA 10)</strong> kèm khối lượng xác nhận.&quot;*</p>
+</blockquote>
+<hr />
+<h2 id="muc_5">🛡️ 6. HỘI ĐỒNG QUẢN LÝ RỦI RO (RISK COMMITTEE)</h2>
+<h1>BIÊN BẢN HỘI ĐỒNG QUẢN TRỊ RỦI RO QUỸ ĐẦU TƯ</h1>
+<p><strong>Tài sản thẩm định:</strong> Ethereum (<code>ETH-USD</code>)<br />
+<strong>Thị giá hiện tại:</strong> 2,357.62 USD<br />
+<strong>Dữ liệu kỹ thuật trọng yếu:</strong> RSI (14): 39.14 | MACD: -56.76 | Vùng tâm lý: Sợ hãi (30–36) | Vị thế: Nằm dưới SMA 10 (2,380.11 USD) &amp; SMA 50.</p>
+<hr />
+<h3>1. Chuyên viên Liều (Aggressive Risk Officer)</h3>
+<blockquote>
+<p><strong>Triết lý:</strong> <em>&quot;Khi đám đông sợ hãi và kiệt quệ thanh khoản là lúc tỷ suất sinh lời bất đối xứng (Asymmetric Upside) đạt đỉnh. Không bắt đáy ở vùng nén thì khi sóng bùng nổ sẽ thành kẻ đu đỉnh.&quot;</em></p>
+</blockquote>
+<ul>
+<li><strong>Đánh giá tình thế:</strong>
+<ul>
+<li>RSI 39.14 tiệm cận vùng quá bán cực hạn; biên độ nén hẹp dưới ATR kết hợp tâm lý sợ hãi (Fear Index 30-36) phản ánh đà bán tháo đã bước vào giai đoạn cạn kiệt (exhaustion selling).</li>
+<li>Phe Bán đang quá tự tin khi giá nằm dưới SMA 10 &amp; SMA 50, tạo tiền đề hoàn hảo cho một cú <strong>Short Squeeze</strong> quét thanh khoản vùng trên.</li>
+</ul>
+</li>
+<li><strong>Chiến lược hành động:</strong>
+<ul>
+<li>Giải ngân vị thế <strong>Mua thăm dò chủ động (Long/Spot Accumulation)</strong> ngay tại mức giá thị trường 2,357.62 USD, chấp nhận biên độ rung lắc lớn để ăn trọn nhịp phục hồi chữ V hoặc sóng đảo chiều mạnh lên các cản kỹ thuật cao hơn.</li>
+</ul>
+</li>
+<li><strong>Khuyến nghị thông số kỹ thuật:</strong>
+<ul>
+<li><strong>Vị thế:</strong> <strong>LONG (Mua)</strong></li>
+<li><strong>Điểm vào lệnh (Entry):</strong> 2,355 – 2,358 USD</li>
+<li><strong>Stop Loss (Cắt lỗ):</strong> <strong>2,230.00 USD</strong> <em>(biên rủi ro ~5.4%, đặt dưới vùng đáy hỗ trợ cứng và vùng quét râu thanh khoản trước đó)</em></li>
+<li><strong>Take Profit (Chốt lời mục tiêu):</strong>
+<ul>
+<li>TP1: 2,520.00 USD (test lại SMA 50)</li>
+<li>TP2: <strong>2,740.00 USD</strong> (vùng đỉnh phân phối cũ)</li>
+</ul>
+</li>
+<li><strong>Tỷ lệ Risk : Reward (R:R):</strong> <strong>1 : 3.0</strong> <em>(Rủi ro ~127.6 USD đổi lấy kỳ vọng lợi nhuận ~382.4 USD)</em></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>2. Chuyên viên Thận trọng (Conservative Risk Officer)</h3>
+<blockquote>
+<p><strong>Triết lý:</strong> <em>&quot;Bảo toàn vốn là ưu tiên sinh tử số 1. Không bắt dao rơi khi cấu trúc xu hướng giảm chưa có dấu hiệu đảo chiều xác nhận.&quot;</em></p>
+</blockquote>
+<ul>
+<li><strong>Đánh giá tình thế:</strong>
+<ul>
+<li>Về mặt cấu trúc, giá nằm dưới cả SMA 10 và SMA 50, MACD âm sâu (-56.76) cho thấy động lượng phe gấu vẫn đang chi phối hoàn toàn. Bất kỳ nhịp hồi nào trước khi vượt lại SMA 10 (2,380.11 USD) đều mang rủi ro là một bẫy tăng giá (<em>Bull Trap / Dead Cat Bounce</em>).</li>
+<li>Việc giải ngân mua lớn lúc này là hành động đánh cược, vi phạm nguyên tắc giao dịch thuận xu hướng của quỹ.</li>
+</ul>
+</li>
+<li><strong>Chiến lược hành động:</strong>
+<ul>
+<li><strong>Đứng ngoài quan sát (Kiên nhẫn chờ xác nhận)</strong> HOẶC mở vị thế <strong>Bán khống phòng hộ (Short hedge/Swing Short)</strong> khi giá hồi kiểm định lại cụm kháng cự SMA 10 – SMA 50 nhưng thất bại. Nếu buộc phải vào lệnh theo xu hướng gãy vỡ hiện tại, phe bán có xác suất thắng cao hơn.</li>
+</ul>
+</li>
+<li><strong>Khuyến nghị thông số kỹ thuật (Kịch bản Bán thuận xu hướng):</strong>
+<ul>
+<li><strong>Vị thế:</strong> <strong>SHORT (Bán theo đà) khi có nhịp hồi kiểm định</strong></li>
+<li><strong>Điểm vào lệnh (Entry):</strong> 2,380.00 – 2,395.00 USD (vùng kháng cự SMA 10)</li>
+<li><strong>Stop Loss (Cắt lỗ):</strong> <strong>2,445.00 USD</strong> <em>(đóng lệnh tuyệt đối nếu giá bứt phá trở lại trên vùng kháng cự gần, rủi ro ~2.5% - 3.7%)</em></li>
+<li><strong>Take Profit (Chốt lời mục tiêu):</strong> <strong>2,210.00 USD</strong> <em>(vùng hỗ trợ thanh khoản đáy cũ)</em></li>
+<li><strong>Tỷ lệ Risk : Reward (R:R):</strong> <strong>1 : 2.6</strong> <em>(Rủi ro ~65 USD đổi lấy lợi nhuận ~170 USD)</em></li>
+<li><em>Ghi chú giải ngân:</em> Tối đa 20% - 30% hạn mức danh mục, tuyệt đối không dùng đòn bẩy lớn.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>3. Chuyên viên Trung lập (Neutral Risk Officer)</h3>
+<blockquote>
+<p><strong>Triết lý:</strong> <em>&quot;Không đoán đỉnh đáy, không thiên vị phe nào. Chỉ hành động khi tỷ lệ R:R tối thiểu đạt 1:2 và quản trị rủi ro bằng việc chia nhỏ các mốc giải ngân.&quot;</em></p>
+</blockquote>
+<ul>
+<li><strong>Đánh giá tình thế:</strong>
+<ul>
+<li>Thị trường đang nén chặt: Phe Bán nắm giữ xu hướng trung hạn (SMA 50 dốc xuống), nhưng biên độ nới rộng của lực bán đang chậm lại rõ rệt (RSI tiệm cận 39, ATR thu hẹp). Vùng 2,350 USD là hỗ trợ tâm lý quan trọng.</li>
+<li>Tình thế này đòi hỏi một kịch bản giao dịch theo biên độ (Range-bound) với điểm cắt lỗ chặt chẽ (tight stop loss) để tối ưu tỷ lệ R:R.</li>
+</ul>
+</li>
+<li><strong>Chiến lược hành động:</strong>
+<ul>
+<li>Thực hiện chiến lược <strong>Bắt nhịp hồi phục kỹ thuật có điều kiện (Mean Reversion)</strong>: Mua từng phần quanh 2,350 USD, kỳ vọng giá hồi về vùng cân bằng SMA 10 và SMA 50. Cắt lỗ nhanh nếu thủng ngưỡng hỗ trợ then chốt 2,300 USD.</li>
+</ul>
+</li>
+<li><strong>Khuyến nghị thông số kỹ thuật:</strong>
+<ul>
+<li><strong>Vị thế:</strong> <strong>LONG (Cân bằng rủi ro / Mean Reversion)</strong></li>
+<li><strong>Điểm vào lệnh (Entry):</strong> 2,350.00 – 2,357.62 USD</li>
+<li><strong>Stop Loss (Cắt lỗ):</strong> <strong>2,295.00 USD</strong> <em>(dưới đáy số tròn 2,300 USD, rủi ro ~2.65% tương đương ~62.6 USD)</em></li>
+<li><strong>Take Profit (Chốt lời mục tiêu):</strong>
+<ul>
+<li>TP1 (50% vị thế): 2,420.00 USD (hồi quy kỹ thuật)</li>
+<li>TP2 (50% vị thế): <strong>2,490.00 USD</strong> (tiệm cận SMA 50)</li>
+</ul>
+</li>
+<li><strong>Tỷ lệ Risk : Reward (R:R):</strong> <strong>1 : 2.1</strong> <em>(tính trên mức chốt lời trung bình ~2,480 USD)</em></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>BẢNG TỔNG HỢP KHUYẾN NGHỊ RỦI RO CHO CHỦ TỌA / CIO</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Chỉ số / Chuyên viên</th>
+<th style="text-align:left">Chuyên viên Liều (Aggressive)</th>
+<th style="text-align:left">Chuyên viên Thận trọng (Conservative)</th>
+<th style="text-align:left">Chuyên viên Trung lập (Neutral)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Định hướng</strong></td>
+<td style="text-align:left"><strong>LONG</strong> (Đón đầu đảo chiều / Squeeze)</td>
+<td style="text-align:left"><strong>SHORT</strong> (Thuận xu hướng giảm khi hồi)</td>
+<td style="text-align:left"><strong>LONG</strong> (Mean Reversion - Hồi kỹ thuật)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Vùng vào lệnh (Entry)</strong></td>
+<td style="text-align:left">2,355 – 2,358 USD</td>
+<td style="text-align:left">2,380 – 2,395 USD</td>
+<td style="text-align:left">2,350 – 2,357 USD</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Stop Loss (Cắt lỗ)</strong></td>
+<td style="text-align:left"><strong>2,230.00 USD</strong> (-5.4%)</td>
+<td style="text-align:left"><strong>2,445.00 USD</strong> (+2.7%)</td>
+<td style="text-align:left"><strong>2,295.00 USD</strong> (-2.65%)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Take Profit (Chốt lời)</strong></td>
+<td style="text-align:left"><strong>2,740.00 USD</strong> (+16.2%)</td>
+<td style="text-align:left"><strong>2,210.00 USD</strong> (-7.1%)</td>
+<td style="text-align:left"><strong>2,480.00 USD</strong> (+5.2%)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Tỷ lệ R:R</strong></td>
+<td style="text-align:left"><strong>1 : 3.0</strong></td>
+<td style="text-align:left"><strong>1 : 2.6</strong></td>
+<td style="text-align:left"><strong>1 : 2.1</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Quy mô vốn đề xuất</strong></td>
+<td style="text-align:left">50% hạn mức (Dám chịu biến động)</td>
+<td style="text-align:left">25% hạn mức (Phòng thủ chặt)</td>
+<td style="text-align:left">35% hạn mức (Chia 2 nhịp giải ngân)</td>
+</tr>
+</tbody>
+</table>
+
+    </article>
+
+    <footer class="footer">
+      <p>Báo cáo được khởi tạo tự động bởi <b>AI Trading Multi-Agent</b> · Cổng máy chủ cục bộ <code>localhost:5050</code></p>
+      <p style="margin-top:6px; font-size:12px;">Dữ liệu phân tích chỉ nhằm mục đích nghiên cứu học tập, không cấu thành lời khuyên đầu tư tài chính.</p>
+    </footer>
+  </main>
+
+  <div id="toast">✅ Đã sao chép link báo cáo vào bộ nhớ tạm!</div>
+
+  <script>
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const target = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', target);
+  localStorage.setItem('ai_trading_theme', target);
+}
+
+function copyReportLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    const toast = document.getElementById('toast');
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 2500);
+  });
+}
+
+function xoaBaoCaoHienTai() {
+  const parts = window.location.pathname.split('/');
+  const tenFile = decodeURIComponent(parts[parts.length - 1] || '');
+  if (!confirm(`Bạn có chắc chắn muốn xoá vĩnh viễn báo cáo này?\n"${tenFile}"?\n\n(Thao tác này sẽ xoá cả file HTML và Markdown tương ứng)`)) {
+    return;
+  }
+  fetch('/api/delete?file=' + encodeURIComponent(tenFile), {
+    method: 'POST'
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      alert('Đã xoá báo cáo thành công. Hệ thống sẽ quay về trang danh sách.');
+      window.location.href = '/';
+    } else {
+      alert('Lỗi: ' + (data.message || 'Không thể xoá báo cáo'));
+    }
+  })
+  .catch(err => {
+    alert('Lỗi kết nối tới máy chủ: ' + err);
+  });
+}
+
+// Khởi tạo theme: Mặc định Light nếu chưa chọn
+(function() {
+  const saved = localStorage.getItem('ai_trading_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+})();
+</script>
+</body>
+</html>

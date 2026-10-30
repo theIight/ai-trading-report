@@ -23,7 +23,7 @@ if command -v uv >/dev/null 2>&1; then
     PYTHON_BIN="$VENV_DIR/bin/python"
     
     if [ ! -f "$VENV_DIR/.installed" ]; then
-        echo "[2/3] Cài đặt các thư viện cần thiết (TradingAgents v0.5.2)..."
+        echo "[2/3] Cài đặt các thư viện cần thiết (TradingAgents v0.7.1)..."
         uv pip install -r requirements.txt
         touch "$VENV_DIR/.installed"
     fi
@@ -55,7 +55,7 @@ else
     PYTHON_BIN="$VENV_DIR/bin/python"
 
     if [ ! -f "$VENV_DIR/.installed" ]; then
-        echo "[2/3] Cài đặt thư viện (TradingAgents v0.5.2)..."
+        echo "[2/3] Cài đặt thư viện (TradingAgents v0.7.1)..."
         "$PYTHON_BIN" -m pip install --upgrade pip -q
         "$PYTHON_BIN" -m pip install -r requirements.txt
         touch "$VENV_DIR/.installed"
@@ -64,6 +64,8 @@ fi
 
 echo "[3/3] Môi trường đã sẵn sàng!"
 echo ""
+
+export PYTHONWARNINGS="ignore::pandas.errors.Pandas4Warning,ignore::DeprecationWarning"
 
 # Chạy main.py
 exec "$PYTHON_BIN" main.py "$@"

@@ -14,9 +14,23 @@ import subprocess
 import sys
 import time
 import urllib.parse
+import warnings
 import webbrowser
 from datetime import datetime, timedelta
 from pathlib import Path
+
+# Bỏ qua triệt để cảnh báo từ thư viện bên thứ 3 (yfinance / pandas PDEP-8 inplace trên mọi thread)
+_old_showwarning = warnings.showwarning
+def _loc_canh_bao(message, category, filename, lineno, file=None, line=None):
+    msg_str = str(message)
+    cat_name = getattr(category, "__name__", "")
+    if "inplace" in msg_str or "Pandas4Warning" in cat_name or "PDEP-8" in msg_str or "yfinance" in str(filename):
+        return
+    _old_showwarning(message, category, filename, lineno, file, line)
+warnings.showwarning = _loc_canh_bao
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 import yfinance as yf
 from stockstats import wrap
 

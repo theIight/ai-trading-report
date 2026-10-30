@@ -43,6 +43,7 @@ jobs:
           GOOGLE_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PYTHONUNBUFFERED: "1"
           PYTHONIOENCODING: "utf-8"
+          PYTHONWARNINGS: "ignore"
         run: |
           NGAY="${{ inputs.ngay }}"
           if [ -z "$NGAY" ]; then

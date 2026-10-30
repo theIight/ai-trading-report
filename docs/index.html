@@ -358,14 +358,18 @@
     <!-- Thanh cấu hình kết nối GitHub -->
     <div class="github-bar">
       <div class="github-inputs">
-        <span style="font-size:13px; font-weight:700;">🐙 GitHub Repo:</span>
-        <input type="text" id="ghRepo" class="form-control" style="width:200px;" placeholder="owner/repo">
+        <span style="font-size:13px; font-weight:700;">🐙 Repo:</span>
+        <input type="text" id="ghRepo" class="form-control" style="width:180px;" placeholder="owner/repo">
         <span style="font-size:13px; font-weight:700;">🔑 Token:</span>
-        <input type="password" id="ghToken" class="form-control" style="width:220px;" placeholder="Personal Access Token (ghp_...)">
-        <button class="btn btn-sm btn-primary" onclick="luuCauHinhGitHub()">Lưu cấu hình</button>
+        <input type="password" id="ghToken" class="form-control" style="width:200px;" placeholder="Tùy chọn (để kích hoạt từ web)">
+        <label style="font-size:12px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+          <input type="checkbox" id="saveTokenCheck" checked> Ghi nhớ
+        </label>
+        <button class="btn btn-sm btn-primary" onclick="luuCauHinhGitHub()">Lưu</button>
+        <button class="btn btn-sm" onclick="xoaTokenKhoiTrinhDuyet()" title="Xoá token khỏi bộ nhớ trình duyệt">Xoá Token</button>
       </div>
       <div id="ghStatusBadge">
-        <span class="badge badge-info">Chưa cấu hình</span>
+        <span class="badge badge-info">Chế độ xem báo cáo</span>
       </div>
     </div>
 
@@ -395,9 +399,12 @@
           <label for="inputDate">Ngày phân tích</label>
           <input type="date" id="inputDate" class="form-control">
         </div>
-        <div>
-          <button id="btnRun" class="btn btn-primary" onclick="dispatchGitHubAction()" style="height:42px; width:100%; justify-content:center;">
-            ⚡ Kích Hoạt GitHub Action Phân Tích
+        <div style="display:flex; gap:8px;">
+          <button id="btnRun" class="btn btn-primary" onclick="dispatchGitHubAction()" style="height:42px; justify-content:center;">
+            ⚡ Kích Hoạt Qua Token
+          </button>
+          <button type="button" class="btn" onclick="moTrangGitHubActions()" style="height:42px; justify-content:center;" title="Mở trang GitHub Actions để chạy trực tiếp mà KHÔNG CẦN nhập token">
+            ↗️ Mở GitHub Chạy (Không cần Token)
           </button>
         </div>
       </div>
@@ -497,23 +504,46 @@
       const badge = document.getElementById('ghStatusBadge');
 
       if (token && repo) {
-        badge.innerHTML = '<span class="badge badge-buy">🟢 Đã kết nối GitHub</span>';
+        badge.innerHTML = '<span class="badge badge-buy">🟢 Đã cấp Token</span>';
       } else {
-        badge.innerHTML = '<span class="badge badge-hold">🟡 Cần nhập Token để kích hoạt Action</span>';
+        badge.innerHTML = '<span class="badge badge-info">⚪ Chế độ xem (Không cần Token)</span>';
       }
     }
 
     function luuCauHinhGitHub() {
       const repo = document.getElementById('ghRepo').value.trim();
       const token = document.getElementById('ghToken').value.trim();
+      const shouldSave = document.getElementById('saveTokenCheck').checked;
+
       if (!repo) { alert('Vui lòng nhập repo dạng owner/repo'); return; }
 
       localStorage.setItem('gh_repo', repo);
-      if (token) localStorage.setItem('gh_token', token);
+      if (shouldSave) {
+        if (token) localStorage.setItem('gh_token', token);
+      } else {
+        localStorage.removeItem('gh_token');
+      }
 
       capNhatBadge();
-      hienToast('✅ Đã lưu cấu hình GitHub');
+      hienToast('✅ Đã cập nhật cấu hình');
       taiDanhSachBaoCao();
+    }
+
+    function xoaTokenKhoiTrinhDuyet() {
+      localStorage.removeItem('gh_token');
+      document.getElementById('ghToken').value = '';
+      capNhatBadge();
+      hienToast('🗑️ Đã xoá token khỏi bộ nhớ trình duyệt');
+    }
+
+    function moTrangGitHubActions() {
+      const repo = document.getElementById('ghRepo').value.trim() || autoDetectRepo();
+      if (!repo) {
+        alert('Vui lòng nhập tên repo (owner/repo) trước.');
+        return;
+      }
+      const url = `https://github.com/${repo}/actions/workflows/analyze.yml`;
+      window.open(url, '_blank');
     }
 
     function chonMa(ma) {

@@ -117,6 +117,7 @@ class AnalysisRunner:
             env["PATH"] = ":".join(extra_paths) + ":" + env.get("PATH", "")
             env["PYTHONUNBUFFERED"] = "1"
             env["PYTHONIOENCODING"] = "utf-8"
+            env["PYTHONWARNINGS"] = "ignore::pandas.errors.Pandas4Warning,ignore::DeprecationWarning"
 
             try:
                 self.process = subprocess.Popen(

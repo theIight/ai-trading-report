@@ -9,6 +9,8 @@ if ! 0<&0 2>/dev/null; then
     exec 0</dev/null
 fi
 
+export PYTHONWARNINGS="ignore::pandas.errors.Pandas4Warning,ignore::DeprecationWarning"
+
 echo "=========================================================="
 echo "   AI TRADING MULTI-AGENT (ANTIGRAVITY NATIVE SESSION)"
 echo "   Chạy qua tài khoản Antigravity - KHÔNG CẦN API KEY"

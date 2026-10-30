@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Trading · Cloud SPA Dashboard (GitHub Pages)</title>
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #f1f5f9;
+      --bg-card: #ffffff;
+      --bg-hover: #f1f5f9;
+      --border-color: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --accent-gold: #d97706;
+      --accent-blue: #0284c7;
+      --accent-green: #059669;
+      --accent-red: #dc2626;
+      --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+      --input-bg: #ffffff;
+      --code-bg: #0f172a;
+      --code-text: #e2e8f0;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0b0e14;
+      --bg-secondary: #121722;
+      --bg-card: #182030;
+      --bg-hover: #222d42;
+      --border-color: #273349;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b9bb4;
+      --text-muted: #5d6e87;
+      --accent-gold: #f59e0b;
+      --accent-blue: #38bdf8;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      --input-bg: #121722;
+      --code-bg: #0b0e14;
+      --code-text: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 24px 20px 80px 20px;
+      line-height: 1.6;
+      transition: background 0.2s, color 0.2s;
+    }
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .title-group h1 {
+      font-size: 26px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+    .title-group p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-top: 2px;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* GitHub Config Bar */
+    .github-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: var(--card-shadow);
+    }
+    .github-inputs {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+
+    /* Panel Khởi Tạo Phân Tích */
+    .runner-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--card-shadow);
+    }
+    .runner-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .runner-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .quick-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .chip {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      transition: all 0.15s;
+    }
+    .chip:hover, .chip.active {
+      background: var(--accent-blue);
+      color: #fff;
+      border-color: var(--accent-blue);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) auto;
+      gap: 14px;
+      align-items: end;
+    }
+    @media (max-width: 768px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .form-control {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.15s;
+    }
+    .form-control:focus {
+      border-color: var(--accent-blue);
+    }
+
+    /* Live Progress Box */
+    #liveProgressBox {
+      display: none;
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 10px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+    }
+    .pulse-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10b981;
+      margin-right: 6px;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Card Danh Sách */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: var(--card-shadow);
+    }
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .search-input {
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      width: 280px;
+      max-width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th {
+      text-align: left;
+      padding: 12px 14px;
+      color: var(--text-muted);
+      font-weight: 600;
+      border-bottom: 2px solid var(--border-color);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    td {
+      padding: 14px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    tr:hover td {
+      background: var(--bg-hover);
+    }
+
+    .ticker-pill {
+      background: rgba(2, 132, 199, 0.08);
+      color: var(--accent-blue);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 13px;
+      border: 1px solid rgba(2, 132, 199, 0.2);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-buy { background: rgba(16, 185, 129, 0.12); color: #047857; border: 1px solid rgba(16, 185, 129, 0.25); }
+    .badge-sell { background: rgba(239, 68, 68, 0.12); color: #b91c1c; border: 1px solid rgba(239, 68, 68, 0.25); }
+    .badge-hold { background: rgba(245, 158, 11, 0.12); color: #b45309; border: 1px solid rgba(245, 158, 11, 0.25); }
+    .badge-info { background: var(--bg-secondary); color: var(--text-secondary); border: 1px solid var(--border-color); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      transition: all 0.15s ease;
+    }
+    .btn:hover {
+      background: var(--bg-hover);
+      border-color: var(--accent-blue);
+    }
+    .btn-primary {
+      background: #2563eb;
+      border-color: #1d4ed8;
+      color: #fff;
+      font-weight: 600;
+    }
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.25);
+      color: #dc2626;
+      font-weight: 500;
+    }
+    .btn-danger:hover {
+      background: #dc2626;
+      border-color: #b91c1c;
+      color: #fff;
+    }
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #10b981;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="title-group">
+        <h1>⚡ AI TRADING · GITHUB CLOUD SPA</h1>
+        <p>Ứng dụng điều hành và chạy phân tích đa tác tử trực tiếp qua GitHub Pages & Actions</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn" onclick="toggleTheme()">🌓 Giao diện</button>
+      </div>
+    </header>
+
+    <!-- Thanh cấu hình kết nối GitHub -->
+    <div class="github-bar">
+      <div class="github-inputs">
+        <span style="font-size:13px; font-weight:700;">🐙 GitHub Repo:</span>
+        <input type="text" id="ghRepo" class="form-control" style="width:200px;" placeholder="owner/repo">
+        <span style="font-size:13px; font-weight:700;">🔑 Token:</span>
+        <input type="password" id="ghToken" class="form-control" style="width:220px;" placeholder="Personal Access Token (ghp_...)">
+        <button class="btn btn-sm btn-primary" onclick="luuCauHinhGitHub()">Lưu cấu hình</button>
+      </div>
+      <div id="ghStatusBadge">
+        <span class="badge badge-info">Chưa cấu hình</span>
+      </div>
+    </div>
+
+    <!-- Bảng Điều Khiển: Khởi Chạy Phân Tích Mới -->
+    <div class="runner-card">
+      <div class="runner-header">
+        <h2>🚀 Khởi Tạo Phân Tích Mới (GitHub Actions Cloud)</h2>
+        <span class="badge badge-buy">Chạy trên Cloud Runner · Không tốn máy tính</span>
+      </div>
+
+      <div class="quick-chips">
+        <span style="font-size:12px; color:var(--text-muted); align-self:center; margin-right:4px;">Chọn nhanh:</span>
+        <button type="button" class="chip active" onclick="chonMa('BTC-USD')">BTC-USD (Bitcoin)</button>
+        <button type="button" class="chip" onclick="chonMa('GC=F')">GC=F (Vàng)</button>
+        <button type="button" class="chip" onclick="chonMa('NVDA')">NVDA (Nvidia)</button>
+        <button type="button" class="chip" onclick="chonMa('AAPL')">AAPL (Apple)</button>
+        <button type="button" class="chip" onclick="chonMa('TSLA')">TSLA (Tesla)</button>
+        <button type="button" class="chip" onclick="chonMa('ETH-USD')">ETH-USD (Ethereum)</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="inputSymbol">Mã tài sản</label>
+          <input type="text" id="inputSymbol" class="form-control" value="BTC-USD" placeholder="VD: BTC-USD, GC=F...">
+        </div>
+        <div class="form-group">
+          <label for="inputDate">Ngày phân tích</label>
+          <input type="date" id="inputDate" class="form-control">
+        </div>
+        <div>
+          <button id="btnRun" class="btn btn-primary" onclick="dispatchGitHubAction()" style="height:42px; width:100%; justify-content:center;">
+            ⚡ Kích Hoạt GitHub Action Phân Tích
+          </button>
+        </div>
+      </div>
+
+      <!-- Khối Live Progress theo dõi GitHub Actions -->
+      <div id="liveProgressBox">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <span class="pulse-dot"></span>
+            <b>Trạng thái GitHub Action:</b> <span id="actionStatusText" style="color:var(--accent-blue); font-weight:700;">Đang khởi chạy...</span>
+          </div>
+          <div>
+            <a id="actionRunLink" href="#" target="_blank" class="btn btn-sm">Xem tiến độ trên GitHub ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Danh Sách Báo Cáo Phân Tích -->
+    <div class="card">
+      <div class="toolbar">
+        <h2 style="font-size:18px;">Danh Sách Báo Cáo Đã Phân Tích</h2>
+        <div style="display:flex; gap:8px;">
+          <input type="text" class="search-input" id="searchInput" placeholder="Tìm theo mã hoặc tên file..." oninput="filterReports()">
+          <button class="btn btn-sm" onclick="taiDanhSachBaoCao()">🔄 Làm mới</button>
+        </div>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Mã</th>
+              <th>Tên File Báo Cáo</th>
+              <th>Thời gian</th>
+              <th style="text-align:right;">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="reportTableBody">
+            <tr>
+              <td colspan="4" style="text-align:center; padding:30px; color:var(--text-muted);">
+                Đang nạp danh sách báo cáo từ GitHub...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    // Theme setup
+    function toggleTheme() {
+      const cur = document.documentElement.getAttribute('data-theme') || 'light';
+      const target = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', target);
+      localStorage.setItem('ai_trading_theme', target);
+    }
+    (function() {
+      const saved = localStorage.getItem('ai_trading_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', saved);
+
+      // Điền ngày hôm qua
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      document.getElementById('inputDate').value = yesterday.toISOString().split('T')[0];
+    })();
+
+    // Tự động suy đoán repo nếu host trên username.github.io/repo/
+    function autoDetectRepo() {
+      const host = window.location.hostname;
+      const path = window.location.pathname.split('/').filter(Boolean);
+      if (host.endsWith('.github.io') && path.length > 0) {
+        const owner = host.split('.')[0];
+        const repo = path[0];
+        return `${owner}/${repo}`;
+      }
+      return localStorage.getItem('gh_repo') || '';
+    }
+
+    function khoiTaoConfig() {
+      const savedRepo = autoDetectRepo();
+      const savedToken = localStorage.getItem('gh_token') || '';
+
+      if (savedRepo) document.getElementById('ghRepo').value = savedRepo;
+      if (savedToken) document.getElementById('ghToken').value = savedToken;
+
+      capNhatBadge();
+      taiDanhSachBaoCao();
+    }
+
+    function capNhatBadge() {
+      const token = document.getElementById('ghToken').value.trim();
+      const repo = document.getElementById('ghRepo').value.trim();
+      const badge = document.getElementById('ghStatusBadge');
+
+      if (token && repo) {
+        badge.innerHTML = '<span class="badge badge-buy">🟢 Đã kết nối GitHub</span>';
+      } else {
+        badge.innerHTML = '<span class="badge badge-hold">🟡 Cần nhập Token để kích hoạt Action</span>';
+      }
+    }
+
+    function luuCauHinhGitHub() {
+      const repo = document.getElementById('ghRepo').value.trim();
+      const token = document.getElementById('ghToken').value.trim();
+      if (!repo) { alert('Vui lòng nhập repo dạng owner/repo'); return; }
+
+      localStorage.setItem('gh_repo', repo);
+      if (token) localStorage.setItem('gh_token', token);
+
+      capNhatBadge();
+      hienToast('✅ Đã lưu cấu hình GitHub');
+      taiDanhSachBaoCao();
+    }
+
+    function chonMa(ma) {
+      document.getElementById('inputSymbol').value = ma;
+      document.querySelectorAll('.chip').forEach(c => {
+        if (c.textContent.startsWith(ma)) c.classList.add('active');
+        else c.classList.remove('active');
+      });
+    }
+
+    function hienToast(msg, bg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.background = bg || '#10b981';
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+
+    // Kích hoạt GitHub Action thông qua GitHub REST API
+    let pollInterval = null;
+
+    async function dispatchGitHubAction() {
+      const repo = document.getElementById('ghRepo').value.trim();
+      const token = document.getElementById('ghToken').value.trim();
+      const ma = document.getElementById('inputSymbol').value.trim().toUpperCase();
+      const ngay = document.getElementById('inputDate').value.trim();
+
+      if (!repo) {
+        alert('Vui lòng nhập tên GitHub Repo (owner/repo) ở thanh phía trên!');
+        return;
+      }
+      if (!token) {
+        alert('Vui lòng nhập GitHub Personal Access Token (PAT) để có quyền kích hoạt Action!');
+        return;
+      }
+      if (!ma) { alert('Vui lòng nhập mã tài sản!'); return; }
+
+      const btnRun = document.getElementById('btnRun');
+      btnRun.disabled = true;
+      btnRun.innerHTML = '⏳ Đang gửi lệnh lên GitHub...';
+
+      try {
+        const res = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/analyze.yml/dispatches`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            ref: 'main',
+            inputs: { ma, ngay }
+          })
+        });
+
+        if (res.status === 204 || res.status === 200) {
+          hienToast('🚀 Đã gửi lệnh kích hoạt GitHub Action thành công!');
+          theoDoiGitHubAction(repo, token);
+        } else {
+          const err = await res.json().catch(() => ({}));
+          alert('Lỗi từ GitHub: ' + (err.message || res.statusText));
+          btnRun.disabled = false;
+          btnRun.innerHTML = '⚡ Kích Hoạt GitHub Action Phân Tích';
+        }
+      } catch (e) {
+        alert('Lỗi kết nối tới GitHub API: ' + e);
+        btnRun.disabled = false;
+        btnRun.innerHTML = '⚡ Kích Hoạt GitHub Action Phân Tích';
+      }
+    }
+
+    function theoDoiGitHubAction(repo, token) {
+      const box = document.getElementById('liveProgressBox');
+      const statusText = document.getElementById('actionStatusText');
+      const actionLink = document.getElementById('actionRunLink');
+      const btnRun = document.getElementById('btnRun');
+
+      box.style.display = 'block';
+      statusText.textContent = 'Đang chờ GitHub runner khởi động (queued)...';
+      actionLink.href = `https://github.com/${repo}/actions`;
+
+      if (pollInterval) clearInterval(pollInterval);
+
+      pollInterval = setInterval(async () => {
+        try {
+          const res = await fetch(`https://api.github.com/repos/${repo}/actions/runs?workflow_id=analyze.yml&per_page=1`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/vnd.github.v3+json'
+            }
+          });
+          const data = await res.json();
+          const run = data.workflow_runs && data.workflow_runs[0];
+
+          if (run) {
+            actionLink.href = run.html_url;
+            if (run.status === 'queued') {
+              statusText.textContent = '⏳ Đang chờ máy chủ GitHub nhận lệnh (queued)...';
+            } else if (run.status === 'in_progress') {
+              statusText.textContent = '🚀 Máy chủ GitHub đang phân tích đa tác tử... (in_progress)';
+            } else if (run.status === 'completed') {
+              clearInterval(pollInterval);
+              btnRun.disabled = false;
+              btnRun.innerHTML = '⚡ Kích Hoạt GitHub Action Phân Tích';
+
+              if (run.conclusion === 'success') {
+                statusText.innerHTML = '🎉 <b style="color:#059669;">Hoàn thành xuất sắc! Báo cáo mới đã được push.</b>';
+                hienToast('🎉 Báo cáo mới đã hoàn thành trên GitHub!', '#10b981');
+                taiDanhSachBaoCao();
+              } else {
+                statusText.innerHTML = `<span style="color:#dc2626;">❌ Workflow kết thúc với trạng thái: ${run.conclusion}</span>`;
+              }
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }, 5000);
+    }
+
+    // Tải danh sách báo cáo từ GitHub Contents API
+    async function taiDanhSachBaoCao() {
+      const repo = document.getElementById('ghRepo').value.trim() || autoDetectRepo();
+      const token = document.getElementById('ghToken').value.trim();
+      const tbody = document.getElementById('reportTableBody');
+
+      if (!repo) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--text-muted);">Vui lòng nhập tên GitHub Repo để nạp danh sách báo cáo.</td></tr>';
+        return;
+      }
+
+      const headers = { 'Accept': 'application/vnd.github.v3+json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      try {
+        // Quét thư mục Kết quả
+        const res = await fetch(`https://api.github.com/repos/${repo}/contents/Kết quả`, { headers });
+        if (res.status === 404) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--text-muted);">Chưa có thư mục "Kết quả" trên repo này. Hãy chạy phân tích đầu tiên!</td></tr>';
+          return;
+        }
+
+        const items = await res.json();
+        let reports = [];
+
+        // Duyệt qua các folder mã tài sản (BTC-USD, GC_F...)
+        for (const item of items) {
+          if (item.type === 'dir') {
+            const subRes = await fetch(item.url, { headers });
+            const subItems = await subRes.json();
+            for (const f of subItems) {
+              if (f.name.endsWith('.html') && !f.name.includes('Tiến độ')) {
+                reports.push({
+                  ma: item.name,
+                  ten: f.name,
+                  path: f.path,
+                  html_url: f.html_url,
+                  // Link xem trực tiếp trên GitHub Pages
+                  view_url: `./${encodeURIComponent(f.path)}`,
+                  sha: f.sha
+                });
+              }
+            }
+          }
+        }
+
+        if (reports.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--text-muted);">Chưa có file báo cáo HTML nào trong thư mục Kết quả.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = reports.map((r, idx) => `
+          <tr id="row-${idx}" class="report-row" data-ma="${r.ma.toUpperCase()}" data-ten="${r.ten.toLowerCase()}">
+            <td><span class="ticker-pill">${r.ma}</span></td>
+            <td><b>${r.ten}</b></td>
+            <td style="color:var(--text-muted); font-size:13px;">Trên GitHub Cloud</td>
+            <td style="text-align:right; white-space:nowrap;">
+              <a href="${r.view_url}" target="_blank" class="btn btn-primary btn-sm">Mở Báo Cáo ↗</a>
+              <button class="btn btn-danger btn-sm" style="margin-left:5px;" onclick="xoaBaoCaoGitHub('${r.path}', '${r.sha}', 'row-${idx}')">🗑️ Xoá</button>
+            </td>
+          </tr>
+        `).join('');
+
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--text-muted);">Không thể tải danh sách báo cáo: ${e.message}</td></tr>`;
+      }
+    }
+
+    async function xoaBaoCaoGitHub(path, sha, rowId) {
+      const repo = document.getElementById('ghRepo').value.trim();
+      const token = document.getElementById('ghToken').value.trim();
+
+      if (!token) {
+        alert('Cần có GitHub Token để thực hiện thao tác xoá trên repo!');
+        return;
+      }
+      if (!confirm(`Bạn có chắc muốn xoá file này trên GitHub?\n"${path}"`)) return;
+
+      try {
+        const res = await fetch(`https://api.github.com/repos/${repo}/contents/${encodeURI(path)}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: `chore: Xoá báo cáo ${path} qua Web SPA`,
+            sha: sha
+          })
+        });
+
+        if (res.status === 200) {
+          const row = document.getElementById(rowId);
+          if (row) row.remove();
+          hienToast('🗑️ Đã xoá file trên GitHub thành công!');
+        } else {
+          const err = await res.json().catch(() => ({}));
+          alert('Lỗi xoá file: ' + (err.message || res.statusText));
+        }
+      } catch (e) {
+        alert('Lỗi kết nối: ' + e);
+      }
+    }
+
+    function filterReports() {
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+      document.querySelectorAll('.report-row').forEach(r => {
+        const ma = r.getAttribute('data-ma').toLowerCase();
+        const ten = r.getAttribute('data-ten').toLowerCase();
+        r.style.display = (ma.includes(q) || ten.includes(q)) ? '' : 'none';
+      });
+    }
+
+    // Khởi chạy khi load trang
+    window.addEventListener('DOMContentLoaded', khoiTaoConfig);
+  </script>
+</body>
+</html>

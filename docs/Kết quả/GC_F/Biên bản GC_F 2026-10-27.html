@@ -1,0 +1,1209 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Báo cáo Phân tích GC=F (2026-10-27) · AI Trading</title>
+  <style>
+:root {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-hover: #f1f5f9;
+  --border-color: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --accent-gold: #d97706;
+  --accent-blue: #0284c7;
+  --accent-green: #059669;
+  --accent-red: #dc2626;
+  --accent-purple: #9333ea;
+  --code-bg: #f8fafc;
+  --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0b0e14;
+  --bg-secondary: #121722;
+  --bg-card: #182030;
+  --bg-hover: #222d42;
+  --border-color: #273349;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b9bb4;
+  --text-muted: #5d6e87;
+  --accent-gold: #f59e0b;
+  --accent-blue: #38bdf8;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --accent-purple: #a855f7;
+  --code-bg: #0d1117;
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.65;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header & Top Bar */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+[data-theme="dark"] .topbar {
+  background: rgba(18, 23, 34, 0.92);
+  box-shadow: none;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-logo {
+  font-size: 22px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.brand-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  transition: all 0.15s ease;
+}
+.btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-blue);
+}
+.btn-primary {
+  background: #2563eb;
+  border-color: #1d4ed8;
+  color: #fff;
+  font-weight: 600;
+}
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+.btn-danger {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: #dc2626;
+  font-weight: 500;
+}
+.btn-danger:hover {
+  background: #dc2626;
+  border-color: #b91c1c;
+  color: #fff;
+}
+[data-theme="dark"] .btn-danger {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.badge-buy {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+.badge-sell {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+.badge-hold {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+.badge-info {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+[data-theme="dark"] .badge-buy {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+[data-theme="dark"] .badge-sell {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+[data-theme="dark"] .badge-hold {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+/* Layout */
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 32px 20px 80px 20px;
+}
+
+/* Hero Section */
+.hero-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 24px;
+  box-shadow: var(--card-shadow);
+}
+[data-theme="dark"] .hero-card {
+  background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+}
+
+.hero-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.hero-title-group h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.hero-subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-color);
+}
+.stat-box {
+  background: var(--bg-secondary);
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Table of Contents */
+.toc-bar {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+  white-space: nowrap;
+  box-shadow: var(--card-shadow);
+}
+.toc-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+.toc-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.toc-link:hover {
+  background: var(--bg-hover);
+  color: var(--accent-blue);
+}
+
+/* Article Body */
+.report-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 36px 40px;
+  box-shadow: var(--card-shadow);
+}
+@media (max-width: 768px) {
+  .report-content { padding: 20px; }
+}
+
+.report-content h1,
+.report-content h2,
+.report-content h3,
+.report-content h4 {
+  color: var(--text-primary);
+  margin-top: 36px;
+  margin-bottom: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.report-content h1 { font-size: 26px; border-bottom: 2px solid var(--border-color); padding-bottom: 12px; }
+.report-content h2 {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent-blue);
+  background: linear-gradient(90deg, rgba(2, 132, 199, 0.08) 0%, transparent 100%);
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border-radius: 0 8px 8px 0;
+}
+.report-content h3 { font-size: 17px; color: var(--accent-gold); }
+.report-content p { margin-bottom: 16px; }
+.report-content ul, .report-content ol {
+  margin-bottom: 18px;
+  padding-left: 24px;
+}
+.report-content li { margin-bottom: 6px; }
+.report-content strong { color: var(--text-primary); font-weight: 700; }
+
+.report-content hr {
+  border: 0;
+  height: 1px;
+  background: var(--border-color);
+  margin: 32px 0;
+}
+
+/* Tables */
+.report-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 14px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+.report-content th {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 2px solid var(--border-color);
+}
+.report-content td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+.report-content tr:nth-child(even) td {
+  background: rgba(0, 0, 0, 0.02);
+}
+[data-theme="dark"] .report-content tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.02);
+}
+.report-content tr:hover td {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* Code & Pre */
+.report-content code {
+  background: var(--code-bg);
+  color: #e11d48;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  border: 1px solid var(--border-color);
+}
+[data-theme="dark"] .report-content code {
+  color: #ff7b72;
+}
+
+.report-content pre {
+  background: var(--code-bg);
+  padding: 16px;
+  border-radius: 10px;
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  margin: 18px 0;
+}
+.report-content pre code {
+  background: transparent;
+  padding: 0;
+  border: none;
+  color: inherit;
+}
+
+/* Alert Callouts */
+.alert {
+  padding: 14px 18px;
+  border-radius: 10px;
+  margin: 20px 0;
+  border-left: 4px solid;
+  line-height: 1.6;
+}
+.alert p:last-child { margin-bottom: 0; }
+.alert-note {
+  background: #eff6ff;
+  border-color: var(--accent-blue);
+  color: #1e40af;
+}
+[data-theme="dark"] .alert-note {
+  background: rgba(56, 189, 248, 0.1);
+  color: #bae6fd;
+}
+.alert-important {
+  background: #faf5ff;
+  border-color: var(--accent-purple);
+  color: #6b21a8;
+}
+[data-theme="dark"] .alert-important {
+  background: rgba(168, 85, 247, 0.12);
+  color: #e9d5ff;
+}
+.alert-warning {
+  background: #fffbeb;
+  border-color: var(--accent-gold);
+  color: #92400e;
+}
+[data-theme="dark"] .alert-warning {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fde68a;
+}
+.alert-caution {
+  background: #fef2f2;
+  border-color: var(--accent-red);
+  color: #991b1b;
+}
+[data-theme="dark"] .alert-caution {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Toast */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #10b981;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  display: none;
+  z-index: 1000;
+}
+
+@media print {
+  .topbar, .toc-bar, .top-actions, .footer, #toast { display: none !important; }
+  body { background: #fff !important; color: #000 !important; }
+  .report-content, .hero-card { border: none !important; box-shadow: none !important; padding: 0 !important; }
+}
+</style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="topbar">
+    <div class="brand-section">
+      <a href="/" class="brand-logo" style="text-decoration:none;">⚡ AI TRADING</a>
+      <div class="brand-meta">
+        <span class="badge badge-info">⚪ - Thời gian chạy: 6.3 phút</span>
+        <span class="badge badge-info">📅 2026-10-27</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a href="/" class="btn" title="Về trang tổng hợp">🏠 Danh sách</a>
+      <button class="btn" onclick="copyReportLink()" title="Sao chép link mở trên trình duyệt">📋 Sao chép link</button>
+      <button class="btn btn-primary" onclick="window.print()" title="In ra giấy hoặc lưu thành PDF">🖨️ Xuất PDF</button>
+      <button class="btn" onclick="toggleTheme()" title="Đổi giao diện Sáng / Tối">🌓 Giao diện</button>
+      <button class="btn btn-danger" onclick="xoaBaoCaoHienTai()" title="Xoá vĩnh viễn báo cáo này">🗑️ Xoá</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Hero Summary Card -->
+    <div class="hero-card">
+      <div class="hero-header">
+        <div class="hero-title-group">
+          <h1>Báo Cáo Phân Tích: GC=F</h1>
+          <div class="hero-subtitle">
+            Hệ sinh thái Đa Tác tử (Multi-Agent System) · Thẩm định tự động & Toàn diện
+          </div>
+        </div>
+        <div>
+          <span class="badge badge-info" style="font-size:14px; padding: 6px 14px;">⚪ - Thời gian chạy: 6.3 phút</span>
+        </div>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-box">
+          <div class="stat-label">Mã tài sản</div>
+          <div class="stat-value">GC=F</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Ngày phân tích</div>
+          <div class="stat-value">2026-10-27</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Bộ não AI</div>
+          <div class="stat-value" style="font-size:14px; word-break:break-all;">gemini-3.8-flash-high</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Thời gian phân tích</div>
+          <div class="stat-value">6.3 phút</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table of Contents -->
+    
+        <div class="toc-bar">
+          <span class="toc-title">Điều hướng:</span>
+          <a class="toc-link" href="#muc_1">🏆 1. PHÁN QUYẾT CUỐI CÙNG CỦA GIÁM ĐỐC QUỸ</a><a class="toc-link" href="#muc_2">📊 2. BÁO CÁO PHÒNG KỸ THUẬT (MARKET TECHNICIAN)</a><a class="toc-link" href="#muc_3">📰 3. BÁO CÁO PHÒNG TIN TỨC &amp; TÂM LÝ (SENTIMENT &amp; NEWS)</a><a class="toc-link" href="#muc_4">⚔️ 5. TRANH BIỆN PHE MUA VS PHE BÁN (BULL VS BEAR DEBATE)</a><a class="toc-link" href="#muc_5">HIỆP 1: CẤU TRÚC GIÁ &amp; CHIẾN TUYẾN 4,000 USD</a><a class="toc-link" href="#muc_6">HIỆP 2: CÁC CHỈ BÁO KỸ THUẬT &amp; ĐỘNG LƯỢNG</a><a class="toc-link" href="#muc_7">HIỆP 3: TÂM LÝ ĐÁM ĐÔNG &amp; TRẬN CHIẾN THANH KHOẢN</a><a class="toc-link" href="#muc_8">🛡️ 6. HỘI ĐỒNG QUẢN LÝ RỦI RO (RISK COMMITTEE)</a><a class="toc-link" href="#muc_9">1. PHÂN TÍCH VÀ ĐỀ XUẤT CỦA CÁC CHUYÊN VIÊN RỦI RO</a><a class="toc-link" href="#muc_10">2. BẢNG TỔNG HỢP SO SÁNH PHƯƠNG ÁN RỦI RO</a><a class="toc-link" href="#muc_11">3. PHÁN QUYẾT CUỐI CÙNG CỦA HỘI ĐỒNG (CRO CONSENSUS)</a>
+        </div>
+        
+
+    <!-- Main Content -->
+    <article class="report-content">
+      <h1>BIÊN BẢN PHÂN TÍCH ĐA TÁC TỬ: GC=F</h1>
+<ul>
+<li><strong>Ngày phân tích:</strong> 2026-10-27</li>
+<li><strong>Bộ não AI:</strong> <code>gemini-3.8-flash-high</code> (Antigravity Native Session - Không tốn API key)</li>
+<li><strong>Xếp hạng khuyến nghị:</strong> ****</li>
+<li><strong>Thời gian chạy:</strong> 6.3 phút</li>
+</ul>
+<div class="alert alert-important">Biên bản do hệ sinh thái Antigravity Multi-Agent tổng hợp dựa trên dữ liệu giá thực tế từ Yahoo Finance. Báo cáo chỉ nhằm mục đích nghiên cứu học tập, **KHÔNG PHẢI LỜI KHUYÊN ĐẦU TƯ TÀI CHÍNH**.</div>
+<hr />
+<h2 id="muc_1">🏆 1. PHÁN QUYẾT CUỐI CÙNG CỦA GIÁM ĐỐC QUỸ</h2>
+<p>Trên cương vị <strong>Giám đốc Quỹ Đầu tư (CIO / Portfolio Manager)</strong>, sau khi thẩm định toàn diện báo cáo kỹ thuật và cân nhắc các quan điểm tranh biện từ Hội đồng Quản trị Rủi ro, tôi đưa ra <strong>PHÁN QUYẾT CUỐI CÙNG</strong> đối với hợp đồng Vàng tương lai (<code>GC=F</code>) cho ngày giao dịch 2026-10-27 như sau:</p>
+<hr />
+<h3>1. QUYẾT ĐỊNH HÀNH ĐỘNG:</h3>
+<p><strong>MUA (BUY)</strong> <em>(Vị thế lướt sóng hồi phục kỹ thuật / Tactical Mean-Reversion Long)</em></p>
+<hr />
+<h3>2. XẾP HẠNG KHUYẾN NGHỊ:</h3>
+<p><strong>TÍCH CỰC (4/5 sao)</strong></p>
+<hr />
+<h3>3. KẾ HOẠCH GIAO DỊCH CỤ THỂ:</h3>
+<ul>
+<li><strong>Vùng giá mua khuyến nghị (Entry Zone):</strong> <strong>4,050.00 – 4,075.00 USD</strong><br />
+<em>(Ưu tiên khớp quanh thị giá hiện tại 4,074 USD hoặc chờ nhịp rung lắc kỹ thuật đầu phiên về nửa trên thân nến Pin Bar, tuyệt đối không mua đuổi nếu giá vượt qua 4,085 USD).</em></li>
+<li><strong>Mức cắt lỗ tuyệt đối (Stop Loss):</strong> <strong>3,994.00 USD</strong><br />
+<em>(Thấp hơn mức thấp nhất phiên 4,001.60 USD và mốc tâm lý tròn 4,000 USD; nếu thủng mốc này thì toàn bộ cấu trúc đảo chiều xem như thất bại).</em></li>
+<li><strong>Mục tiêu giá (Take Profit):</strong>
+<ul>
+<li><strong>TP1:</strong> <strong>4,110.00 USD</strong> <em>(Kháng cự động đường SMA 10 tại 4,109.31 USD – chốt lời 50% vị thế).</em></li>
+<li><strong>TP2:</strong> <strong>4,143.00 USD</strong> <em>(Đường trung trục SMA 20 / Middle Bollinger Band tại 4,143.51 USD – hiện thực hóa toàn bộ lợi nhuận còn lại).</em></li>
+</ul>
+</li>
+<li><strong>Tỷ lệ phân bổ vốn khuyến nghị:</strong> <strong>5% – 7% NAV danh mục</strong><br />
+<em>(Kiểm soát rủi ro chặt chẽ vì đây là lệnh giao dịch ngược xu hướng giảm trung hạn của đường SMA 50).</em></li>
+</ul>
+<hr />
+<h3>4. 3 LÝ DO CỐT LÕI CỦA PHÁN QUYẾT:</h3>
+<ol>
+<li>
+<p><strong>Hiệu ứng bẫy thanh khoản (Bear Trap) và bảo vệ mốc tâm lý 4,000 USD vững chắc:</strong><br />
+Pha rút chân hơn 72 USD từ đáy <code>4,001.60 USD</code> lên đóng cửa sát đỉnh cao nhất phiên tại <code>4,074.60 USD</code> tạo thành một nến Pin Bar kinh điển. Điều này xác nhận lực gom hàng chủ động (Absorption) rất lớn từ dòng tiền tổ chức (Smart Money) ngay khi phe Bán cố gắng đánh thủng cứ điểm 4,000 USD.</p>
+</li>
+<li>
+<p><strong>Thiết lập hồi phục trung bình (Mean Reversion) từ biên dưới dải Bollinger:</strong><br />
+Giá đã kích hoạt phản ứng giật ngược mạnh mẽ sau khi đâm thủng dải dưới Bollinger Band (<code>4,029.82 USD</code>). Kết hợp với RSI(14) tiệm cận vùng quá bán (39.22) đang dốc lên, xác suất cao giá sẽ có nhịp hồi kỹ thuật kéo về kiểm định lại SMA 10 (<code>4,109 USD</code>) và trục giữa dải BB (<code>4,143 USD</code>).</p>
+</li>
+<li>
+<p><strong>Tỷ lệ Lợi nhuận / Rủi ro (R:R) đạt chuẩn mực đầu tư:</strong><br />
+Mức dừng lỗ dưới 4,000 USD (~80 USD rủi ro từ điểm vào lệnh) mang lại điểm tựa cấu trúc rõ ràng. Đổi lại, biên độ hồi phục kỳ vọng đạt 4,110 – 4,143 USD mang lại tiềm năng sinh lời 70 – 110 USD/ounce, đảm bảo tỷ lệ R:R tối thiểu đạt ~1:1.4 đến 1:1.8 – hoàn toàn xứng đáng để quỹ giải ngân tỷ trọng vừa phải.</p>
+</li>
+</ol>
+<hr />
+<h2 id="muc_2">📊 2. BÁO CÁO PHÒNG KỸ THUẬT (MARKET TECHNICIAN)</h2>
+<h3>Dữ liệu thị trường &amp; Chỉ báo kỹ thuật (GC=F tại ngày 2026-10-27):</h3>
+<ul>
+<li><strong>Giá đóng cửa (Close):</strong> 4,074.60 USD (Biến động ngày: +0.90%)</li>
+<li><strong>Biên độ trong ngày:</strong> Thấp nhất = 4,001.60 USD | Cao nhất = 4,079.40 USD</li>
+<li><strong>Khối lượng giao dịch (Volume):</strong> 126,007</li>
+<li><strong>RSI (14 ngày):</strong> 39.22 (Trung tính)</li>
+<li><strong>MACD:</strong> -64.91 | <strong>Signal Line:</strong> -60.28 | <strong>Histogram:</strong> -4.64 (Cắt xuống (Bearish Cross))</li>
+<li><strong>Đường trung bình (SMA):</strong>
+<ul>
+<li>SMA 10 (Ngắn hạn): 4,109.31 USD (Dưới SMA 10)</li>
+<li>SMA 50 (Trung hạn): 4,325.91 USD (Dưới SMA 50)</li>
+<li>SMA 200 (Dài hạn): Chưa đủ 200 phiên</li>
+</ul>
+</li>
+<li><strong>Dải Bollinger Bands:</strong>
+<ul>
+<li>Dải trên (Upper Band): 4,257.20 USD</li>
+<li>Dải giữa (Middle Band): 4,143.51 USD</li>
+<li>Dải dưới (Lower Band): 4,029.82 USD</li>
+</ul>
+</li>
+<li><strong>Độ biến động ATR (14):</strong> 77.40 USD</li>
+</ul>
+<h1>BÁO CÁO PHÂN TÍCH KỸ THUẬT CHUYÊN SÂU: VÀNG TƯƠNG LAI (GC=F)</h1>
+<p><strong>Phòng Phân tích Kỹ thuật Thị trường Tài chính</strong><br />
+<strong>Thời điểm ghi nhận:</strong> Phiên đóng cửa ngày 27/10/2026<br />
+<strong>Thị giá hiện tại (Close):</strong> 4,074.60 USD (+0.90%)</p>
+<hr />
+<h3>TÓM TẮT THÔNG SỐ KỸ THUẬT CỐT LÕI</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Chỉ báo / Thông số</th>
+<th style="text-align:left">Giá trị</th>
+<th style="text-align:left">Trạng thái kỹ thuật</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Giá đóng cửa (Close)</strong></td>
+<td style="text-align:left"><strong>4,074.60 USD</strong></td>
+<td style="text-align:left">Nến rút chân mạnh sát đỉnh ngày (High: 4,079.40 USD)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Biên độ phiên (Range)</strong></td>
+<td style="text-align:left">4,001.60 – 4,079.40 USD</td>
+<td style="text-align:left">Đã kiểm định và phản ứng tích cực tại mốc số tròn 4,000 USD</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>SMA 10 (Ngắn hạn)</strong></td>
+<td style="text-align:left">4,109.31 USD</td>
+<td style="text-align:left">Nằm trên giá hiện tại (+34.71 USD) – Kháng cự động gần nhất</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>SMA 50 (Trung hạn)</strong></td>
+<td style="text-align:left">4,325.91 USD</td>
+<td style="text-align:left">Dốc xuống, nằm trên giá – Xu hướng trung hạn duy trì Giảm</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Bollinger Bands (20)</strong></td>
+<td style="text-align:left">4,029.82 / 4,143.51 / 4,257.20</td>
+<td style="text-align:left">Rút chân từ ngoài dải dưới vào trong dải (<em>Mean Reversion setup</em>)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>RSI (14)</strong></td>
+<td style="text-align:left">39.22</td>
+<td style="text-align:left">Vùng suy yếu tiệm cận quá bán, dấu hiệu chững lại đà rơi</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>MACD (12, 26, 9)</strong></td>
+<td style="text-align:left">MACD: -64.91 | Signal: -60.28 | Hist: -4.64</td>
+<td style="text-align:left">Âm sâu, Bearish Cross; chưa xác nhận điểm giao cắt đảo chiều</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>ATR (14)</strong></td>
+<td style="text-align:left">77.40 USD</td>
+<td style="text-align:left">Biên độ ngày (77.80 USD) khớp chuẩn với độ biến động trung bình</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>1. Đánh giá Xu hướng (Trend Analysis)</h3>
+<ul>
+<li><strong>Cấu trúc Nến (Price Action):</strong>
+<ul>
+<li>Phiên giao dịch ngày 27/10/2026 thể hiện một <strong>nến đảo chiều rút chân kinh điển (Bullish Rejection / Pin Bar)</strong>.</li>
+<li>Phe gấu (Bears) đã cố gắng đẩy giá thủng mốc hỗ trợ tâm lý 4,000 USD (Low đạt 4,001.60 USD), nhưng lực cầu bắt đáy hấp thụ toàn bộ áp lực bán, đẩy giá đóng cửa ở mức 4,074.60 USD — sát mức cao nhất ngày (High 4,079.40 USD). Điều này phản ánh sự từ chối giảm giá dứt khoát tại vùng số tròn 4,000 USD.</li>
+</ul>
+</li>
+<li><strong>Ngắn hạn (Dưới SMA 10: 4,109.31 USD):</strong>
+<ul>
+<li>Xu hướng ngắn hạn vẫn ở trạng thái <strong>Hiệu chỉnh giảm (Correction)</strong> do giá vẫn đóng cửa dưới SMA 10. Tuy nhiên, phiên phục hồi này kích hoạt một nhịp nảy kỹ thuật (<em>technical bounce</em>). Để phá vỡ áp lực giảm ngắn hạn, giá cần đóng cửa dứt khoát trên <strong>4,110 USD</strong>.</li>
+</ul>
+</li>
+<li><strong>Trung hạn (Dưới SMA 50: 4,325.91 USD):</strong>
+<ul>
+<li>Xu hướng trung hạn mang <strong>thiên hướng Giảm (Bearish Trend)</strong>. Khoảng cách giữa giá hiện tại và SMA 50 lên tới hơn 250 USD, cho thấy xu hướng phân phối trước đó diễn ra rất mạnh mẽ.</li>
+</ul>
+</li>
+<li><strong>Dài hạn (SMA 200):</strong>
+<ul>
+<li>Dữ liệu chưa đủ 200 phiên; tuy nhiên, theo cấu trúc sóng rộng hơn, thị trường đang trong pha tái tích lũy sau một chu kỳ tăng lớn trước đó.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>2. Đọc vị Xung lượng &amp; Động lượng (Momentum &amp; Volume)</h3>
+<ul>
+<li><strong>RSI (14) tại 39.22:</strong>
+<ul>
+<li>Chỉ báo nằm ở ngưỡng ranh giới giữa trung tính yếu và vùng quá bán (Oversold &lt; 30). Việc RSI hồi phục từ ngưỡng dưới 35 cho thấy áp lực bán hoảng loạn đã suy giảm đáng kể; dư địa cho một nhịp hồi phục ngắn hạn đang mở ra.</li>
+</ul>
+</li>
+<li><strong>MACD &amp; MACD Histogram:</strong>
+<ul>
+<li>Đường MACD (-64.91) vẫn nằm dưới đường Signal (-60.28) với Histogram âm (-4.64). Động lượng tổng thể của khung ngày vẫn thuộc về phe bán (Bearish momentum).</li>
+<li>Điểm cần quan sát: Mặc dù Histogram còn âm, nếu trong 1–2 phiên tới giá duy trì trên 4,070 USD, Histogram sẽ bắt đầu co ngắn lại (tạo đáy phân kỳ tiềm năng), báo hiệu áp lực giảm suy yếu dần.</li>
+</ul>
+</li>
+<li><strong>Khối lượng giao dịch (Volume = 126,007):</strong>
+<ul>
+<li>Khối lượng khớp lệnh đi kèm với một nến rút chân tăng điểm (+0.90%) cho thấy sự hiện diện của <strong>dòng tiền bắt đáy chủ động (Accumulation/Buying absorption)</strong> quanh vùng 4,000 – 4,030 USD, không phải chỉ là hiện tượng cạn kiệt thanh khoản thụ động.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>3. Đánh giá Biến động &amp; Độ nén (Volatility Analysis)</h3>
+<ul>
+<li><strong>Dải Bollinger Bands:</strong>
+<ul>
+<li>Dải Bollinger đang mở rộng tương đối với biên độ ~227 USD (Upper 4,257.20 USD – Lower 4,029.82 USD).</li>
+<li><strong>Hành vi giá đặc thù:</strong> Trong phiên, giá đã nhúng thủng Dải dưới (Low 4,001.60 &lt; Lower Band 4,029.82), sau đó bật mạnh trở lại và đóng cửa hoàn toàn bên trong dải. Đây là tín hiệu điển hình của thiết lập <strong>Mean Reversion (Hồi quy về giá trị trung bình)</strong>. Mục tiêu kỹ thuật tự nhiên của nhịp hồi này sẽ hướng về <strong>Trục giữa Bollinger (SMA 20) tại 4,143.51 USD</strong>.</li>
+</ul>
+</li>
+<li><strong>Chỉ số ATR (14) = 77.40 USD:</strong>
+<ul>
+<li>Biên độ dao động thực tế của phiên là <strong>77.80 USD</strong> (4,079.40 – 4,001.60), trùng khớp gần như tuyệt đối với mức biến động trung bình 14 phiên (77.40 USD).</li>
+<li>Điều này xác nhận rằng biên độ quét đáy ngày 27/10 đã hoàn tất một &quot;hạn ngạch biến động&quot; tiêu chuẩn của phe bán, tạo cơ sở củng cố vùng đáy ngắn hạn tạm thời.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>4. Thiết lập Bản đồ Hỗ trợ &amp; Kháng cự</h3>
+<pre><code>                [R3] 4,325.90 USD  ─── SMA 50 (Kháng cự xu hướng trung hạn)
+                [R2] 4,143.50 USD  ─── Trục giữa Bollinger Bands (Mục tiêu Mean Reversion)
+                [R1] 4,109.30 USD  ─── Đường SMA 10 ngày (Cản ngắn hạn đầu tiên)
+-----------------------------------------------------------------------------------------
+&gt;&gt;&gt; GIÁ HIỆN TẠI: 4,074.60 USD &lt;&lt;&lt;
+-----------------------------------------------------------------------------------------
+                [S1] 4,029.80 USD  ─── Dải dưới Bollinger Band (Hỗ trợ động ngắn hạn)
+                [S2] 4,000 - 4,001.60 USD ── Đáy phiên 27/10 &amp; Ngưỡng tâm lý số tròn tối quan trọng
+                [S3] 3,925.00 USD  ─── Vùng hỗ trợ mở rộng (Tính theo 1 biên độ ATR dưới S2)
+</code></pre>
+<ul>
+<li><strong>Các mức Kháng cự (Resistance):</strong>
+<ul>
+<li><strong>R1 (4,109.30 USD):</strong> Đường SMA 10. Mốc cản đầu tiên kiểm định lực mua hồi phục.</li>
+<li><strong>R2 (4,143.50 USD):</strong> Trục giữa Bollinger Bands (SMA 20). Vùng chốt lời ngắn hạn then chốt của các vị thế lướt sóng bắt đáy.</li>
+<li><strong>R3 (4,257.20 – 4,325.90 USD):</strong> Dải trên Bollinger Band kết hợp đường SMA 50. Ngưỡng kháng cự cấu trúc lớn, chỉ bị đe dọa nếu có sự chuyển dịch dòng tiền vĩ mô mạnh mẽ.</li>
+</ul>
+</li>
+<li><strong>Các mức Hỗ trợ (Support):</strong>
+<ul>
+<li><strong>S1 (4,029.80 USD):</strong> Dải dưới Bollinger. Đóng vai trò vùng đệm nâng đỡ giá trong các nhịp điều chỉnh trong phiên (pullback).</li>
+<li><strong>S2 (4,000.00 – 4,001.60 USD):</strong> Ngưỡng hỗ trợ trọng yếu. Đây là ranh giới sống còn bảo vệ xu hướng; nếu nến ngày đóng cửa dưới 4,000 USD, phe gấu sẽ tái kích hoạt lệnh bán tháo kỹ thuật.</li>
+<li><strong>S3 (3,925.00 USD):</strong> Vùng hỗ trợ kỹ thuật mở rộng đo lường theo 1 biên độ ATR (4,001.60 - 77.40 USD).</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>5. Tổng kết Nhận định &amp; Khuyến nghị Chiến lược</h3>
+<ul>
+<li><strong>Kết luận Kỹ thuật:</strong>
+<ul>
+<li><strong>Trạng thái thị trường:</strong> <strong>Hồi phục kỹ thuật từ vùng hỗ trợ trọng yếu (Technical Counter-trend Rebound)</strong>.</li>
+<li>Cấu trúc trung hạn vẫn nằm trong kênh giảm (dưới SMA 50, MACD âm). Tuy nhiên, hành động giá &quot;rút chân mạnh mẽ&quot; từ ngoài Dải dưới Bollinger và giữ vững mốc 4,000 USD cho thấy nhịp giảm ngắn hạn đã tạm thời đạt trạng thái quá bán cục bộ.</li>
+</ul>
+</li>
+<li><strong>Kịch bản vận động ưu tiên:</strong>
+<ul>
+<li>Trong 1–3 phiên tới, giá có xu hướng kiểm định lại cản <strong>SMA 10 (4,109 USD)</strong>. Nếu vượt qua thành công, nhịp hồi phục sẽ mở rộng hướng tới vùng <strong>Trục giữa Bollinger (4,143 – 4,150 USD)</strong> trước khi đối mặt với áp lực chốt lời và kiểm định lại cung cầu.</li>
+</ul>
+</li>
+<li><strong>Định hướng giao dịch:</strong>
+<ul>
+<li><em>Vị thế Mua ngắn hạn (Counter-trend Long):</em> Tận dụng các nhịp rung lắc quanh 4,040 – 4,050 USD, kỳ vọng chốt lời tại 4,110 – 4,140 USD; cắt lỗ dứt khoát nếu thủng 3,995 USD (dưới mốc số tròn).</li>
+<li><em>Vị thế Bán theo xu hướng lớn (Trend-following Short):</em> Kiên nhẫn chờ đợi nhịp hồi phục kiểm định vùng kháng cự 4,140 – 4,160 USD; tìm kiếm tín hiệu suy kiệt động lượng (nến đảo chiều/RSI gãy) để kích hoạt lệnh bán thuận xu hướng với tỷ lệ R:R tối ưu.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="muc_3">📰 3. BÁO CÁO PHÒNG TIN TỨC &amp; TÂM LÝ (SENTIMENT &amp; NEWS)</h2>
+<h1>BÁO CÁO PHÂN TÍCH TIN TỨC &amp; TÂM LÝ THỊ TRƯỜNG: VÀNG TƯƠNG LAI (GC=F)</h1>
+<ul>
+<li><strong>Tài sản phân tích:</strong> Hợp đồng tương lai Vàng (Gold Futures - COMEX: <code>GC=F</code>)</li>
+<li><strong>Ngày phân tích:</strong> 27/10/2026</li>
+<li><strong>Vị trí chuyên môn:</strong> Chuyên viên Phân tích Tin tức và Tâm lý Thị trường (<em>Senior Sentiment &amp; News Analyst</em>)</li>
+<li><strong>Vùng giá tham chiếu:</strong> 4,074.60 USD <em>(Biên độ ngày: 4,001.60 – 4,079.40 USD | +0.90%)</em></li>
+</ul>
+<hr />
+<h3>1. Tâm lý chung của đám đông hiện tại: DO DỰ THIÊN VỀ THẬN TRỌNG (Cautious Hesitation)</h3>
+<ul>
+<li><strong>Chấm dứt hưng phấn, chuyển sang phòng thủ:</strong> Sau chu kỳ điều chỉnh từ vùng đỉnh trung hạn (~4,325 USD) về sát mốc số tròn tâm lý 4,000 USD, tâm lý FOMO và lòng tham (Greed) cực đoan của đám đông nhà đầu tư cá nhân đã bị dập tắt hoàn toàn.</li>
+<li><strong>Tâm lý giằng co tại ngưỡng hỗ trợ sống còn:</strong>
+<ul>
+<li>Cú rút chân mạnh mẽ trong phiên từ mức thấp nhất ngày <strong>4,001.60 USD</strong> lên <strong>4,074.60 USD (+0.90%)</strong> cho thấy tâm lý hoảng loạn bán tháo (<em>Panic Selling</em>) đã kịp thời được chặn đứng ngay tại &quot;chiến tuyến&quot; 4,000 USD.</li>
+<li>Đám đông hiện tại rơi vào trạng thái <strong>do dự cực độ</strong>: Phe nắm giữ không còn mặn mà bán tháo vì sợ &quot;bán đúng đáy&quot; khi giá phản ứng tốt tại hỗ trợ tròn, trong khi phe cầm tiền vẫn chưa dám mua đuổi mạnh vì e ngại xu hướng điều chỉnh ngắn hạn còn tiếp diễn (giá vẫn nằm dưới SMA 10 quanh 4,109 USD).</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>2. Các sự kiện vĩ mô và tin tức ngành tác động trực tiếp tới GC=F</h3>
+<ol>
+<li><strong>Lộ trình lãi suất của Fed và biến động Chỉ số USD (DXY):</strong>
+<ul>
+<li>Thị trường tài chính đang trong giai đoạn tái định giá kỳ vọng chính sách tiền tệ. Áp lực từ lợi suất trái phiếu chính phủ Mỹ (US10Y Yields) và đồng USD neo ở mức cao thời gian qua chính là nguyên nhân trực tiếp kìm hãm đà tăng phi mã của kim loại quý, tạo nên nhịp điều chỉnh kỹ thuật từ vùng 4,300 USD về 4,000 USD.</li>
+</ul>
+</li>
+<li><strong>Nhu cầu mua ròng chiến lược của các Ngân hàng Trung ương (Central Banks):</strong>
+<ul>
+<li>Xu hướng đa dạng hóa tài sản dự trữ ngoại hối và phi đô la hóa (De-dollarization) từ các NHTW khối BRICS và các nền kinh tế mới nổi tiếp tục là trụ cột nâng đỡ cấu trúc giá dài hạn. Dù dòng vốn đầu cơ phương Tây có dấu hiệu chững lại, lực cầu vật chất và lực mua bảo chứng từ khu vực công vẫn là tấm đệm hấp thụ cung cực kỳ vững chắc quanh mốc 4,000 USD.</li>
+</ul>
+</li>
+<li><strong>Căng thẳng địa chính trị duy trì &quot;Phí bảo hiểm rủi ro&quot; (Geopolitical Risk Premium):</strong>
+<ul>
+<li>Bất ổn địa chính trị kéo dài tại Trung Đông, Đông Âu cùng sự phân mảnh thương mại toàn cầu khiến nhu cầu sở hữu tài sản trú ẩn an toàn (<em>Safe-haven demand</em>) luôn thường trực, ngăn chặn kịch bản vàng giảm sâu không phanh.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h3>3. Động thái của Dòng tiền lớn (Whale / Smart Money): GOM HÀNG THĂM DÒ (Selective Accumulation)</h3>
+<ul>
+<li><strong>Dấu hiệu hấp thụ thanh khoản (Absorption on Dips):</strong>
+<ul>
+<li>Hành động giá quét sát mốc 4,001.60 USD rồi đóng nến hồi phục lên 4,074.60 USD với khối lượng giao dịch đạt trên <strong>126,000 hợp đồng</strong> phản ánh rõ nét dấu chân của các tổ chức tài chính lớn. Họ đã tận dụng lượng thanh khoản cắt lỗ (Stop-loss) của đám đông nhỏ lẻ tại vùng dưới dải Bollinger Band (4,030 USD) để khớp các lệnh mua giới hạn (<em>Buy Limit</em>).</li>
+</ul>
+</li>
+<li><strong>Động thái cơ cấu của các Quỹ ETF (GLD, IAU) và Báo cáo COT:</strong>
+<ul>
+<li>Dòng tiền tổ chức không xuất hiện tín hiệu phân phối tháo chạy trên diện rộng. Thay vào đó, Smart Money đang bước vào pha <strong>tái tích lũy (Re-accumulation) có kiểm soát</strong>. Họ chưa vội đẩy giá bùng nổ vượt kháng cự để tiếp tục gom thêm hàng ở vùng giá chiết khấu hấp dẫn (4,000 – 4,080 USD) nhằm rũ sạch các vị thế đòn bẩy yếu (<em>Weak Hands</em>).</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>4. Đánh giá rủi ro Thiên nga đen và Tin tức bất ngờ</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Kịch bản</th>
+<th style="text-align:left">Yếu tố kích hoạt tiềm ẩn</th>
+<th style="text-align:left">Tác động dự kiến lên GC=F</th>
+<th style="text-align:left">Xác suất</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Rủi ro Tiêu cực (Downside Risk)</strong></td>
+<td style="text-align:left"><strong>Đột phá hòa đàm địa chính trị &amp; USD tăng vọt:</strong> Xung đột hạ nhiệt bất ngờ làm bốc hơi phí bảo hiểm rủi ro; hoặc Fed phát đi tín hiệu siết chặt tiền tệ cực đoan khiến DXY bứt phá mạnh.</td>
+<td style="text-align:left">Kích hoạt làn sóng thanh lý vị thế Long đòn bẩy, giá có nguy cơ đánh mất ngưỡng hỗ trợ tâm lý 4,000 USD và rơi về vùng 3,920 – 3,950 USD.</td>
+<td style="text-align:left">Trung bình - Thấp (~25%)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Chất xúc tác Bùng nổ (Upside Catalyst)</strong></td>
+<td style="text-align:left"><strong>Cú sốc năng lượng / Đứt gãy tín dụng ngân hàng:</strong> Căng thẳng bùng phát vượt tầm kiểm soát hoặc khủng hoảng nợ công/ngân hàng tái bùng phát thúc đẩy dòng vốn tháo chạy khỏi fiat.</td>
+<td style="text-align:left">Dòng tiền trú ẩn ồ ạt quay lại, kích hoạt đợt <em>Short Squeeze</em> đưa giá vượt nhanh qua 4,150 USD và hướng lại đỉnh 4,300 USD.</td>
+<td style="text-align:left">Trung bình (~35%)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Kịch bản Cơ sở (Base Case)</strong></td>
+<td style="text-align:left">Dữ liệu kinh tế vĩ mô công bố sát kỳ vọng; thị trường tiếp tục giằng co tiêu hóa tin tức.</td>
+<td style="text-align:left">Tích lũy biên độ hẹp quanh trục 4,000 – 4,140 USD để xây nền giá mới.</td>
+<td style="text-align:left">Cao (~40%)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>💡 TỔNG KẾT GÓC NHÌN TÂM LÝ &amp; TIN TỨC:</h3>
+<p>Thị trường vàng đang trong <strong>giai đoạn thử lửa then chốt</strong>. Đám đông dù thận trọng nhưng áp lực bán tháo đã suy yếu rõ rệt. Dòng tiền thông minh đã bắt đầu ra tay bảo vệ mốc tâm lý <strong>4,000 USD</strong>.</p>
+<p><strong>Khuyến nghị góc nhìn:</strong> Ưu tiên chiến lược theo chân dòng tiền lớn — <strong>canh tích lũy thăm dò khi giá kiểm định lại vùng hỗ trợ 4,020 – 4,040 USD</strong>, tuyệt đối không fomo mua đuổi khi giá tiếp cận vùng kháng cự động ngắn hạn (SMA 10 tại 4,109 USD và dải giữa Bollinger Bands tại 4,143 USD).</p>
+<hr />
+<h2 id="muc_4">⚔️ 5. TRANH BIỆN PHE MUA VS PHE BÁN (BULL VS BEAR DEBATE)</h2>
+<h1>BIÊN BẢN TRANH BIỆN CHIẾN LƯỢC: HỢP ĐỒNG TƯƠNG LAI VÀNG (GC=F)</h1>
+<p><strong>Bối cảnh:</strong> Phòng họp chiến lược Quỹ đầu tư định lượng – Sáng ngày 28/10/2026<br />
+<strong>Thị giá tham chiếu:</strong> 4,074.60 USD | <strong>Biên độ phiên trước:</strong> 4,001.60 – 4,079.40 USD<br />
+<strong>Chủ tọa:</strong> Giám đốc Quản trị Rủi ro (Chief Risk Officer - CRO)</p>
+<hr />
+<h3>MỞ ĐẦU CUỘC ĐỐI ĐẦU</h3>
+<blockquote>
+<p><strong>CRO:</strong> <em>&quot;Thưa các cộng sự, giá vàng vừa đóng cửa phiên 27/10/2026 ở mức 4,074.60 USD sau khi quét sát mốc số tròn 4,000 USD. Bàn giao dịch đang chia rẽ sâu sắc: Một bên muốn dốc toàn lực 'bắt đáy' đón siêu sóng hồi phục; một bên yêu cầu lập tức Short đón đầu cú sập gãy cấu trúc. Tôi yêu cầu hai bên đưa ra <strong>3 luận điểm sắc bén nhất</strong> để bảo vệ luận điểm của mình.&quot;</em></p>
+</blockquote>
+<hr />
+<h2 id="muc_5">HIỆP 1: CẤU TRÚC GIÁ &amp; CHIẾN TUYẾN 4,000 USD</h2>
+<h3>🐂 Phe Mua (Bull Researcher): &quot;Bức tường thép 4,000 USD và Nến Pin Bar giải phóng lực cầu tổ chức&quot;</h3>
+<blockquote>
+<p><em>&quot;Các anh hãy nhìn vào biểu đồ giá phiên hôm qua! Phe Gấu đã dồn toàn bộ nguồn lực hòng đánh sập mốc tử huyệt tâm lý 4,000 USD, nhưng kết quả ra sao? Mức thấp nhất chỉ chạm <strong>4,001.60 USD</strong> trước khi một dòng tiền khổng lồ kích hoạt, đẩy giá bắn thẳng lên <strong>4,074.60 USD</strong>, đóng cửa sát đỉnh cao nhất ngày (4,079.40 USD).</em></p>
+<p><em>Đây là một cây nến <strong>Bullish Pin Bar / Hammer rút chân kinh điển</strong> với biên độ hồi phục gần 73 USD – tương đương trọn vẹn dải biến động chuẩn ATR (77.40 USD). Đây không phải là hành động của nhỏ lẻ, mà là vết chân của Smart Money đang bảo vệ phòng tuyến số tròn thế kỷ. Cú 'quét thanh khoản' (Liquidity Grab) thất bại của phe bán đã chính thức giăng ra một cái bẫy gấu (Bear Trap) khổng lồ!&quot;</em></p>
+</blockquote>
+<h3>🐻 Phe Bán (Bear Researcher): &quot;Đừng nhầm lẫn giữa một đợt 'Rút chân tạm thời' với sự Đảo chiều xu hướng&quot;</h3>
+<blockquote>
+<p>*&quot;Ảo tưởng nguy hiểm! Các anh đang bám vào một cây nến đơn lẻ để chống lại cả một cấu trúc xu hướng đang sụp đổ. Hãy nhìn bức tranh lớn hơn: Giá vàng đã trượt dốc không phanh từ đỉnh trung hạn <strong>4,325.91 USD (SMA 50)</strong> về tới đây.</p>
+<p>Mốc 4,000 USD chưa bao giờ là 'bức tường thép', mà thực chất là một <strong>vùng đệm thanh khoản đang bị bào mòn</strong>. Cú rút chân hôm qua bản chất chỉ là động thái đóng bớt vị thế chốt lời ngắn hạn (Short Covering) của các quỹ đầu cơ lớn trước một mốc tâm lý quá rõ ràng, chứ hoàn toàn thiếu vắng lực mua gom chủ động (Aggressive Buying). Khi phe Gấu tái nạp đạn và lượng cầu bắt đáy nghiệp dư cạn kiệt, cú kiểm định lần thứ hai vào mốc 4,000 USD chắc chắn sẽ đục thủng ngưỡng này, kích hoạt làn sóng 'Margin Call' và 'Stop-loss Cascades' kéo giá rơi tự do về 3,850 USD!&quot;*</p>
+</blockquote>
+<hr />
+<h2 id="muc_6">HIỆP 2: CÁC CHỈ BÁO KỸ THUẬT &amp; ĐỘNG LƯỢNG</h2>
+<h3>🐂 Phe Mua: &quot;Thiết lập Mean Reversion chuẩn sách giáo khoa &amp; RSI quá bán giải tỏa áp lực&quot;</h3>
+<blockquote>
+<p>*&quot;Kỹ thuật không bao giờ nói dối nếu anh biết đọc đúng bối cảnh! Hãy xem dải Bollinger Bands (20): Giá đã chọc thủng ra ngoài dải dưới (<strong>4,029.82 USD</strong>) rồi bật ngược đóng nến ngoạn mục vào lại bên trong dải. Đây là tín hiệu kích hoạt chiến lược <strong>Mean Reversion (Hồi quy về giá trị trung bình)</strong> với xác suất thắng cực cao trong phân tích định lượng. Đích đến tự nhiên của nhịp bật này tối thiểu phải là đường trục giữa (SMA 20 tại <strong>4,143.51 USD</strong>), mang lại tỷ lệ R:R (Risk/Reward) vượt trội.</p>
+<p>Thêm vào đó, RSI (14) chạm sát ngưỡng 30 (chạm đáy cục bộ tại <strong>39.22</strong>) và đang dốc ngược lên. Lực bán đã kiệt quệ sau chuỗi ngày giảm liên tục. Dư địa giảm đã hết, cửa tăng phục hồi chữ V đang rộng mở!&quot;*</p>
+</blockquote>
+<h3>🐻 Phe Bán: &quot;Gãy cấu trúc trung hạn &amp; Động lượng MACD Bearish âm sâu báo hiệu 'Cú nảy của mèo chết'&quot;</h3>
+<blockquote>
+<p>*&quot;Đem Mean Reversion ra để biện hộ trong một xu hướng giảm dốc đứng là tự sát! Các anh cố tình lờ đi hệ thống đường xu hướng cốt lõi:</p>
+<ol>
+<li>Ngay trên đầu giá là kháng cự động <strong>SMA 10 tại 4,109.31 USD</strong>, dốc xuống như lưỡi dao chém ngang.</li>
+<li>Nghiêm trọng hơn, <strong>SMA 50 ngày tại 4,325.91 USD</strong> đang cắm thẳng xuống. Xu hướng trung hạn đã chính thức bước vào chu kỳ GIẢM (Bear Market Phase).</li>
+<li>Hãy nhìn vào chỉ báo xung lượng: <strong>MACD (-64.91)</strong> đang chìm sâu dưới đường Signal (-60.28), Histogram vẫn đang âm (-4.64). Không hề có bất kỳ dấu hiệu phân kỳ dương hay điểm cắt đảo chiều nào!</li>
+</ol>
+<p>Việc giá giật lại từ biên dưới Bollinger chỉ đơn thuần là hiện tượng quá bán kỹ thuật – một <strong>'Dead Cat Bounce' (Cú nảy của mèo chết)</strong> kinh điển nhằm lùa những tay mơ lao vào bắt đáy sớm trước khi bước vào đợt sóng giảm số 3 tàn khốc!&quot;*</p>
+</blockquote>
+<hr />
+<h2 id="muc_7">HIỆP 3: TÂM LÝ ĐÁM ĐÔNG &amp; TRẬN CHIẾN THANH KHOẢN</h2>
+<h3>🐂 Phe Mua: &quot;Thanh lọc Fomo cực đoan – Vùng gom hàng yên ắng chuẩn bị cho Short Squeeze&quot;</h3>
+<blockquote>
+<p>*&quot;Báo cáo tâm lý đã chỉ rõ: Tâm lý hưng phấn, lòng tham mù quáng (Greed) từ vùng đỉnh 4,325 USD đã bị quét sạch hoàn toàn. Thị trường hiện đang bao trùm bởi tâm lý <strong>'Do dự thiên về thận trọng'</strong>.</p>
+<p>Trong cấu trúc chu kỳ tâm lý của Wyckoff, sự 'thận trọng và nghi ngờ' ở đáy của một nhịp điều chỉnh chính là mảnh đất màu mỡ nhất để hình thành chân sóng mới! Toàn bộ lượng đòn bẩy yếu ớt đã bị rũ bỏ (Washout) tại mốc 4,001.60 USD. Khi tin tức xấu nhất đã phản ánh vào giá mà giá vẫn không thể thủng 4,000 USD, phe Gấu đang ở thế chân tường. Chỉ cần giá vượt nhẹ qua ngưỡng cản tâm lý <strong>4,100 USD</strong>, một phản ứng dây chuyền <strong>Short Squeeze</strong> sẽ kích nổ, buộc hàng nghìn hợp đồng bán khống phải tranh nhau mua lại giá cao, đẩy GC=F bùng nổ lên thẳng 4,200 USD!&quot;*</p>
+</blockquote>
+<h3>🐻 Phe Bán: &quot;Tâm lý thận trọng nghĩa là Lực Cầu kiệt quệ – Cái bẫy thanh khoản hoàn hảo&quot;</h3>
+<blockquote>
+<p>*&quot;Các anh đang đổi trắng thay đen! 'Tâm lý thận trọng' không phải là tích lũy, mà là minh chứng cho thấy <strong>dòng tiền lớn bên phe Mua hoàn toàn thờ ơ</strong>! Không một nhà đầu tư tổ chức nào dại dột đem tiền lớn giải ngân vào một tài sản đang nằm dưới toàn bộ các đường MA ngắn và trung hạn.</p>
+<p>Đám đông đang sợ hãi, thanh khoản mua đuổi lên cao hoàn toàn không có. Phe Gấu chúng tôi không hề bị 'chân tường' – chúng tôi chỉ đang nhử cho phe Mua đẩy giá lên vùng kháng cự <strong>4,109 – 4,143 USD</strong> (vùng hội tụ giữa SMA 10 và trục giữa Bollinger). Đó là lúc nguồn cung tiềm tàng từ những người kẹp hàng ở vùng 4,200 – 4,300 USD ùa ra cắt lỗ hòa vốn, cộng hưởng cùng lực Short đè xuống của các thuật toán giao dịch theo xu hướng (Trend-following CTA). Một chiếc bẫy tăng giá (Bull Trap) hoàn hảo đang được giăng sẵn!&quot;*</p>
+</blockquote>
+<hr />
+<h3>TỔNG KẾT TRANH LUẬN &amp; ĐIỂM NÚT QUYẾT ĐỊNH (CRO ĐÚC KẾT)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Tiêu chí so sánh</th>
+<th style="text-align:left">🐂 Phe Mua (Bullish Case)</th>
+<th style="text-align:left">🐻 Phe Bán (Bearish Case)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Trọng tâm Price Action</strong></td>
+<td style="text-align:left">Pin Bar rút chân 73 USD, tạo bẫy Bear Trap tại 4,000 USD</td>
+<td style="text-align:left">Xu hướng giảm chi phối; đáy/đỉnh sau thấp hơn; mốc 4,000 USD bị tổn thương</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Trọng tâm Kỹ thuật</strong></td>
+<td style="text-align:left">Kích hoạt Mean Reversion từ Bollinger dưới; RSI thoát quá bán</td>
+<td style="text-align:left">Dưới SMA 10 &amp; SMA 50; MACD Bearish âm sâu; chỉ là &quot;Dead Cat Bounce&quot;</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Kịch bản Vận động</strong></td>
+<td style="text-align:left"><strong>Short Squeeze</strong> bứt phá qua 4,110 USD nhắm thẳng về 4,143 – 4,200 USD</td>
+<td style="text-align:left"><strong>Bull Trap</strong> tại 4,109 – 4,143 USD, quay đầu đục thủng 4,000 USD rơi về 3,850 USD</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Phán quyết của CRO:</strong><br />
+<em>&quot;Cả hai bên đều đã đưa ra những cơ sở không thể phủ nhận. Chiến trường lúc này được thu hẹp về một điểm thử lửa duy nhất:</em></p>
+<ul>
+<li><strong>Ngưỡng kháng cự then chốt:</strong> <strong>4,109.31 – 4,143.51 USD</strong> (Hội tụ SMA 10 &amp; Trục giữa Bollinger Bands).
+<ul>
+<li><em>Nếu Phe Mua đóng nến dứt khoát trên 4,145 USD: Kịch bản Đảo chiều &amp; Short Squeeze được xác nhận.</em></li>
+<li><em>Nếu giá chạm vùng này rồi xuất hiện nến đảo chiều từ chối giá (Rejection): Phe Bán sẽ kích hoạt lệnh Short tổng lực với mục tiêu nghiền nát mốc 4,000 USD.&quot;</em></li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<hr />
+<h2 id="muc_8">🛡️ 6. HỘI ĐỒNG QUẢN LÝ RỦI RO (RISK COMMITTEE)</h2>
+<h1>BIÊN BẢN HỘI ĐỒNG QUẢN TRỊ RỦI RO (RISK COMMITTEE MEMORANDUM)</h1>
+<ul>
+<li><strong>Tài sản tham chiếu:</strong> Hợp đồng Tương lai Vàng (Gold Futures - <code>GC=F</code>)</li>
+<li><strong>Thị giá hiện tại:</strong> <code>4,074.60 USD</code></li>
+<li><strong>Biên độ phiên trước:</strong> <code>4,001.60 – 4,079.40 USD</code> (Biên độ hồi phục: ~72.8 USD | ATR chuẩn: 77.40 USD)</li>
+<li><strong>Chủ đề xem xét:</strong> Đánh giá rủi ro cấu trúc nến Pin Bar bảo vệ mốc 4,000 USD và phân bổ vị thế giao dịch.</li>
+</ul>
+<hr />
+<h2 id="muc_9">1. PHÂN TÍCH VÀ ĐỀ XUẤT CỦA CÁC CHUYÊN VIÊN RỦI RO</h2>
+<h3>1. Chuyên viên Liều (Aggressive Risk Officer - ARO)</h3>
+<blockquote>
+<p><em>&quot;Thị trường không chờ đợi người do dự khi dòng tiền tổ chức (Smart Money) đã ra mặt.&quot;</em></p>
+</blockquote>
+<ul>
+<li><strong>Đánh giá rủi ro:</strong>
+<ul>
+<li>Cú rút chân gần 73 USD từ <code>4,001.60 USD</code> lên <code>4,074.60 USD</code> là hành vi bẫy thanh khoản kinh điển (<strong>Bear Trap / Liquidity Grab</strong>). Phe Gấu đã cạn kiệt hỏa lực sau khi thất bại trong việc xuyên thủng mốc tròn lịch sử 4,000 USD.</li>
+<li>Việc nến ngày đóng cửa sát đỉnh cao nhất phiên (<code>4,079.40 USD</code>) cho thấy lực gom hàng chủ động kéo dài đến tận phút chót. Rủi ro lớn nhất lúc này không phải là thị trường giảm, mà là <strong>rủi ro bỏ lỡ siêu sóng bùng nổ (FOMO / Left-behind Risk)</strong> khi giá dễ dàng bứt phá 4,100 USD ngay trong phiên kế tiếp.</li>
+</ul>
+</li>
+<li><strong>Khuyến nghị hành động:</strong> <strong>BUY/LONG NGAY LẬP TỨC</strong> tại giá thị trường (<code>4,074.60 USD</code>).</li>
+<li><strong>Kế hoạch thông số kỹ thuật:</strong>
+<ul>
+<li><strong>Vị thế (Position Size):</strong> 100% hạn mức rủi ro danh mục (Full Risk Allocation).</li>
+<li><strong>Stop Loss (SL):</strong> <code>3,995.00 USD</code> <em>(Đặt ngay dưới mốc tâm lý 4,000 USD và đáy hôm trước 4,001.60 USD khoảng 6.6 USD để lọc nhiễu quét râu nến)</em>.
+<ul>
+<li><em>Biên độ rủi ro:</em> <code>-79.60 USD/hợp đồng</code> (~1.95%).</li>
+</ul>
+</li>
+<li><strong>Take Profit (TP):</strong>
+<ul>
+<li><em>TP1 (Chốt 50%):</em> <code>4,180.00 USD</code> (+105.40 USD).</li>
+<li><em>TP2 (Chốt phần còn lại):</em> <code>4,260.00 USD</code> (+185.40 USD) – kỳ vọng sóng mở rộng hướng tới đỉnh thời đại mới.</li>
+</ul>
+</li>
+<li><strong>Tỷ lệ Risk : Reward (R:R):</strong> <strong>1 : 2.33</strong> (tính trên mục tiêu TP2).</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>2. Chuyên viên Thận trọng (Conservative Risk Officer - CRO)</h3>
+<blockquote>
+<p><em>&quot;Mua tại đỉnh của một cây nến tăng 73 USD trong ngày là tự sát về mặt quản trị vốn.&quot;</em></p>
+</blockquote>
+<ul>
+<li><strong>Đánh giá rủi ro:</strong>
+<ul>
+<li>Việc giá hồi phục sát trần ATR (<code>72.8 / 77.40 USD</code>) trong một phiên duy nhất khiến thị trường rơi vào trạng thái <strong>quá mua ngắn hạn (Intraday Exhaustion)</strong>. Mua ở <code>4,074.60 USD</code> đồng nghĩa với việc mua ngay kháng cự đỉnh ngày (<code>4,079.40 USD</code>).</li>
+<li>Mốc <code>4,000 USD</code> chỉ mới được chạm tới đúng một lần và rút chân; chưa có bất kỳ nhịp kiểm định (retest) nào để khẳng định đây là &quot;bức tường thép&quot; bền vững. Nếu đây chỉ là cú nảy kỹ thuật (Dead Cat Bounce) hoặc đợt Short Covering ngắn hạn, phe Bán hoàn toàn có thể dội ngược đòn ép giá xuyên thủng 4,000 USD.</li>
+</ul>
+</li>
+<li><strong>Khuyến nghị hành động:</strong> <strong>ĐỨNG NGOÀI (CASH IS KING)</strong> hoặc chỉ đặt lệnh chờ mua giới hạn (<strong>BUY LIMIT</strong>) tại vùng cân bằng giá, kiên quyết không đuổi giá.</li>
+<li><strong>Kế hoạch thông số kỹ thuật (Chỉ kích hoạt nếu giá thoái lui):</strong>
+<ul>
+<li><strong>Vị thế:</strong> Tối đa 25% – 30% hạn mức thông thường.</li>
+<li><strong>Điểm vào lệnh (Entry):</strong> Chờ <code>Buy Limit</code> tại vùng Fibonacci 50% – 61.8% của nến Pin Bar hôm trước: quanh vùng <strong><code>4,038.00 – 4,042.00 USD</code></strong>.</li>
+<li><strong>Stop Loss (SL):</strong> <code>3,998.00 USD</code> <em>(Cắt lỗ dứt khoát nếu mốc 4,000 USD bị phá vỡ; chấp nhận sai sớm, không gồng lỗ)</em>.
+<ul>
+<li><em>Biên độ rủi ro:</em> <code>-42.00 USD/hợp đồng</code> (~1.03%).</li>
+</ul>
+</li>
+<li><strong>Take Profit (TP):</strong>
+<ul>
+<li><em>TP1 (Bảo vệ vốn):</em> <code>4,080.00 USD</code> (đỉnh cũ phiên trước, +40 USD).</li>
+<li><em>TP2 (Mục tiêu tối đa):</em> <code>4,125.00 USD</code> (+85 USD).</li>
+</ul>
+</li>
+<li><strong>Tỷ lệ Risk : Reward (R:R):</strong> <strong>1 : 2.02</strong> (tính trên Entry 4,040 USD và TP2).</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>3. Chuyên viên Trung lập (Neutral Risk Officer - NRO)</h3>
+<blockquote>
+<p><em>&quot;Tôn trọng tín hiệu hành động giá (Price Action) nhưng phải tối ưu hóa toán học vị thế.&quot;</em></p>
+</blockquote>
+<ul>
+<li><strong>Đánh giá rủi ro:</strong>
+<ul>
+<li>Cây nến Pin Bar bảo vệ 4,001.60 USD là tín hiệu kỹ thuật hợp lệ có xác suất thắng (Win rate) trên 60%. Tuy nhiên, tỷ lệ R:R nếu vào toàn bộ lệnh ở <code>4,074.60 USD</code> với SL dưới <code>4,000 USD</code> là quá rộng (~80 USD), làm giảm hiệu quả sử dụng vốn của quỹ.</li>
+<li>Giải pháp hợp lý nhất là áp dụng <strong>chiến lược giải ngân nhiều bước (Scale-in)</strong>: Vừa có vị thế theo xu hướng đảo chiều, vừa có dư địa kéo thấp giá vốn nếu thị trường rung lắc phiên Á/Âu.</li>
+</ul>
+</li>
+<li><strong>Khuyến nghị hành động:</strong> <strong>TÍCH LŨY TỪNG PHẦN (SCALE-IN BUY)</strong>.
+<ul>
+<li><em>Pha 1:</em> Vào 35% vị thế thăm dò tại <code>4,072.00 – 4,074.60 USD</code>.</li>
+<li><em>Pha 2:</em> Đặt lệnh chờ 65% vị thế còn lại quanh <code>4,045.00 USD</code>.</li>
+<li><em>Giá vốn bình quân mục tiêu:</em> <strong>~<code>4,055.00 USD</code></strong>.</li>
+</ul>
+</li>
+<li><strong>Kế hoạch thông số kỹ thuật:</strong>
+<ul>
+<li><strong>Stop Loss (SL):</strong> <code>3,996.50 USD</code> <em>(Đặt đệm 5 USD phía dưới đáy nến Pin Bar 4,001.60 USD)</em>.
+<ul>
+<li><em>Biên độ rủi ro bình quân:</em> <code>-58.50 USD/hợp đồng</code> (~1.44%).</li>
+</ul>
+</li>
+<li><strong>Take Profit (TP):</strong>
+<ul>
+<li><em>TP1:</em> <code>4,130.00 USD</code> (+75 USD) – Đóng 50% khối lượng, dời toàn bộ Stop Loss phần còn lại về điểm hòa vốn (Breakeven).</li>
+<li><em>TP2:</em> <code>4,200.00 USD</code> (+145 USD) – Vùng kháng cự tâm lý số tròn tiếp theo.</li>
+</ul>
+</li>
+<li><strong>Tỷ lệ Risk : Reward (R:R):</strong> <strong>1 : 2.48</strong> (tính trên giá vốn bình quân 4,055 USD và TP2).</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="muc_10">2. BẢNG TỔNG HỢP SO SÁNH PHƯƠNG ÁN RỦI RO</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Tiêu chí</th>
+<th style="text-align:left">Chuyên viên Liều (Aggressive)</th>
+<th style="text-align:left">Chuyên viên Thận trọng (Conservative)</th>
+<th style="text-align:left">Chuyên viên Trung lập (Neutral)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Chiến lược</strong></td>
+<td style="text-align:left">Mua đuổi theo đà (Momentum Long)</td>
+<td style="text-align:left">Chờ Retest sâu hoặc Đứng ngoài</td>
+<td style="text-align:left">Giải ngân 2 bước (Scale-in DCA)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Vùng giá vào (Entry)</strong></td>
+<td style="text-align:left"><code>4,074.60 USD</code> (Market)</td>
+<td style="text-align:left"><code>4,040.00 USD</code> (Limit)</td>
+<td style="text-align:left">Pha 1: <code>4,074 USD</code> (35%)<br>Pha 2: <code>4,045 USD</code> (65%)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Giá vốn dự kiến</strong></td>
+<td style="text-align:left"><code>4,074.60 USD</code></td>
+<td style="text-align:left"><code>4,040.00 USD</code></td>
+<td style="text-align:left"><code>~4,055.00 USD</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Stop Loss (Cắt lỗ)</strong></td>
+<td style="text-align:left"><strong><code>3,995.00 USD</code></strong> (-79.6 USD)</td>
+<td style="text-align:left"><strong><code>3,998.00 USD</code></strong> (-42.0 USD)</td>
+<td style="text-align:left"><strong><code>3,996.50 USD</code></strong> (-58.5 USD)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Take Profit 1 (TP1)</strong></td>
+<td style="text-align:left"><code>4,180.00 USD</code> (+105.4 USD)</td>
+<td style="text-align:left"><code>4,080.00 USD</code> (+40.0 USD)</td>
+<td style="text-align:left"><code>4,130.00 USD</code> (+75.0 USD)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Take Profit 2 (TP2)</strong></td>
+<td style="text-align:left"><code>4,260.00 USD</code> (+185.4 USD)</td>
+<td style="text-align:left"><code>4,125.00 USD</code> (+85.0 USD)</td>
+<td style="text-align:left"><code>4,200.00 USD</code> (+145.0 USD)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Tỷ lệ R:R đề xuất</strong></td>
+<td style="text-align:left"><strong>1 : 2.33</strong></td>
+<td style="text-align:left"><strong>1 : 2.02</strong></td>
+<td style="text-align:left"><strong>1 : 2.48</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Tỷ trọng vốn (Allocation)</strong></td>
+<td style="text-align:left">100% Risk Unit</td>
+<td style="text-align:left">25% - 30% Risk Unit</td>
+<td style="text-align:left">60% - 70% Risk Unit</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="muc_11">3. PHÁN QUYẾT CUỐI CÙNG CỦA HỘI ĐỒNG (CRO CONSENSUS)</h2>
+<p>Hội đồng Quản trị Rủi ro thống nhất thông qua phương án của <strong>Chuyên viên Trung lập (Neutral Risk Officer)</strong> với các điều kiện ràng buộc bổ sung:</p>
+<ol>
+<li><strong>Tuyệt đối không giải ngân 100% vị thế ở vùng giá hiện tại (<code>4,074.60 USD</code>)</strong>: Cây nến Pin Bar hôm trước đã tiêu thụ phần lớn năng lượng động lượng trong ngày (~1 ATR). Rủi ro xuất hiện một nhịp chỉnh lấp thanh khoản (Pullback) đầu phiên là trên 70%.</li>
+<li><strong>Quy tắc bảo vệ vốn (Capital Protection Rule)</strong>: Ngay khi giá đạt mức <code>4,115.00 – 4,130.00 USD</code>, bộ phận thực thi lệnh bắt buộc phải chốt lời 50% khối lượng và kéo Stop Loss của phần còn lại về điểm hòa vốn (<code>Entry BE</code>). Không để một vị thế đã có lãi chuyển thành vị thế lỗ.</li>
+<li><strong>Mốc vi phạm cấu trúc (Invalidation Level)</strong>: Nếu giá xuyên thủng mốc <code>3,996.50 USD</code>, toàn bộ các vị thế Long phải được thanh lý cưỡng bức (Kill switch), đồng thời cấm bắt đáy thêm trong vòng 48 giờ để đánh giá lại cấu trúc vĩ mô.</li>
+</ol>
+
+    </article>
+
+    <footer class="footer">
+      <p>Báo cáo được khởi tạo tự động bởi <b>AI Trading Multi-Agent</b> · Cổng máy chủ cục bộ <code>localhost:5050</code></p>
+      <p style="margin-top:6px; font-size:12px;">Dữ liệu phân tích chỉ nhằm mục đích nghiên cứu học tập, không cấu thành lời khuyên đầu tư tài chính.</p>
+    </footer>
+  </main>
+
+  <div id="toast">✅ Đã sao chép link báo cáo vào bộ nhớ tạm!</div>
+
+  <script>
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const target = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', target);
+  localStorage.setItem('ai_trading_theme', target);
+}
+
+function copyReportLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    const toast = document.getElementById('toast');
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 2500);
+  });
+}
+
+function xoaBaoCaoHienTai() {
+  const parts = window.location.pathname.split('/');
+  const tenFile = decodeURIComponent(parts[parts.length - 1] || '');
+  if (!confirm(`Bạn có chắc chắn muốn xoá vĩnh viễn báo cáo này?\n"${tenFile}"?\n\n(Thao tác này sẽ xoá cả file HTML và Markdown tương ứng)`)) {
+    return;
+  }
+  fetch('/api/delete?file=' + encodeURIComponent(tenFile), {
+    method: 'POST'
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      alert('Đã xoá báo cáo thành công. Hệ thống sẽ quay về trang danh sách.');
+      window.location.href = '/';
+    } else {
+      alert('Lỗi: ' + (data.message || 'Không thể xoá báo cáo'));
+    }
+  })
+  .catch(err => {
+    alert('Lỗi kết nối tới máy chủ: ' + err);
+  });
+}
+
+// Khởi tạo theme: Mặc định Light nếu chưa chọn
+(function() {
+  const saved = localStorage.getItem('ai_trading_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+})();
+</script>
+</body>
+</html>

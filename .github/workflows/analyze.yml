@@ -64,6 +64,11 @@ jobs:
                   print('Generated HTML:', html_file.name)
           "
 
+      - name: 🌐 Đồng bộ báo cáo sang thư mục GitHub Pages (/docs)
+        run: |
+          mkdir -p "docs/Kết quả"
+          cp -r Kết\ quả/* "docs/Kết quả/" || true
+
       - name: 📤 Lưu Artifact báo cáo (Tải về từ GitHub)
         uses: actions/upload-artifact@v4
         with:
@@ -75,7 +80,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add "Kết quả/"
+          git add "Kết quả/" "docs/"
           if git diff --staged --quiet; then
             echo "Không có thay đổi mới để commit."
           else

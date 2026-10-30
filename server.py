@@ -676,6 +676,7 @@ def tao_trang_dashboard_html(port: int) -> str:
         <p>Giao diện điều hành, thẩm định tài chính đa tác tử trên localhost:{port}</p>
       </div>
       <div class="header-actions">
+        <a href="/spa" class="btn" title="Giao diện Cloud SPA chạy qua GitHub Actions">☁️ Cloud SPA</a>
         <a href="/Tiến độ.html" class="btn" title="Xem file tiến độ">🚀 Tiến độ</a>
         <button class="btn" onclick="toggleTheme()" title="Đổi giao diện Sáng / Tối">🌓 Giao diện</button>
       </div>
@@ -1257,6 +1258,13 @@ class ReportHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             if not chi_gui_header:
                 self.wfile.write(data)
             return
+
+        # Cloud SPA
+        if duong_dan in ("/spa", "/spa/", "/docs", "/docs/", "/docs/index.html"):
+            spa_file = GOC / "docs" / "index.html"
+            if spa_file.exists():
+                self._gui_file(spa_file, chi_gui_header=chi_gui_header)
+                return
 
         # Tìm kiếm file báo cáo theo đường dẫn hoặc tên yêu cầu
         file_found = tim_file_bao_cao(duong_dan)

@@ -1,0 +1,1151 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Báo cáo Phân tích BTC-USD (2026-10-26) · AI Trading</title>
+  <style>
+:root {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-hover: #f1f5f9;
+  --border-color: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --accent-gold: #d97706;
+  --accent-blue: #0284c7;
+  --accent-green: #059669;
+  --accent-red: #dc2626;
+  --accent-purple: #9333ea;
+  --code-bg: #f8fafc;
+  --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0b0e14;
+  --bg-secondary: #121722;
+  --bg-card: #182030;
+  --bg-hover: #222d42;
+  --border-color: #273349;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b9bb4;
+  --text-muted: #5d6e87;
+  --accent-gold: #f59e0b;
+  --accent-blue: #38bdf8;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --accent-purple: #a855f7;
+  --code-bg: #0d1117;
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.65;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header & Top Bar */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+[data-theme="dark"] .topbar {
+  background: rgba(18, 23, 34, 0.92);
+  box-shadow: none;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-logo {
+  font-size: 22px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.brand-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  transition: all 0.15s ease;
+}
+.btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-blue);
+}
+.btn-primary {
+  background: #2563eb;
+  border-color: #1d4ed8;
+  color: #fff;
+  font-weight: 600;
+}
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+.btn-danger {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: #dc2626;
+  font-weight: 500;
+}
+.btn-danger:hover {
+  background: #dc2626;
+  border-color: #b91c1c;
+  color: #fff;
+}
+[data-theme="dark"] .btn-danger {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.badge-buy {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+.badge-sell {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+.badge-hold {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+.badge-info {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+[data-theme="dark"] .badge-buy {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+[data-theme="dark"] .badge-sell {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+[data-theme="dark"] .badge-hold {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+/* Layout */
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 32px 20px 80px 20px;
+}
+
+/* Hero Section */
+.hero-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 24px;
+  box-shadow: var(--card-shadow);
+}
+[data-theme="dark"] .hero-card {
+  background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+}
+
+.hero-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.hero-title-group h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.hero-subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-color);
+}
+.stat-box {
+  background: var(--bg-secondary);
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Table of Contents */
+.toc-bar {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+  white-space: nowrap;
+  box-shadow: var(--card-shadow);
+}
+.toc-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+.toc-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.toc-link:hover {
+  background: var(--bg-hover);
+  color: var(--accent-blue);
+}
+
+/* Article Body */
+.report-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 36px 40px;
+  box-shadow: var(--card-shadow);
+}
+@media (max-width: 768px) {
+  .report-content { padding: 20px; }
+}
+
+.report-content h1,
+.report-content h2,
+.report-content h3,
+.report-content h4 {
+  color: var(--text-primary);
+  margin-top: 36px;
+  margin-bottom: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.report-content h1 { font-size: 26px; border-bottom: 2px solid var(--border-color); padding-bottom: 12px; }
+.report-content h2 {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent-blue);
+  background: linear-gradient(90deg, rgba(2, 132, 199, 0.08) 0%, transparent 100%);
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border-radius: 0 8px 8px 0;
+}
+.report-content h3 { font-size: 17px; color: var(--accent-gold); }
+.report-content p { margin-bottom: 16px; }
+.report-content ul, .report-content ol {
+  margin-bottom: 18px;
+  padding-left: 24px;
+}
+.report-content li { margin-bottom: 6px; }
+.report-content strong { color: var(--text-primary); font-weight: 700; }
+
+.report-content hr {
+  border: 0;
+  height: 1px;
+  background: var(--border-color);
+  margin: 32px 0;
+}
+
+/* Tables */
+.report-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 14px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+.report-content th {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 2px solid var(--border-color);
+}
+.report-content td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+.report-content tr:nth-child(even) td {
+  background: rgba(0, 0, 0, 0.02);
+}
+[data-theme="dark"] .report-content tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.02);
+}
+.report-content tr:hover td {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* Code & Pre */
+.report-content code {
+  background: var(--code-bg);
+  color: #e11d48;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  border: 1px solid var(--border-color);
+}
+[data-theme="dark"] .report-content code {
+  color: #ff7b72;
+}
+
+.report-content pre {
+  background: var(--code-bg);
+  padding: 16px;
+  border-radius: 10px;
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  margin: 18px 0;
+}
+.report-content pre code {
+  background: transparent;
+  padding: 0;
+  border: none;
+  color: inherit;
+}
+
+/* Alert Callouts */
+.alert {
+  padding: 14px 18px;
+  border-radius: 10px;
+  margin: 20px 0;
+  border-left: 4px solid;
+  line-height: 1.6;
+}
+.alert p:last-child { margin-bottom: 0; }
+.alert-note {
+  background: #eff6ff;
+  border-color: var(--accent-blue);
+  color: #1e40af;
+}
+[data-theme="dark"] .alert-note {
+  background: rgba(56, 189, 248, 0.1);
+  color: #bae6fd;
+}
+.alert-important {
+  background: #faf5ff;
+  border-color: var(--accent-purple);
+  color: #6b21a8;
+}
+[data-theme="dark"] .alert-important {
+  background: rgba(168, 85, 247, 0.12);
+  color: #e9d5ff;
+}
+.alert-warning {
+  background: #fffbeb;
+  border-color: var(--accent-gold);
+  color: #92400e;
+}
+[data-theme="dark"] .alert-warning {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fde68a;
+}
+.alert-caution {
+  background: #fef2f2;
+  border-color: var(--accent-red);
+  color: #991b1b;
+}
+[data-theme="dark"] .alert-caution {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Toast */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #10b981;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  display: none;
+  z-index: 1000;
+}
+
+@media print {
+  .topbar, .toc-bar, .top-actions, .footer, #toast { display: none !important; }
+  body { background: #fff !important; color: #000 !important; }
+  .report-content, .hero-card { border: none !important; box-shadow: none !important; padding: 0 !important; }
+}
+</style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="topbar">
+    <div class="brand-section">
+      <a href="/" class="brand-logo" style="text-decoration:none;">⚡ AI TRADING</a>
+      <div class="brand-meta">
+        <span class="badge badge-info">⚪ ### 2. XẾP HẠNG KHUYẾN NGHỊ</span>
+        <span class="badge badge-info">📅 2026-10-26</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a href="/" class="btn" title="Về trang tổng hợp">🏠 Danh sách</a>
+      <button class="btn" onclick="copyReportLink()" title="Sao chép link mở trên trình duyệt">📋 Sao chép link</button>
+      <button class="btn btn-primary" onclick="window.print()" title="In ra giấy hoặc lưu thành PDF">🖨️ Xuất PDF</button>
+      <button class="btn" onclick="toggleTheme()" title="Đổi giao diện Sáng / Tối">🌓 Giao diện</button>
+      <button class="btn btn-danger" onclick="xoaBaoCaoHienTai()" title="Xoá vĩnh viễn báo cáo này">🗑️ Xoá</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Hero Summary Card -->
+    <div class="hero-card">
+      <div class="hero-header">
+        <div class="hero-title-group">
+          <h1>Báo Cáo Phân Tích: BTC-USD</h1>
+          <div class="hero-subtitle">
+            Hệ sinh thái Đa Tác tử (Multi-Agent System) · Thẩm định tự động & Toàn diện
+          </div>
+        </div>
+        <div>
+          <span class="badge badge-info" style="font-size:14px; padding: 6px 14px;">⚪ ### 2. XẾP HẠNG KHUYẾN NGHỊ</span>
+        </div>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-box">
+          <div class="stat-label">Mã tài sản</div>
+          <div class="stat-value">BTC-USD</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Ngày phân tích</div>
+          <div class="stat-value">2026-10-26</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Bộ não AI</div>
+          <div class="stat-value" style="font-size:14px; word-break:break-all;">gemini-3.8-flash-high</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Thời gian phân tích</div>
+          <div class="stat-value">4.5 phút</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table of Contents -->
+    
+        <div class="toc-bar">
+          <span class="toc-title">Điều hướng:</span>
+          <a class="toc-link" href="#muc_1">🏆 1. PHÁN QUYẾT CUỐI CÙNG CỦA GIÁM ĐỐC QUỸ</a><a class="toc-link" href="#muc_2">📊 2. BÁO CÁO PHÒNG KỸ THUẬT (MARKET TECHNICIAN)</a><a class="toc-link" href="#muc_3">📰 3. BÁO CÁO PHÒNG TIN TỨC &amp; TÂM LÝ (SENTIMENT &amp; NEWS)</a><a class="toc-link" href="#muc_4">⚔️ 5. TRANH BIỆN PHE MUA VS PHE BÁN (BULL VS BEAR DEBATE)</a><a class="toc-link" href="#muc_5">🛡️ 6. HỘI ĐỒNG QUẢN LÝ RỦI RO (RISK COMMITTEE)</a>
+        </div>
+        
+
+    <!-- Main Content -->
+    <article class="report-content">
+      <h1>BIÊN BẢN PHÂN TÍCH ĐA TÁC TỬ: BTC-USD</h1>
+<ul>
+<li><strong>Ngày phân tích:</strong> 2026-10-26</li>
+<li><strong>Bộ não AI:</strong> <code>gemini-3.8-flash-high</code> (Antigravity Native Session - Không tốn API key)</li>
+<li><strong>Xếp hạng khuyến nghị:</strong> <strong>### 2. XẾP HẠNG KHUYẾN NGHỊ</strong></li>
+<li><strong>Thời gian chạy:</strong> 4.5 phút</li>
+</ul>
+<div class="alert alert-important">Biên bản do hệ sinh thái Antigravity Multi-Agent tổng hợp dựa trên dữ liệu giá thực tế từ Yahoo Finance. Báo cáo chỉ nhằm mục đích nghiên cứu học tập, **KHÔNG PHẢI LỜI KHUYÊN ĐẦU TƯ TÀI CHÍNH**.</div>
+<hr />
+<h2 id="muc_1">🏆 1. PHÁN QUYẾT CUỐI CÙNG CỦA GIÁM ĐỐC QUỸ</h2>
+<p>Dưới cương vị <strong>Giám đốc Quỹ Đầu tư (Chief Investment Officer / Portfolio Manager)</strong>, sau khi xem xét báo cáo kỹ thuật Daily và đánh giá từ Hội đồng Quản trị Rủi ro, tôi đưa ra <strong>PHÁN QUYẾT CUỐI CÙNG</strong> cho mã <strong>BTC-USD</strong> tại ngày 26/10/2026 như sau:</p>
+<hr />
+<h3>1. QUYẾT ĐỊNH HÀNH ĐỘNG</h3>
+<p><strong>MUA (BUY)</strong> <em>(Vị thế chiến thuật / Mua thăm dò phản ứng phục hồi kỹ thuật - Tactical Long)</em></p>
+<h3>2. XẾP HẠNG KHUYẾN NGHỊ</h3>
+<p><strong>TÍCH CỰC (4/5 sao)</strong></p>
+<h3>3. KẾ HOẠCH GIAO DỊCH CỤ THỂ</h3>
+<ul>
+<li><strong>Vùng giá mua khuyến nghị (Entry Zone):</strong> <strong>79,800 – 80,100 USD</strong> <em>(Khớp lệnh linh hoạt quanh thị giá 80,006.66 USD)</em>.</li>
+<li><strong>Mức cắt lỗ tuyệt đối (Stop Loss):</strong> <strong>79,050 USD</strong> <em>(Đặt ngay dưới đáy râu nến quét thanh khoản 79,278 USD; biên độ rủi ro ~1.2%)</em>.</li>
+<li><strong>Mục tiêu giá 1 (TP1):</strong> <strong>82,200 USD</strong> <em>(Kiểm định lại trục giữa Bollinger Bands và kháng cự ngắn hạn, chốt lời 50% vị thế)</em>.</li>
+<li><strong>Mục tiêu giá 2 (TP2):</strong> <strong>84,500 USD</strong> <em>(Vùng cân bằng cung cầu cũ / cản Fibo thoái lui, hiện thực hóa toàn bộ lợi nhuận còn lại)</em>.</li>
+<li><strong>Tỷ lệ phân bổ vốn khuyến nghị:</strong> <strong>5% – 7% tổng giá trị danh mục (NAV)</strong> <em>(Không dùng đòn bẩy hoặc tối đa Leverage 2x; kiên quyết bác bỏ đề xuất giải ngân 100% của Chuyên viên Liều để đảm bảo mức rủi ro toàn danh mục không vượt quá 0.1% NAV)</em>.</li>
+</ul>
+<h3>4. 3 LÝ DO CỐT LÕI CỦA PHÁN QUYẾT</h3>
+<ol>
+<li><strong>Dấu chân Dòng tiền lớn (Absorption &amp; Liquidity Sweep):</strong> Cây nến Daily rút chân mạnh mẽ từ vùng 79,278 USD kèm thanh khoản bùng nổ đột biến hơn 27.3 tỷ USD tại mốc số tròn 80,000 USD xác nhận hiện tượng hấp thụ cung triệt để. Phe Gấu đã dồn lực bán tháo nhưng không thể đánh sập phòng tuyến 79,000 USD, mở ra khả năng cao xảy ra bẫy bán khống (Short Squeeze).</li>
+<li><strong>Tỷ lệ Rủi ro : Lợi nhuận (R:R) bất đối xứng tối ưu:</strong> Điểm vào lệnh sát mốc 80,000 USD cho phép thiết lập mức dừng lỗ cực kỳ chặt chẽ tại 79,050 USD (chấp nhận rủi ro chỉ ~1.2%), trong khi tiềm năng tăng giá tới TP1 (82,200 USD) và TP2 (84,500 USD) mang lại tỷ lệ R:R vượt trội từ <strong>1:2.3 đến 1:4.6</strong>.</li>
+<li><strong>Kỷ luật vốn và trung hòa rủi ro vĩ mô:</strong> Dù xung lực giảm trung hạn chưa chấm dứt hoàn toàn (MACD âm, RSI ở mức 41.49), việc giải ngân tỷ trọng nhỏ (5% – 7% NAV) vừa giúp Quỹ nắm bắt được nhịp bật lại có lợi thế xác suất cao của Smart Money, vừa duy trì vị thế an toàn tuyệt đối cho danh mục nếu kịch bản xấu xảy ra.</li>
+</ol>
+<hr />
+<h2 id="muc_2">📊 2. BÁO CÁO PHÒNG KỸ THUẬT (MARKET TECHNICIAN)</h2>
+<h3>Dữ liệu thị trường &amp; Chỉ báo kỹ thuật (BTC-USD tại ngày 2026-10-26):</h3>
+<ul>
+<li><strong>Giá đóng cửa (Close):</strong> 80,006.66 USD (Biến động ngày: -0.02%)</li>
+<li><strong>Biên độ trong ngày:</strong> Thấp nhất = 79,278.71 USD | Cao nhất = 80,709.98 USD</li>
+<li><strong>Khối lượng giao dịch (Volume):</strong> 27,374,211,312</li>
+<li><strong>RSI (14 ngày):</strong> 41.49 (Trung tính)</li>
+<li><strong>MACD:</strong> -438.16 | <strong>Signal Line:</strong> -70.91 | <strong>Histogram:</strong> -367.25 (Cắt xuống (Bearish Cross))</li>
+<li><strong>Đường trung bình (SMA):</strong>
+<ul>
+<li>SMA 10 (Ngắn hạn): 81,541.38 USD (Dưới SMA 10)</li>
+<li>SMA 50 (Trung hạn): 81,797.86 USD (Dưới SMA 50)</li>
+<li>SMA 200 (Dài hạn): 72,986.54 USD</li>
+</ul>
+</li>
+<li><strong>Dải Bollinger Bands:</strong>
+<ul>
+<li>Dải trên (Upper Band): 84,197.79 USD</li>
+<li>Dải giữa (Middle Band): 81,978.33 USD</li>
+<li>Dải dưới (Lower Band): 79,758.87 USD</li>
+</ul>
+</li>
+<li><strong>Độ biến động ATR (14):</strong> 2,000.66 USD</li>
+</ul>
+<h1>BÁO CÁO PHÂN TÍCH KỸ THUẬT CHUYÊN SÂU: BTC-USD</h1>
+<p><strong>Ngày phân tích:</strong> 26/10/2026<br />
+<strong>Vị thế phân tích:</strong> Trưởng phòng Phân tích Kỹ thuật (Senior Market Technician)<br />
+<strong>Tài sản:</strong> Bitcoin (BTC/USD) | <strong>Khung thời gian:</strong> Daily (D1)</p>
+<hr />
+<h3>BẢNG TỔNG QUAN CHỈ SỐ KỸ THUẬT (26/10/2026)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Chỉ báo / Dữ liệu</th>
+<th style="text-align:left">Giá trị thực tế</th>
+<th style="text-align:left">Trạng thái kỹ thuật</th>
+<th style="text-align:left">Đánh giá</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Giá đóng cửa (Close)</strong></td>
+<td style="text-align:left"><strong>80,006.66 USD</strong></td>
+<td style="text-align:left">-0.02% (Doji/Spinning Top)</td>
+<td style="text-align:left">Neo sát mốc tâm lý số tròn 80,000 USD</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Biên độ trong ngày</strong></td>
+<td style="text-align:left">79,278.71 – 80,709.98 USD</td>
+<td style="text-align:left">Rút chân từ vùng dưới Lower Band</td>
+<td style="text-align:left">Có lực cầu bắt đáy quanh 79,200 USD</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Khối lượng (Volume)</strong></td>
+<td style="text-align:left">27,374,211,312 USD</td>
+<td style="text-align:left">Khá cao so với biên độ ngày hẹp</td>
+<td style="text-align:left">Xuất hiện hiện tượng hấp thụ cung (Absorption)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>RSI (14)</strong></td>
+<td style="text-align:left">41.49</td>
+<td style="text-align:left">Vùng gấu kiểm soát (&lt; 50)</td>
+<td style="text-align:left">Chưa quá bán, phe bán vẫn chiếm ưu thế</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>MACD (12, 26, 9)</strong></td>
+<td style="text-align:left">MACD: -438.16 | Signal: -70.91</td>
+<td style="text-align:left">Histogram: -367.25 (Mở rộng âm)</td>
+<td style="text-align:left">Xung lượng giảm (Bearish Momentum) mạnh</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>SMA 10 / SMA 50</strong></td>
+<td style="text-align:left">81,541.38 / 81,797.86 USD</td>
+<td style="text-align:left">Giá nằm dưới cả hai đường SMA</td>
+<td style="text-align:left">Xu hướng ngắn &amp; trung hạn suy yếu</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>SMA 200</strong></td>
+<td style="text-align:left">72,986.54 USD</td>
+<td style="text-align:left">Giá cách SMA 200 khoảng +9.6%</td>
+<td style="text-align:left">Cấu trúc dài hạn duy trì xu hướng Tăng</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Bollinger Bands</strong></td>
+<td style="text-align:left">79,758.87 – 81,978.33 – 84,197.79</td>
+<td style="text-align:left">Đóng cửa sát Lower Band (79,758.87)</td>
+<td style="text-align:left">Kiểm tra cạnh dưới của dải biến động</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>ATR (14)</strong></td>
+<td style="text-align:left">2,000.66 USD</td>
+<td style="text-align:left">Biên độ thực tế (1,431 USD) &lt; ATR</td>
+<td style="text-align:left">Biến động nén ngắn hạn trước khi mở biên</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>1. ĐÁNH GIÁ CẤU TRÚC XU HƯỚNG (TREND ANALYSIS)</h3>
+<ul>
+<li><strong>Ngắn hạn (Dưới 2 tuần): XU HƯỚNG GIẢM (BEARISH)</strong>
+<ul>
+<li>Giá đóng cửa tại 80,006.66 USD, nằm hoàn toàn dưới đường trung bình động ngắn hạn <strong>SMA 10 (81,541.38 USD)</strong>.</li>
+<li>Cấu trúc đỉnh/đáy ngắn hạn đang tạo các đỉnh thấp dần (Lower Highs). Việc đường SMA 10 dốc xuống và chuẩn bị giao cắt xuống dưới SMA 50 phản ánh áp lực bán đè nặng lên các nhịp hồi phục.</li>
+</ul>
+</li>
+<li><strong>Trung hạn (1 – 3 tháng): ĐIỀU CHỈNH / TIÊU CỰC (CORRECTIVE / WEAK)</strong>
+<ul>
+<li>Giá nằm dưới <strong>SMA 50 (81,797.86 USD)</strong> và dải giữa Bollinger Bands (81,978.33 USD). Đây từng là bệ đỡ xu hướng trong các tháng trước, nay đã chính thức chuyển hóa thành cụm cản kháng cự động trung hạn.</li>
+<li>Xu hướng trung hạn đã mất đi cấu trúc tăng bền vững, chuyển sang trạng thái điều chỉnh tích lũy giảm (downward consolidation).</li>
+</ul>
+</li>
+<li><strong>Dài hạn (6 – 12 tháng): XU HƯỚNG TĂNG DUY TRÌ (BULLISH)</strong>
+<ul>
+<li>Thị trường vẫn vận động phía trên đường trung bình chu kỳ dài <strong>SMA 200 (72,986.54 USD)</strong> với biên độ an toàn xấp xỉ <strong>+9.6% (~7,020 USD)</strong>.</li>
+<li>Cấu trúc chu kỳ vĩ mô chưa bị phá vỡ; đợt sụt giảm hiện tại về mặt kỹ thuật vẫn được phân loại là một <strong>nhịp thoái lui lành mạnh (Healthy Retracement)</strong> trong xu hướng tăng lớn, chừng nào mốc 73,000 USD chưa bị xâm phạm.</li>
+</ul>
+</li>
+<li><strong>Cấu trúc nến ngày 26/10:</strong>
+<ul>
+<li>Nến ngày có thân rất nhỏ (biến động -0.02%), tạo hình thái tương tự nến <strong>Doji chân dài (Long-legged Doji)</strong> với bóng dưới dài quét xuống 79,278.71 USD rồi rút chân đóng cửa trên 80,000 USD. Điều này thể hiện sự giằng co quyết liệt giữa hai phe quanh ngưỡng tâm lý trọng yếu.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>2. PHÂN TÍCH XUNG LƯỢNG VÀ ĐỘNG LƯỢNG (MOMENTUM &amp; VOLUME)</h3>
+<ul>
+<li><strong>RSI (14) = 41.49:</strong>
+<ul>
+<li>Chỉ số vận động dưới ngưỡng cân bằng 50, xác nhận phe Bán đang nắm quyền kiểm soát nhịp thị trường.</li>
+<li>Tuy nhiên, RSI chưa tiến vào vùng quá bán (Oversold &lt; 30). Điều này hàm ý hai góc nhìn:
+<ol>
+<li>Phe bán vẫn còn dư địa để đẩy giá xuống tiếp nếu hỗ trợ 80,000 USD gãy.</li>
+<li>Áp lực bán hoảng loạn (panic selling) chưa xảy ra; đây là quá trình phân phối và ép bán có kiểm soát.</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><strong>MACD &amp; MACD Histogram:</strong>
+<ul>
+<li>Cặp đường tín hiệu nằm sâu dưới mức 0: MACD (-438.16) cắt xuống dưới Signal Line (-70.91).</li>
+<li><strong>Histogram âm sâu (-367.25)</strong> và tiếp tục nở rộng về phía dưới, xác nhận xung lượng giảm vẫn đang gia tăng tốc độ, chưa xuất hiện tín hiệu phân kỳ dương (Bullish Divergence) đảo chiều.</li>
+</ul>
+</li>
+<li><strong>Phân tích Khối lượng (Volume):</strong>
+<ul>
+<li>Khối lượng giao dịch đạt hơn <strong>27.37 tỷ USD</strong>, mức thanh khoản đáng kể trong một ngày có biên độ co hẹp (-0.02%).</li>
+<li>Sự kết hợp giữa khối lượng lớn + bóng nến dưới kéo dài từ 79,278 USD lên 80,006 USD chứng minh đã có <strong>lực cầu chặn (Buying on Dips / Absorption)</strong> chủ động vào đỡ giá khi BTC rơi thủng dải dưới Bollinger Bands.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>3. ĐỘ NÉN BIẾN ĐỘNG (VOLATILITY: BOLLINGER BANDS &amp; ATR)</h3>
+<ul>
+<li><strong>Vị thế giá so với Bollinger Bands:</strong>
+<ul>
+<li>Khoảng cách dải (Upper - Lower) hiện khoảng <strong>4,438.92 USD</strong>, cho thấy biên độ dao động thị trường vẫn còn tương đối mở rộng.</li>
+<li>Giá đóng cửa (80,006.66 USD) nằm ngay sát mép <strong>Lower Band (79,758.87 USD)</strong>. Đáy ngày 79,278.71 USD đã đâm xuyên ra ngoài dải trước khi đóng nến hồi lại vào trong.</li>
+<li>Hiện tượng giá bám biên dưới (<em>Walking the Lower Band</em>) xác nhận xu hướng giảm ngắn hạn mạnh; tuy nhiên việc giá bật lại từ ngoài dải báo hiệu khả năng xuất hiện một nhịp hồi phục kỹ thuật dạng <em>Mean Reversion</em> (hồi về dải giữa).</li>
+</ul>
+</li>
+<li><strong>Độ nén qua ATR (14):</strong>
+<ul>
+<li>Chỉ số ATR(14) đo lường mức độ biến động trung bình ngày là <strong>2,000.66 USD</strong>.</li>
+<li>Biên độ dao động thực tế ngày 26/10 (High - Low = 1,431.27 USD) chỉ bằng <strong>~71.5%</strong> so với ATR. Sự sụt giảm biên độ tạm thời ngay tại vùng hỗ trợ then chốt báo hiệu thị trường đang bước vào pha nén tích lũy ngắn hạn trước khi bung biến động mạnh tiếp theo.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>4. CÁC NGƯỠNG HỖ TRỢ &amp; KHÁNG CỰ QUAN TRỌNG</h3>
+<p>Quanh vùng giá hiện tại (80,006.66 USD), các mốc kỹ thuật định hình cấu trúc giao dịch bao gồm:</p>
+<pre><code>                  [Kháng cự R3] 84,197.79 USD (Upper Bollinger Band)
+                                      ▲
+                  [Kháng cự R2] 81,800 - 81,978 USD (SMA 50 + Mid Bollinger Band)
+                                      ▲
+                  [Kháng cự R1] 81,541.38 USD (SMA 10 - Cản ngắn hạn)
+─────────────────────────────────────────────────────────────────────────────
+ === HIỆN TẠI: 80,006.66 USD (Ngưỡng chốt chặn tâm lý) ===
+─────────────────────────────────────────────────────────────────────────────
+                                      ▼
+                  [Hỗ trợ S1] 79,758.87 USD (Lower Bollinger Band)
+                                      ▼
+                  [Hỗ trợ S2] 79,278.71 USD (Đáy trong ngày 26/10)
+                                      ▼
+                  [Hỗ trợ S3] 76,000 - 76,500 USD (Hỗ trợ cấu trúc Fibo thoái lui)
+                                      ▼
+                  [Hỗ trợ S4] 72,986.54 USD (SMA 200 - Phòng tuyến chu kỳ)
+</code></pre>
+<h4>Chi tiết các mốc:</h4>
+<ul>
+<li><strong>Kháng cự:</strong>
+<ul>
+<li><strong>R1 (81,541 USD):</strong> Cản động SMA 10. Phe mua cần đóng nến trên mốc này để vô hiệu hóa áp lực giảm ngắn hạn.</li>
+<li><strong>R2 (81,800 – 81,978 USD):</strong> <strong>Vùng kháng cự hợp lưu then chốt (Confluence Resistance)</strong> gồm SMA 50 và Middle Band. Đây là chốt chặn quyết định xu hướng trung hạn.</li>
+<li><strong>R3 (84,198 USD):</strong> Dải trên Bollinger Band, mục tiêu nếu xảy ra kịch bản bứt phá mạnh.</li>
+</ul>
+</li>
+<li><strong>Hỗ trợ:</strong>
+<ul>
+<li><strong>S1 (79,758 – 80,000 USD):</strong> Lower Band kết hợp mốc tâm lý số tròn (Round Number).</li>
+<li><strong>S2 (79,278 USD):</strong> Đáy nến ngày 26/10. Nếu gãy mức này, toàn bộ lực bắt đáy trong ngày sẽ bị bẫy vị thế (Trapped Buyers).</li>
+<li><strong>S3 (76,000 USD):</strong> Vùng đệm kỹ thuật trung gian.</li>
+<li><strong>S4 (72,986 USD):</strong> <strong>SMA 200 ngày</strong> – &quot;Phòng tuyến sinh tử&quot; bảo vệ cấu trúc Bull-market dài hạn của Bitcoin.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>5. TỔNG KẾT NHẬN ĐỊNH &amp; CHIẾN LƯỢC KỸ THUẬT</h3>
+<ol>
+<li><strong>Trạng thái thị trường:</strong> Bitcoin đang ở pha <strong>thử thách hỗ trợ ranh giới</strong> tại mốc 80,000 USD. Phe Bán nắm quyền kiểm soát hoàn toàn ở khung ngắn hạn và trung hạn (dưới SMA 10, SMA 50, MACD âm mở rộng). Tuy nhiên, bóng nến rút chân tại 79,278 USD cùng khối lượng lớn cho thấy lực cầu bắt đáy đang hình thành phòng tuyến phản công.</li>
+<li><strong>Kịch bản 1 – Hồi phục kỹ thuật (Xác suất 45%):</strong>
+<ul>
+<li>Giữ vững trên 79,278 – 79,758 USD.</li>
+<li>Xuất hiện nhịp <em>Mean Reversion</em> hướng lên kiểm định lại vùng hợp lưu <strong>81,500 – 81,980 USD (SMA 10/50 &amp; Mid-band)</strong>. Tại đây, áp lực cung dự kiến sẽ tiếp tục thử thách sức mạnh phe Mua.</li>
+</ul>
+</li>
+<li><strong>Kịch bản 2 – Phá vỡ xuôi dòng (Xác suất 55%):</strong>
+<ul>
+<li>Đóng nến ngày dứt khoát dưới <strong>79,278 USD</strong>.</li>
+<li>Xung lượng giảm từ MACD sẽ kích hoạt làn sóng bán tháo kỹ thuật (Stop-loss cascading), đẩy giá trượt nhanh về vùng hỗ trợ <strong>76,000 USD</strong>, xa hơn là kiểm định đường xu hướng dài hạn <strong>SMA 200 quanh 73,000 USD</strong>.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="muc_3">📰 3. BÁO CÁO PHÒNG TIN TỨC &amp; TÂM LÝ (SENTIMENT &amp; NEWS)</h2>
+<h1>BÁO CÁO PHÂN TÍCH TÂM LÝ THỊ TRƯỜNG &amp; TIN TỨC VĨ MÔ (SENTIMENT &amp; NEWS REPORT)</h1>
+<ul>
+<li><strong>Mã tài sản:</strong> BTC-USD</li>
+<li><strong>Ngày phân tích:</strong> 26/10/2026</li>
+<li><strong>Vốn hóa thị trường (Market Cap):</strong> ~1,624.00 tỷ USD <em>(Tương đương vùng giá ~81,000 – 82,500 USD với lượng cung lưu hành ~19.78M BTC)</em></li>
+<li><strong>Đồng thuận của các quỹ:</strong> N/A <em>(Đặc thù tài sản số: Chủ yếu theo dõi qua dòng vốn ròng Spot ETF và On-chain)</em></li>
+</ul>
+<hr />
+<h3>1. Tâm lý chung của đám đông hiện tại: <strong>Tham lam thận trọng (Cautious Greed)</strong></h3>
+<ul>
+<li><strong>Chỉ số Sợ hãi &amp; Tham lam (Fear &amp; Greed Index):</strong> Ước lượng ở mức <strong>72 – 76 (Tham lam / Greed)</strong>.</li>
+<li><strong>Tâm lý nhà đầu tư cá nhân (Retail):</strong>
+<ul>
+<li>Sự chú ý của truyền thông đại chúng gia tăng khi vốn hóa Bitcoin vững vàng vượt ngưỡng 1,600 tỷ USD. Tâm lý FOMO (Sợ bỏ lỡ cơ hội) bắt đầu nhen nhóm trở lại trên các diễn đàn và mạng xã hội.</li>
+<li>Tuy nhiên, đám đông vẫn mang tâm lý &quot;vừa hưng phấn vừa e ngại&quot; do Bitcoin đang neo ở vùng định giá kỷ lục; các nhịp rung lắc ngắn hạn thường tạo ra phản ứng tháo chạy nhanh ở nhóm nhà đầu tư lướt sóng.</li>
+</ul>
+</li>
+<li><strong>Tâm lý thị trường phái sinh (Derivatives Sentiment):</strong>
+<ul>
+<li>Tỷ lệ Funding Rate trên các sàn lớn (Binance, Bybit, OKX) duy trì ở mức dương vừa phải, cho thấy phe Long đang chiếm ưu thế nhưng chưa đến mức quá nhiệt (Overheated).</li>
+<li>Khối lượng hợp đồng mở (Open Interest - OI) duy trì ở mức cao kỷ lục, phản ánh trạng thái chuẩn bị cho một đợt biến động mở rộng biên độ mạnh.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>2. Sự kiện vĩ mô &amp; Tin tức ngành tác động trực tiếp</h3>
+<ul>
+<li><strong>Chu kỳ Hậu Halving (Post-Halving Dynamics):</strong>
+<ul>
+<li>Tại thời điểm cuối năm 2026 (khoảng 2.5 năm sau đợt Halving tháng 4/2024), nguồn cung phát hành mới từ thợ đào đã giảm một nửa trong thời gian đủ dài để hiện thực hóa &quot;cú sốc nguồn cung&quot; (Supply Shock). Tỷ lệ lạm phát hàng năm của Bitcoin thấp hơn đáng kể so với Vàng vật chất.</li>
+</ul>
+</li>
+<li><strong>Dòng vốn thể chế qua Spot ETF &amp; TradFi:</strong>
+<ul>
+<li>Các quỹ Bitcoin Spot ETF (BlackRock IBIT, Fidelity FBTC...) tiếp tục duy trì trạng thái tích lũy ròng ổn định. Dòng tiền từ các quỹ hưu trí (Pension Funds) và quỹ phân bổ tài sản đa kênh (Multi-Asset Allocation) bắt đầu gia tăng tỷ trọng định kỳ từ 1% – 3% vào BTC như một tài sản lưu trữ giá trị thay thế.</li>
+</ul>
+</li>
+<li><strong>Chính sách tiền tệ vĩ mô toàn cầu:</strong>
+<ul>
+<li>Chu kỳ nới lỏng định lượng và hạ lãi suất của Cục Dự trữ Liên bang Mỹ (FED) cùng các Ngân hàng Trung ương lớn tạo môi trường thanh khoản dồi dào (Global M2 expansion).</li>
+<li>Chỉ số sức mạnh đồng USD (DXY) suy yếu và lợi suất trái phiếu Mỹ giảm là bệ đỡ vững chắc cho các tài sản khan hiếm rủi ro cao.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>3. Hành vi Dòng tiền lớn (Whale / Smart Money Flow)</h3>
+<ul>
+<li><strong>Xu hướng chủ đạo:</strong> <strong>Tích lũy chiến lược (Strategic Accumulation) kết hợp Tái cân bằng danh mục qua OTC.</strong></li>
+<li><strong>Dữ liệu On-chain &amp; Lưu ký:</strong>
+<ul>
+<li><strong>Dự trữ trên các sàn giao dịch (Exchange Reserves):</strong> Tiếp tục xu hướng rút ròng (Outflow) về ví lạnh và các đơn vị lưu ký cấp tổ chức (Coinbase Custody, BitGo), làm cạn kiệt thanh khoản bán tự do (Liquid Supply) trên sàn.</li>
+<li><strong>Hành vi cá voi (&gt; 1,000 BTC):</strong> Không ghi nhận hiện tượng bán tháo diện rộng trên sổ lệnh giao ngay (Order Book). Các ví lớn chủ yếu gom hàng trong các nhịp điều chỉnh kỹ thuật (Dips) và sử dụng hợp đồng phái sinh (Options/Covered Calls) để bảo hiểm rủi ro danh mục.</li>
+<li><strong>Nhóm thợ đào (Miners):</strong> Áp lực bán từ thợ đào duy trì ở mức thấp do các doanh nghiệp khai thác đã cơ cấu xong chi phí vận hành và có xu hướng giữ lại BTC thế chấp thay vì bán thẳng.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>4. Đánh giá rủi ro Thiên nga đen &amp; Tin tức bất ngờ (Tail Risks)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Rủi ro tiềm ẩn</th>
+<th style="text-align:center">Mức độ tác động</th>
+<th style="text-align:center">Xác suất</th>
+<th style="text-align:left">Đánh giá &amp; Kịch bản ứng phó</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Thanh lý đòn bẩy dây chuyền (Long Squeeze Cascade)</strong></td>
+<td style="text-align:center"><strong>Cao</strong></td>
+<td style="text-align:center"><strong>Trung bình - Cao</strong></td>
+<td style="text-align:left">Khi Open Interest phình to, chỉ cần một biến động giật xuống 3-5% có thể kích hoạt chuỗi thanh lý tự động của phe Long, kéo giá giảm tức thì 8 - 12% để quét thanh khoản.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Cú sốc địa chính trị / Khủng hoảng tín dụng bất ngờ</strong></td>
+<td style="text-align:center"><strong>Rất cao</strong></td>
+<td style="text-align:center"><strong>Thấp - Trung bình</strong></td>
+<td style="text-align:left">Sự kiện bất khả kháng thúc đẩy làn sóng &quot;Dash for Cash&quot; (bán tháo tài sản để giữ tiền mặt USD), khiến BTC bị bán tương quan ngắn hạn với chứng khoán.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Chính phủ/Thực thể lớn thanh lý tài sản tịch thu</strong></td>
+<td style="text-align:center"><strong>Trung bình</strong></td>
+<td style="text-align:center"><strong>Trung bình</strong></td>
+<td style="text-align:left">Tin đồn hoặc động thái chuyển ví lượng lớn BTC từ kho tịch thu của các chính phủ có thể tạo cú sốc FUD tâm lý ngắn hạn trong 24–48h.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Rủi ro kỹ thuật / Lỗ hổng Smart Contract / Cầu nối lớn</strong></td>
+<td style="text-align:center"><strong>Trung bình</strong></td>
+<td style="text-align:center"><strong>Thấp</strong></td>
+<td style="text-align:left">Tác động gián tiếp lên tâm lý toàn thị trường tiền mã hóa thông qua việc rút vốn phòng vệ.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>💡 Tổng kết khuyến nghị phòng ban Tâm lý &amp; Tin tức:</h3>
+<p>Thị trường đang nằm trong <strong>pha tăng trưởng được hỗ trợ bởi thanh khoản vĩ mô và dòng tiền tổ chức</strong>, tâm lý thị trường thiên về <strong>Tích cực (Bullish)</strong>. Tuy nhiên, do tâm lý chung đã bước vào vùng <strong>Tham lam (Greed)</strong> và đòn bẩy thị trường bắt đầu dày đặc, nhà đầu tư cần:</p>
+<ol>
+<li>Tránh FOMO mua đuổi tại các vùng kháng cự tâm lý chưa qua kiểm định lại (retest).</li>
+<li>Sẵn sàng kịch bản gom thêm hàng khi xảy ra các đợt quét thanh lý đòn bẩy (Leverage Flush) bất ngờ từ 7% – 10%.</li>
+</ol>
+<hr />
+<h2 id="muc_4">⚔️ 5. TRANH BIỆN PHE MUA VS PHE BÁN (BULL VS BEAR DEBATE)</h2>
+<h3>BIÊN BẢN TRANH BIỆN CHIẾN LƯỢC: BTC-USD ($80,006.66)</h3>
+<p><strong>Thời điểm:</strong> Phiên giao dịch ngày 26/10/2026<br />
+<strong>Bối cảnh:</strong> Bitcoin đang ngập ngừng ngay ngưỡng tử huyệt tâm lý <strong>80,000 USD</strong> sau phiên biến động nén (Doji rút chân từ 79,278 USD). Phòng Phân tích Chiến lược chia thành hai luồng quan điểm đối đầu trực diện:</p>
+<hr />
+<h3>HIỆP 1: HÀNH ĐỘNG GIÁ &amp; KHỐI LƯỢNG (PRICE ACTION &amp; VOLUME)</h3>
+<h4>🟢 Phe Mua (Bull Researcher) – Luận điểm 1: <em>Hiện tượng &quot;Hấp thụ cung&quot; (Absorption) và đòn bẩy rút chân quét thanh khoản</em></h4>
+<blockquote>
+<p><em>&quot;Hãy nhìn vào cây nến Daily hôm nay: Biên độ chỉ 1,431 USD (thấp hơn nhiều so với ATR 2,000 USD), nhưng khối lượng khớp lệnh lại bùng nổ lên tới hơn <strong>27.3 tỷ USD</strong>! Nếu phe bán thực sự nắm quyền kiểm soát tuyệt đối, tại sao với khối lượng khổng lồ đó họ không thể đánh sập giá thủng 79,000 USD?<br />
+Thực tế rõ ràng: Râu nến dưới quét qua Lower Band (79,758 USD) xuống tận 79,278 USD rồi giật ngược trở lại đóng nến trên 80,000 USD là pha săn thanh khoản kinh điển (Liquidity Sweep). Dòng tiền thông minh (Smart Money) đã âm thầm hấp thụ toàn bộ lực bán hoảng loạn của đám đông tại vùng 79,200 USD. Nến Doji/Spinning Top tại hỗ trợ cứng chính là tín hiệu kiệt quệ của phe gấu (Seller Exhaustion) trước một nhịp bật lò xo!&quot;</em></p>
+</blockquote>
+<h4>🔴 Phe Bán (Bear Researcher) – Phản biện 1: <em>Khối lượng lớn không đẩy được giá là biểu hiện của Phân phối (Distribution)</em></h4>
+<blockquote>
+<p><em>&quot;Các anh đang tự huyễn hoặc mình! Khối lượng hơn 27 tỷ USD xuất hiện ở vùng đáy nến nhưng giá đóng cửa gần như đi ngang (-0.02%) không chứng minh lực mua mạnh, mà chứng minh <strong>phe mua đang phải gồng mình đỡ đạn trong vô vọng</strong>.<br />
+Cú rút chân từ 79,278 USD chỉ là phản ứng kỹ thuật yếu ớt khi giá chạm biên dưới Bollinger Band. Đừng quên giá vẫn đang đóng cửa sát sạt Lower Band (79,758 USD). Trong phân tích kỹ thuật, khi giá liên tục cọ xát và đóng cửa bám dải dưới (walking the band), đó là dấu hiệu dải băng sắp mở rộng xuống phía dưới (Band Expansion) chứ không phải bật nảy. Cố gắng đỡ giá tại 80,000 USD lúc này chẳng khác nào đưa tay hứng một con dao đang rơi!&quot;</em></p>
+</blockquote>
+<hr />
+<h3>HIỆP 2: CẤU TRÚC XU HƯỚNG &amp; XUNG LƯỢNG (TREND &amp; MOMENTUM)</h3>
+<h4>🟢 Phe Mua (Bull Researcher) – Luận điểm 2: <em>Xu hướng vĩ mô nguyên vẹn, nhịp điều chỉnh lành mạnh trên SMA 200</em></h4>
+<blockquote>
+<p><em>&quot;Hãy lùi lại một bước để nhìn bức tranh toàn cảnh: Bitcoin đang cách <strong>SMA 200 ngày (72,986 USD)</strong> gần +10%. Cấu trúc tăng giá dài hạn (Macro Bull Market) hoàn toàn không hề suy suyển!<br />
+Việc giá tạm thời trượt dưới SMA 10 (81,541 USD) và SMA 50 (81,797 USD) chỉ là một nhịp rũ bỏ lành mạnh (Shakeout) để thanh lọc đòn bẩy dư thừa sau chuỗi ngày tăng nóng. RSI 14 hiện đã hạ nhiệt về <strong>41.49</strong> – áp lực bán đã đi gần hết chu kỳ mà chưa hề chạm ngưỡng quá bán, tạo ra dư địa tăng trưởng cực lớn cho một pha phục hồi 'Mean Reversion' hướng thẳng về trục giữa Bollinger Band (81,978 USD) và mốc 84,000 USD!&quot;</em></p>
+</blockquote>
+<h4>🔴 Phe Bán (Bear Researcher) – Phản biện 2: <em>Gãy gập xu hướng ngắn/trung hạn, Xung lượng gấu (MACD) đang xé toạc biểu đồ</em></h4>
+<blockquote>
+<p><em>&quot;Các anh nói về xu hướng dài hạn để trốn tránh thực tại bi đát trước mắt! Giá đã chính thức <strong>nằm dưới cả hai đường trung bình động sống còn SMA 10 lẫn SMA 50</strong>. Đây là tín hiệu xác nhận cấu trúc đỉnh ngắn hạn đã hoàn thành.<br />
+Hãy nhìn vào chỉ báo xung lượng: <strong>MACD (-438.16)</strong> đang cắm đầu xuống dưới đường Signal, và chỉ số Histogram đang giãn rộng về vùng âm cực đại (<strong>-367.25</strong>). Xung lượng giảm giá (Bearish Momentum) không hề có dấu hiệu chậm lại mà đang gia tốc! RSI ở mức 41.49 chứng minh phe gấu đang hoàn toàn kiểm soát cuộc chơi (&lt; 50) và còn một khoảng rơi rất dài mới chạm vùng quá bán (&lt; 30). Nếu chốt chặn 80,000 USD vỡ vụn, khoảng trống thanh khoản sẽ kéo tụt giá về thẳng vùng SMA 200 quanh 73,000 USD – tương đương mức sụt giảm gần 9% nữa!&quot;</em></p>
+</blockquote>
+<hr />
+<h3>HIỆP 3: TÂM LÝ ĐÁM ĐÔNG &amp; BẪY THANH KHOẢN (SENTIMENT &amp; LIQUIDITY TRAP)</h3>
+<h4>🟢 Phe Mua (Bull Researcher) – Luận điểm 3: <em>Định giá vốn hóa 1.62 nghìn tỷ USD vững chắc, lực FOMO ngầm chực chờ bùng nổ</em></h4>
+<blockquote>
+<p><em>&quot;Tâm lý thị trường hiện tại ghi nhận mức <strong>Tham lam (Fear &amp; Greed Index 72 – 76)</strong> đi kèm vốn hóa vững chắc vượt ngưỡng <strong>1,624 tỷ USD</strong>. Điều đó khẳng định dòng tiền thể chế và niềm tin của các nhà đầu tư lớn chưa bao giờ lung lay.<br />
+Trạng thái 'Tham lam thận trọng' (Cautious Greed) của đám đông nhỏ lẻ chính là mảnh đất màu mỡ nhất: Nhỏ lẻ đang sợ hãi vì giá rung lắc quanh 80,000 USD nên đã vội vã cắt lỗ hoặc mở vị thế Short đón đầu. Một khi giá được kéo giật ngược trở lại qua 81,800 USD (SMA 50), toàn bộ lượng Short đu bám này sẽ trở thành nhiên liệu cho một cú <strong>Short Squeeze</strong> bùng nổ, kéo theo làn sóng FOMO muộn màng đưa BTC lập đỉnh cao mới!&quot;</em></p>
+</blockquote>
+<h4>🔴 Phe Bán (Bear Researcher) – Phản biện 3: <em>Bẫy bò kinh điển (Bull Trap) &amp; Nguy cơ sập đổ dây chuyền từ tâm lý &quot;Tham lam đu đỉnh&quot;</em></h4>
+<blockquote>
+<p><em>&quot;Đó chính là cạm bẫy chết người nhất! Chỉ số Tham lam neo cao (72 – 76) trong khi đồ thị kỹ thuật và xung lượng lại suy thoái nghiêm trọng – đây chính là sự <strong>phân kỳ tâm lý tiêu cực điển hình</strong> của giai đoạn phân phối đỉnh!<br />
+Báo cáo tâm lý đã chỉ rõ: Nhỏ lẻ đang 'vừa hưng phấn vừa e ngại', tâm lý cực kỳ mong manh và nhạy cảm. Họ đang ôm hàng ở vùng giá kỷ lục 80,000 – 82,000 USD với kỳ vọng phi thực tế. Chỉ cần mốc tâm lý số tròn 80,000 USD bị đánh thủng dứt khoát trong phiên tiếp theo, sự hoảng loạn (Panic Selling) sẽ ngay lập tức thay thế lòng tham. Làn sóng tháo chạy kết hợp với các lệnh cắt lỗ cưỡng bức (Long Liquidation) sẽ tạo ra một cú trượt giá dây chuyền (Flash Dump) quét sạch các 'tay mơ' đu đỉnh!&quot;</em></p>
+</blockquote>
+<hr />
+<h3>TỔNG KẾT BÀN TRANH LUẬN</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Tiêu chí</th>
+<th style="text-align:left">🟢 Phe Mua (Bull Case)</th>
+<th style="text-align:left">🔴 Phe Bán (Bear Case)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Kịch bản chính</strong></td>
+<td style="text-align:left">Giữ vững 80,000 USD, bật nẩy đảo chiều lên <strong>82,000 – 84,200 USD</strong></td>
+<td style="text-align:left">Đâm thủng 79,200 USD, mở rộng biên rơi về <strong>76,000 – 73,000 USD (SMA 200)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Điểm tựa</strong></td>
+<td style="text-align:left">Rút chân nén vol cao, cấu trúc vĩ mô trên SMA 200 vững chắc</td>
+<td style="text-align:left">Gãy SMA 10/50, MACD phân kỳ âm mở rộng, rủi ro Long Squeeze</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Cảnh báo hành động</strong></td>
+<td style="text-align:left">Mua thăm dò tại hỗ trợ, Stop-loss nghiêm ngặt dưới 79,200 USD</td>
+<td style="text-align:left">Đứng ngoài quan sát hoặc Short khi giá thủng 79,700 USD dứt khoát</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="muc_5">🛡️ 6. HỘI ĐỒNG QUẢN LÝ RỦI RO (RISK COMMITTEE)</h2>
+<h3>BIÊN BẢN HỌP HỘI ĐỒNG QUẢN TRỊ RỦI RO (RISK COMMITTEE MEMO)</h3>
+<ul>
+<li><strong>Tài sản:</strong> BTC-USD</li>
+<li><strong>Thị giá tham chiếu:</strong> 80,006.66 USD</li>
+<li><strong>Bối cảnh kỹ thuật:</strong> Nến Daily Doji rút chân từ 79,278 USD, biên độ nén hẹp (1,431 USD) nhưng khối lượng khớp lệnh bùng nổ dị thường (27.3 tỷ USD) ngay mốc tâm lý trọng yếu 80,000 USD.</li>
+</ul>
+<hr />
+<h3>1. Chuyên viên Liều (Aggressive Risk Officer) – <em>&quot;Đòn bẩy bất đối xứng, săn Short Squeeze&quot;</em></h3>
+<h4>💡 Nhận định &amp; Phân tích:</h4>
+<blockquote>
+<p><em>&quot;Cơ hội sinh ra từ sự hỗn loạn! Cây nến quét râu xuống 79,278 USD rồi giật ngược đóng trên 80,000 USD là pha săn thanh khoản kinh điển (Liquidity Sweep). Với hơn 27 tỷ USD được nạp vào thị trường mà giá không thủng 79,000 USD, điều đó chứng minh toàn bộ lệnh Short bán đuổi hoảng loạn đã bị Dòng tiền lớn nuốt trọn (Absorption). Phe Gấu đã dùng hết hỏa lực nhưng không thể hạ gục mốc 80K. Đây là điểm vào lệnh Long có tỷ lệ Asymmetric R:R (lợi nhuận tiềm năng vượt trội so với rủi ro) hiếm có!&quot;</em></p>
+</blockquote>
+<ul>
+<li><strong>Khuyến nghị hành động:</strong> <strong>LONG NGAY TẠI THỊ GIÁ ($80,006.66)</strong> – Giải ngân 100% hạn mức danh mục cho BTC hoặc sử dụng đòn bẩy cao.</li>
+<li><strong>Stop Loss (Cắt lỗ):</strong> <strong>79,080 USD</strong> <em>(Đặt ngay dưới đáy râu nến quét thanh khoản 79,278 USD, chấp nhận biên độ trượt giá ngắn).</em></li>
+<li><strong>Take Profit (Chốt lời mục tiêu):</strong>
+<ul>
+<li><strong>TP1:</strong> 83,500 USD (Kháng cự ngắn hạn).</li>
+<li><strong>TP2 (Mục tiêu chính):</strong> <strong>85,800 USD</strong> (Vùng thanh khoản của phe Short trên đỉnh cũ).</li>
+</ul>
+</li>
+<li><strong>Tỷ lệ Risk : Reward (R:R):</strong>
+<ul>
+<li><em>Khoảng cách Rủi ro (Risk):</em> ~926 USD (-1.15%)</li>
+<li><em>Khoảng cách Lợi nhuận (Reward):</em> ~5,793 USD (+7.24%)</li>
+<li><strong>$\rightarrow$ R:R = 1 : 6.25</strong></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>2. Chuyên viên Thận trọng (Conservative Risk Officer) – <em>&quot;Bảo toàn vốn là tiên quyết, coi chừng Bẫy phân phối&quot;</em></h3>
+<h4>💡 Nhận định &amp; Phân tích:</h4>
+<blockquote>
+<p><em>&quot;Tôi phản đối luận điểm lạc quan mù quáng của Phe Mua. Trong nguyên lý Wyckoff, hiện tượng khối lượng giao dịch cực đại (Ultra-high Volume) đi kèm biên độ giá dẹt (Narrow Spread) và mức thay đổi gần như bằng 0 (-0.02%) là triệu chứng điển hình của <strong>Phân phối ngầm (Churning/Absorption by Bears)</strong>. Nếu lực cầu thực sự áp đảo, giá phải bật tăng mạnh mẽ chứ không thể bất động ở 80,000 USD. Ngưỡng 80K là mốc tâm lý mỏng manh; một khi thủng 79,200 USD, chuỗi thanh lý dây chuyền (Liquidation Cascade) sẽ kéo giá sập về 75,000 – 76,000 USD.&quot;</em></p>
+</blockquote>
+<ul>
+<li><strong>Khuyến nghị hành động:</strong> <strong>ĐỨNG NGOÀI (CASH POSITION)</strong> – Kiên nhẫn chờ nến Daily tiếp theo xác nhận. Nếu buộc phải tham gia theo quy chế quỹ: <strong>Mở vị thế BÁN PHÒNG HỘ KHI THỦNG HỖ TRỢ (Short Breakdown)</strong> khi giá gãy 79,200 USD với khối lượng duy trì cao (tỷ trọng chỉ 5% NAV).</li>
+<li><strong>Điểm vào lệnh (Entry):</strong> 79,150 USD (Sau khi gãy đáy cũ xác nhận phe Bán thắng thế).</li>
+<li><strong>Stop Loss (Cắt lỗ):</strong> <strong>80,450 USD</strong> <em>(Đóng lệnh nếu nến quay ngược lên lại trên mốc tâm lý 80K).</em></li>
+<li><strong>Take Profit (Chốt lời mục tiêu):</strong> <strong>76,200 USD</strong> <em>(Vùng hỗ trợ cứng theo khung tuần W1).</em></li>
+<li><strong>Tỷ lệ Risk : Reward (R:R):</strong>
+<ul>
+<li><em>Khoảng cách Rủi ro (Risk):</em> ~1,300 USD (+1.64%)</li>
+<li><em>Khoảng cách Lợi nhuận (Reward):</em> ~2,950 USD (+3.73%)</li>
+<li><strong>$\rightarrow$ R:R = 1 : 2.27</strong></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>3. Chuyên viên Trung lập (Neutral Risk Officer) – <em>&quot;Cân bằng xác suất, quản trị theo biến động&quot;</em></h3>
+<h4>💡 Nhận định &amp; Phân tích:</h4>
+<blockquote>
+<p><em>&quot;Cả hai bên đều có cơ sở hợp lý: Thị trường đang ở trạng thái nén cực đại (Volatility Squeeze) và giằng co sinh tử. ATR hiện ở mức 2,000 USD, trong khi biên độ nến chỉ 1,431 USD báo hiệu sắp có một đợt bùng nổ biến động lớn (Expansion). Vì giá vẫn tôn trọng mốc tâm lý 80,000 USD và râu nến dưới thể hiện có lực đỡ tạm thời, chúng ta có thể ưu tiên kịch bản Long nhưng <strong>bắt buộc phải giải ngân từng phần (Scaling-in)</strong> và mở rộng biên độ Stop Loss vượt qua vùng nhiễu động của nến Daily.&quot;</em></p>
+</blockquote>
+<ul>
+<li><strong>Khuyến nghị hành động:</strong> <strong>LONG THĂM DÒ (PROBE POSITION)</strong> – Phân bổ 30% vị thế quanh 80,000 USD; 70% còn lại chỉ gia tăng khi giá vượt dứt khoát 81,200 USD kèm volume.</li>
+<li><strong>Stop Loss (Cắt lỗ):</strong> <strong>78,750 USD</strong> <em>(Cách đáy 79,278 USD khoảng 0.5 ATR để tránh các pha tiếp tục quét râu giả).</em></li>
+<li><strong>Take Profit (Chốt lời mục tiêu):</strong>
+<ul>
+<li><strong>TP1 (Chốt 50% vị thế):</strong> 82,600 USD (Cạnh trên dải Bollinger Band/Kháng cự ngắn hạn).</li>
+<li><strong>TP2 (Chốt 50% còn lại):</strong> <strong>84,200 USD</strong> (Mục tiêu trung bình).</li>
+<li><em>Mức TP trung bình thực tế:</em> <strong>83,400 USD</strong>.</li>
+</ul>
+</li>
+<li><strong>Tỷ lệ Risk : Reward (R:R):</strong>
+<ul>
+<li><em>Khoảng cách Rủi ro (Risk):</em> ~1,256.66 USD (-1.57%)</li>
+<li><em>Khoảng cách Lợi nhuận (Reward):</em> ~3,393.34 USD (+4.24%)</li>
+<li><strong>$\rightarrow$ R:R = 1 : 2.70</strong></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3>BẢNG TỔNG HỢP KHUYẾN NGHỊ ĐIỀU HÀNH QUỸ</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Tiêu chí</th>
+<th style="text-align:left">Chuyên viên Liều (Aggressive)</th>
+<th style="text-align:left">Chuyên viên Thận trọng (Conservative)</th>
+<th style="text-align:left">Chuyên viên Trung lập (Neutral) <em>(Khuyến nghị)</em></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Vị thế</strong></td>
+<td style="text-align:left"><strong>Long</strong> ngay $80,006.66</td>
+<td style="text-align:left"><strong>Đứng ngoài</strong> <em>(Chờ Short $79,150)</em></td>
+<td style="text-align:left"><strong>Long thăm dò (30% Sizing)</strong> $80,006.66</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Cắt lỗ (SL)</strong></td>
+<td style="text-align:left"><strong>79,080 USD</strong> <em>(Rủi ro chặt)</em></td>
+<td style="text-align:left"><strong>80,450 USD</strong> <em>(Bảo vệ vốn)</em></td>
+<td style="text-align:left"><strong>78,750 USD</strong> <em>(Đệm theo ATR)</em></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Chốt lời (TP)</strong></td>
+<td style="text-align:left"><strong>85,800 USD</strong></td>
+<td style="text-align:left"><strong>76,200 USD</strong></td>
+<td style="text-align:left"><strong>83,400 USD</strong> <em>(Chia 2 mốc 82.6k &amp; 84.2k)</em></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Tỷ lệ R:R</strong></td>
+<td style="text-align:left"><strong>1 : 6.25</strong></td>
+<td style="text-align:left"><strong>1 : 2.27</strong></td>
+<td style="text-align:left"><strong>1 : 2.70</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Tỷ trọng vốn</strong></td>
+<td style="text-align:left">Tối đa (High Exposure)</td>
+<td style="text-align:left">Tối thiểu / 0% (Cash/Hedge)</td>
+<td style="text-align:left">Trung bình (Duy trì Max Drawdown &lt; 1.5% NAV)</td>
+</tr>
+</tbody>
+</table>
+
+    </article>
+
+    <footer class="footer">
+      <p>Báo cáo được khởi tạo tự động bởi <b>AI Trading Multi-Agent</b> · Cổng máy chủ cục bộ <code>localhost:5050</code></p>
+      <p style="margin-top:6px; font-size:12px;">Dữ liệu phân tích chỉ nhằm mục đích nghiên cứu học tập, không cấu thành lời khuyên đầu tư tài chính.</p>
+    </footer>
+  </main>
+
+  <div id="toast">✅ Đã sao chép link báo cáo vào bộ nhớ tạm!</div>
+
+  <script>
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const target = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', target);
+  localStorage.setItem('ai_trading_theme', target);
+}
+
+function copyReportLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    const toast = document.getElementById('toast');
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 2500);
+  });
+}
+
+function xoaBaoCaoHienTai() {
+  const parts = window.location.pathname.split('/');
+  const tenFile = decodeURIComponent(parts[parts.length - 1] || '');
+  if (!confirm(`Bạn có chắc chắn muốn xoá vĩnh viễn báo cáo này?\n"${tenFile}"?\n\n(Thao tác này sẽ xoá cả file HTML và Markdown tương ứng)`)) {
+    return;
+  }
+  fetch('/api/delete?file=' + encodeURIComponent(tenFile), {
+    method: 'POST'
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      alert('Đã xoá báo cáo thành công. Hệ thống sẽ quay về trang danh sách.');
+      window.location.href = '/';
+    } else {
+      alert('Lỗi: ' + (data.message || 'Không thể xoá báo cáo'));
+    }
+  })
+  .catch(err => {
+    alert('Lỗi kết nối tới máy chủ: ' + err);
+  });
+}
+
+// Khởi tạo theme: Mặc định Light nếu chưa chọn
+(function() {
+  const saved = localStorage.getItem('ai_trading_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+})();
+</script>
+</body>
+</html>

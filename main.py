@@ -10,6 +10,7 @@ import argparse
 import html
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -172,6 +173,8 @@ def cai_dat_xoay_tua_he_thong(gemini_rotator: KeyRotator, groq_rotator: KeyRotat
     import re
     import time
 
+    cai_dat_ngon_ngu_tieng_viet()
+
     # 1. Hook cho Gemini (luôn cài đặt để tự động delay + xoay tua chống sập)
     from tradingagents.llm_clients.google_client import NormalizedChatGoogleGenerativeAI
     from google.genai import Client
@@ -179,6 +182,9 @@ def cai_dat_xoay_tua_he_thong(gemini_rotator: KeyRotator, groq_rotator: KeyRotat
     orig_gemini_invoke = NormalizedChatGoogleGenerativeAI.invoke
 
     def wrapped_gemini_invoke(self, input, config=None, **kwargs):
+        # Đảm bảo chỉ thị tiếng Việt
+        input = _ep_tieng_viet(input)
+
         # Nếu có nhiều key: xoay round-robin trước mỗi lượt gọi
         if gemini_rotator.has_multiple():
             cur_k = gemini_rotator.rotate("Lượt AI mới")
@@ -224,6 +230,9 @@ def cai_dat_xoay_tua_he_thong(gemini_rotator: KeyRotator, groq_rotator: KeyRotat
     orig_groq_invoke = NormalizedChatOpenAI.invoke
 
     def wrapped_groq_invoke(self, input, config=None, **kwargs):
+        # Đảm bảo chỉ thị tiếng Việt
+        input = _ep_tieng_viet(input)
+
         # 0. Nếu prompt quá lớn (>24,000 ký tự ~ 7,500+ token) và có sẵn Google Gemini:
         # Tự động chuyển thẳng sang Gemini (1M context) để tránh dính HTTP 413 trên Groq (trần 8K TPM)
         text_len = len(input) if isinstance(input, str) else (len(getattr(input, "text", "")) if hasattr(input, "text") else 0)
@@ -314,6 +323,51 @@ def cai_dat_xoay_tua_he_thong(gemini_rotator: KeyRotator, groq_rotator: KeyRotat
 
 os.environ.setdefault("PYTHONUTF8", "1")
 os.environ.setdefault("TRADINGAGENTS_LLM_MAX_RETRIES", "10")
+os.environ.setdefault("TRADINGAGENTS_OUTPUT_LANGUAGE", "Vietnamese")
+
+
+def _ep_tieng_viet(inp):
+    """Bổ sung chỉ thị bắt buộc trả lời bằng tiếng Việt cho LLM."""
+    noi_dung_vn = (
+        "\n\n[QUY TẮC BẮT BUỘC VỀ NGÔN NGỮ]:\n"
+        "- Toàn bộ nội dung phân tích, nhận định và bảng biểu BẮT BUỘC phải viết 100% bằng TIẾNG VIỆT tự nhiên, sâu sắc, chuẩn mực tài chính.\n"
+        "- Giữ nguyên các thuật ngữ viết tắt chuẩn quốc tế (RSI, MACD, SMA, EMA, P/E, Stop Loss, Take Profit, Entry) và nhãn hệ thống ('**Rating**:').\n"
+        "- Tuyệt đối KHÔNG trả lời bằng tiếng Anh."
+    )
+    if isinstance(inp, str):
+        if "[QUY TẮC BẮT BUỘC VỀ NGÔN NGỮ]" not in inp:
+            return inp + noi_dung_vn
+        return inp
+    elif isinstance(inp, list) and inp:
+        try:
+            last_msg = inp[-1]
+            if hasattr(last_msg, "content") and isinstance(last_msg.content, str):
+                if "[QUY TẮC BẮT BUỘC VỀ NGÔN NGỮ]" not in last_msg.content:
+                    last_msg.content += noi_dung_vn
+        except Exception:
+            pass
+    return inp
+
+
+def cai_dat_ngon_ngu_tieng_viet():
+    """Thiết lập instruction tiếng Việt chuyên sâu cho mọi Agent của TradingAgents."""
+    try:
+        import tradingagents.agents.context as ctx
+
+        def huong_dan_tieng_viet() -> str:
+            return (
+                "\n\n[QUY TẮC BẮT BUỘC VỀ NGÔN NGỮ]:\n"
+                "- Toàn bộ nội dung phân tích, tiêu đề, lập luận, bảng biểu so sánh và khuyến nghị BẮT BUỘC phải viết 100% bằng TIẾNG VIỆT tự nhiên, sâu sắc, chuẩn mực tài chính.\n"
+                "- Giữ nguyên các thuật ngữ kỹ thuật tài chính viết tắt quốc tế (RSI, MACD, SMA, EMA, P/E, ROI, Stop Loss, Take Profit, Entry Zone) để đảm bảo tính chuyên nghiệp.\n"
+                "- Riêng dòng nhãn hệ thống bắt buộc giữ nguyên nhãn tiếng Anh theo đúng quy định ('**Rating**: <Buy/Hold/Sell/Overweight/Underweight>', 'FINAL TRANSACTION PROPOSAL:')."
+            )
+
+        ctx.get_language_instruction = huong_dan_tieng_viet
+        for mod_name, mod in list(sys.modules.items()):
+            if mod_name.startswith("tradingagents.agents.") and hasattr(mod, "get_language_instruction"):
+                setattr(mod, "get_language_instruction", huong_dan_tieng_viet)
+    except Exception:
+        pass
 
 TEN_BUOC = {
     "Market Analyst": "Phòng kỹ thuật (nến + chỉ báo)",
@@ -388,7 +442,7 @@ def cau_hinh(ma: str, groq_rotator: KeyRotator | None = None, gemini_rotator: Ke
     c["results_dir"] = str(thu_muc / "logs")
     c["data_cache_dir"] = str(GOC / "cache")
     c["memory_log_path"] = str(thu_muc / "so_nho.md")
-    c["output_language"] = "English"
+    c["output_language"] = os.getenv("OUTPUT_LANGUAGE", "Vietnamese")
     c["max_tool_rounds"] = int(os.getenv("MAX_TOOL_ROUNDS", "10"))
 
     # Cài đặt hook xoay tua đa tài khoản tự động
@@ -487,31 +541,192 @@ def tao_callback(td: TheoDoi):
     return CB()
 
 
-def ghi_bien_ban(thu_muc: Path, ma: str, ngay: str, state: dict, rating: str, phut: float, mo_ta_ai: str = "Google Gemini") -> Path:
+def _chuan_hoa_rating(raw_rating: str) -> str:
+    """Chuẩn hóa xếp hạng khuyến nghị với ngôi sao và nhãn rõ ràng."""
+    r = str(raw_rating or "").replace("*", "").strip()
+    r_up = r.upper()
+    if "BUY" in r_up or "MUA" in r_up:
+        return "⭐⭐⭐⭐⭐ MUA (BUY)"
+    elif "OVERWEIGHT" in r_up or "TĂNG TỶ TRỌNG" in r_up:
+        return "⭐⭐⭐⭐☆ TĂNG TỶ TRỌNG (OVERWEIGHT)"
+    elif "SELL" in r_up or "BÁN" in r_up:
+        return "⭐☆☆☆☆ BÁN (SELL)"
+    elif "UNDERWEIGHT" in r_up or "GIẢM TỶ TRỌNG" in r_up:
+        return "⭐⭐☆☆☆ GIẢM TỶ TRỌNG (UNDERWEIGHT)"
+    elif "HOLD" in r_up or "QUAN SÁT" in r_up or "TRUNG LẬP" in r_up:
+        return "⭐⭐⭐☆☆ QUAN SÁT (HOLD)"
+    return f"⭐⭐⭐☆☆ {r if r else 'QUAN SÁT (HOLD)'}"
+
+
+def _dinh_dang_tranh_luan(raw_history: str) -> str:
+    """Format hóa các lượt đối đáp tranh luận giữa Phe Mua và Phe Bán."""
+    if not raw_history:
+        return "_Chưa có dữ liệu tranh luận._"
+    text = str(raw_history).strip()
+    text = re.sub(r"(?im)^(?:Bull (?:Analyst|Researcher)|Phe Mua)[:\s*]+", "\n\n#### 🐂 Phe Mua (Bull Researcher):\n", text)
+    text = re.sub(r"(?im)^(?:Bear (?:Analyst|Researcher)|Phe Bán)[:\s*]+", "\n\n#### 🐻 Phe Bán (Bear Researcher):\n", text)
+    return text.strip()
+
+
+def _dinh_dang_rui_ro(raw_risk: str) -> str:
+    """Format hóa các ý kiến đề xuất của Hội đồng Quản lý Rủi ro."""
+    if not raw_risk:
+        return "_Chưa có dữ liệu rủi ro._"
+    text = str(raw_risk).strip()
+    text = re.sub(r"(?im)^(?:Aggressive (?:Analyst|Debator)|Phe Tấn Công)[:\s*]+", "\n\n#### 🚀 Chuyên viên Rủi ro: Phe Tấn Công (Aggressive):\n", text)
+    text = re.sub(r"(?im)^(?:Conservative (?:Analyst|Debator)|Phe Phòng Thủ)[:\s*]+", "\n\n#### 🛡️ Chuyên viên Rủi ro: Phe Phòng Thủ (Conservative):\n", text)
+    text = re.sub(r"(?im)^(?:Neutral (?:Analyst|Debator)|Phe Trung Lập)[:\s*]+", "\n\n#### ⚖️ Chuyên viên Rủi ro: Phe Trung Lập (Neutral):\n", text)
+    return text.strip()
+
+
+def _la_tieng_anh(text: str) -> bool:
+    """Kiểm tra xem văn bản có đang bị trả về bằng tiếng Anh thay vì tiếng Việt hay không."""
+    if not text or len(text) < 150:
+        return False
+    dau_vn = sum(1 for c in text.lower() if c in "àáảãạăắằẳẵặâấầẩẫậđèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵ")
+    return (dau_vn / len(text)) < 0.015
+
+
+def _dich_sang_tieng_viet_neu_can(text: str, gemini_rotator=None, groq_rotator=None) -> str:
+    """Tự động dịch/chuẩn hóa văn bản sang Tiếng Việt chuẩn mực nếu model trả về tiếng Anh."""
+    if not text or not _la_tieng_anh(text):
+        return text
+    prompt = (
+        "Bạn là một chuyên gia phân tích tài chính cao cấp. Hãy dịch và biên tập lại toàn bộ nội dung báo cáo sau đây sang TIẾNG VIỆT tự nhiên, sâu sắc, chuẩn mực chuyên môn đầu tư:\n"
+        "- Giữ nguyên định dạng Markdown (tiêu đề, danh sách, bảng biểu, in đậm).\n"
+        "- Giữ nguyên các thuật ngữ viết tắt chuẩn quốc tế (RSI, MACD, SMA, EMA, P/E, Stop Loss, Take Profit, Entry).\n"
+        "- Tuyệt đối không thêm lời dẫn mở đầu hay kết thúc, chỉ trả về nội dung báo cáo bằng Tiếng Việt.\n\n"
+        f"--- NỘI DUNG CẦN DỊCH ---\n{text}"
+    )
+    if groq_rotator and groq_rotator.get_current():
+        try:
+            from tradingagents.llm_clients.openai_client import NormalizedChatOpenAI
+            llm = NormalizedChatOpenAI(
+                model=os.getenv("GROQ_QUICK", "openai/gpt-oss-120b"),
+                api_key=groq_rotator.get_current(),
+                base_url="https://api.groq.com/openai/v1",
+            )
+            res = llm.invoke(prompt)
+            if res and hasattr(res, "content") and len(str(res.content).strip()) > 50:
+                return str(res.content).strip()
+        except Exception:
+            pass
+    if gemini_rotator and gemini_rotator.get_current():
+        try:
+            from tradingagents.llm_clients.google_client import NormalizedChatGoogleGenerativeAI
+            llm = NormalizedChatGoogleGenerativeAI(
+                model=os.getenv("GEMINI_DEEP", "gemini-3.8-flash"),
+                google_api_key=gemini_rotator.get_current(),
+            )
+            res = llm.invoke(prompt)
+            if res and hasattr(res, "content") and len(str(res.content).strip()) > 50:
+                return str(res.content).strip()
+        except Exception:
+            pass
+    return text
+
+
+def ghi_bien_ban(thu_muc: Path, ma: str, ngay: str, state: dict, rating: str, phut: float, mo_ta_ai: str = "Google Gemini", gemini_rotator=None, groq_rotator=None) -> tuple[Path, Path]:
     s = state or {}
-    phan = [
-        ("Quyết định cuối của giám đốc (Final Decision)", s.get("final_trade_decision", "")),
-        ("Kế hoạch lệnh của Trader", s.get("trader_investment_plan", "")),
-        ("Kế hoạch của trưởng phòng nghiên cứu", s.get("investment_plan", "")),
-        ("Phòng kỹ thuật (Market Technicals)", s.get("market_report", "")),
-        ("Phòng tâm lý & mạng xã hội (Sentiment)", s.get("sentiment_report", "")),
-        ("Phòng tin tức (News Analyst)", s.get("news_report", "")),
-        ("Phòng tài chính (Fundamentals)", s.get("fundamentals_report", "")),
-        ("Tranh luận phe Mua & phe Bán (Bull vs Bear Debate)", (s.get("investment_debate_state") or {}).get("history", "")),
-        ("Vòng quản lý rủi ro (Risk Debate)", (s.get("risk_debate_state") or {}).get("history", "")),
-    ]
+
+    rating_hien_thi = _chuan_hoa_rating(rating)
+
+    # Đảm bảo tiếng Việt cho từng phần báo cáo
+    final_decision = _dich_sang_tieng_viet_neu_can(s.get("final_trade_decision", ""), gemini_rotator, groq_rotator)
+    trader_plan = _dich_sang_tieng_viet_neu_can(s.get("trader_investment_plan", ""), gemini_rotator, groq_rotator)
+    research_plan = _dich_sang_tieng_viet_neu_can(s.get("investment_plan", ""), gemini_rotator, groq_rotator)
+    market_report = _dich_sang_tieng_viet_neu_can(s.get("market_report", ""), gemini_rotator, groq_rotator)
+    sentiment_report = _dich_sang_tieng_viet_neu_can(s.get("sentiment_report", ""), gemini_rotator, groq_rotator)
+    news_report = _dich_sang_tieng_viet_neu_can(s.get("news_report", ""), gemini_rotator, groq_rotator)
+    fundamentals_report = _dich_sang_tieng_viet_neu_can(s.get("fundamentals_report", ""), gemini_rotator, groq_rotator)
+
+    raw_debate = (s.get("investment_debate_state") or {}).get("history", "")
+    debate_history = _dinh_dang_tranh_luan(_dich_sang_tieng_viet_neu_can(raw_debate, gemini_rotator, groq_rotator))
+
+    raw_risk = (s.get("risk_debate_state") or {}).get("history", "")
+    risk_history = _dinh_dang_rui_ro(_dich_sang_tieng_viet_neu_can(raw_risk, gemini_rotator, groq_rotator))
+
+    # Cấu trúc báo cáo chuẩn mực 6 phần
     noi_dung = [
-        f"# Biên bản phân tích {ma} ngày {ngay}",
+        f"# BIÊN BẢN PHÂN TÍCH ĐA TÁC TỬ: {ma}",
         "",
-        f"Xếp hạng khuyến nghị: **{rating}** · Thời gian chạy: {phut:.1f} phút · Bộ não AI: {mo_ta_ai}",
+        f"- **Ngày phân tích:** {ngay}",
+        f"- **Bộ não AI:** `{mo_ta_ai}`",
+        f"- **Xếp hạng khuyến nghị:** **{rating_hien_thi}**",
+        f"- **Thời gian chạy:** {phut:.1f} phút",
         "",
-        "> [!NOTE]",
-        "> Biên bản do hệ thống AI đa tác tử tổng hợp. Chỉ phục vụ học tập và nghiên cứu, KHÔNG phải lời khuyên đầu tư.",
+        "> [!IMPORTANT]",
+        "> Biên bản do hệ thống AI đa tác tử tổng hợp dựa trên dữ liệu giá thực tế từ Yahoo Finance. Báo cáo chỉ nhằm mục đích nghiên cứu học tập, **KHÔNG PHẢI LỜI KHUYÊN ĐẦU TƯ TÀI CHÍNH**.",
+        "",
+        "---",
+        "",
+        "## 🏆 1. PHÁN QUYẾT CUỐI CÙNG CỦA GIÁM ĐỐC QUỸ",
+        "",
+        final_decision if final_decision else "_Đang cập nhật quyết định điều hành..._",
         "",
     ]
-    for tieu_de, nd in phan:
-        if nd and str(nd).strip():
-            noi_dung += [f"## {tieu_de}", "", str(nd).strip(), ""]
+
+    if trader_plan and str(trader_plan).strip() and str(trader_plan).strip() != str(final_decision).strip():
+        noi_dung += [
+            "### 📋 Kế hoạch giải ngân chi tiết từ Trader",
+            "",
+            str(trader_plan).strip(),
+            "",
+        ]
+
+    if research_plan and str(research_plan).strip() and str(research_plan).strip() != str(final_decision).strip():
+        noi_dung += [
+            "### 🎯 Kế hoạch chiến lược từ Trưởng phòng Nghiên cứu",
+            "",
+            str(research_plan).strip(),
+            "",
+        ]
+
+    noi_dung += [
+        "---",
+        "",
+        "## 📊 2. BÁO CÁO PHÒNG KỸ THUẬT (MARKET TECHNICIAN)",
+        "",
+        market_report if market_report else "_Chưa có báo cáo kỹ thuật._",
+        "",
+        "---",
+        "",
+        "## 📰 3. BÁO CÁO PHÒNG TIN TỨC & TÂM LÝ (SENTIMENT & NEWS)",
+        "",
+    ]
+
+    if sentiment_report and str(sentiment_report).strip():
+        noi_dung += [str(sentiment_report).strip(), ""]
+    if news_report and str(news_report).strip():
+        if sentiment_report:
+            noi_dung += ["---", ""]
+        noi_dung += [str(news_report).strip(), ""]
+
+    if fundamentals_report and str(fundamentals_report).strip() and "N/A" not in str(fundamentals_report):
+        noi_dung += [
+            "---",
+            "",
+            "## 🏢 4. BÁO CÁO PHÒNG PHÂN TÍCH CƠ BẢN (FUNDAMENTALS)",
+            "",
+            str(fundamentals_report).strip(),
+            "",
+        ]
+
+    noi_dung += [
+        "---",
+        "",
+        "## ⚔️ 5. TRANH BIỆN PHE MUA VS PHE BÁN (BULL VS BEAR DEBATE)",
+        "",
+        debate_history,
+        "",
+        "---",
+        "",
+        "## 🛡️ 6. HỘI ĐỒNG QUẢN LÝ RỦI RO (RISK COMMITTEE)",
+        "",
+        risk_history,
+        "",
+    ]
+
     tep_md = thu_muc / f"Biên bản {ten_sach(ma)} {ngay}.md"
     tep_md.write_text("\n".join(noi_dung), encoding="utf-8")
 
@@ -523,7 +738,7 @@ def ghi_bien_ban(thu_muc: Path, ma: str, ngay: str, state: dict, rating: str, ph
             md_content="\n".join(noi_dung),
             ma=ma,
             ngay=ngay,
-            rating=str(rating),
+            rating=str(rating_hien_thi),
             model=mo_ta_ai,
             phut=phut,
         )
@@ -705,7 +920,17 @@ def main():
         print(loi[-800:])
         sys.exit(3)
 
-    tep_md, tep_html = ghi_bien_ban(thu_muc, ma, ngay, state, rating, phut, mo_ta_ai=mo_ta_ai)
+    tep_md, tep_html = ghi_bien_ban(
+        thu_muc,
+        ma,
+        ngay,
+        state,
+        rating,
+        phut,
+        mo_ta_ai=mo_ta_ai,
+        gemini_rotator=gemini_rotator,
+        groq_rotator=groq_rotator,
+    )
     td.buoc = "HOÀN THÀNH"
     td.ket_qua = str(rating)
     td.ghi()

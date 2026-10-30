@@ -1,0 +1,85 @@
+name: AI Trading - Multi-Agent Analysis
+
+on:
+  workflow_dispatch:
+    inputs:
+      ma:
+        description: 'Mã tài sản muốn phân tích (VD: BTC-USD, GC=F, NVDA, AAPL)'
+        required: true
+        default: 'BTC-USD'
+        type: string
+      ngay:
+        description: 'Ngày phân tích dạng YYYY-MM-DD (để trống sẽ lấy ngày hôm qua)'
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🐍 Cài đặt Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: 📦 Cài đặt thư viện phụ thuộc
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install markdown-it-py
+
+      - name: 🚀 Chạy phân tích Đa Tác tử (Multi-Agent Trading)
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PYTHONUNBUFFERED: "1"
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          NGAY="${{ inputs.ngay }}"
+          if [ -z "$NGAY" ]; then
+            NGAY=$(date -d "yesterday" +%Y-%m-%d 2>/dev/null || date -v-1d +%Y-%m-%d)
+          fi
+          echo "Bắt đầu phân tích mã: ${{ inputs.ma }} - Ngày: $NGAY"
+          python main.py --ma "${{ inputs.ma }}" --ngay "$NGAY" --headless
+
+      - name: 📄 Đảm bảo sinh file Báo cáo HTML
+        run: |
+          python -c "
+          from pathlib import Path
+          from report_generator import chuyen_doi_md_sang_html
+          kq = Path('Kết quả')
+          for md in kq.rglob('*.md'):
+              html_file = md.with_suffix('.html')
+              if not html_file.exists():
+                  chuyen_doi_md_sang_html(md, html_file)
+                  print('Generated HTML:', html_file.name)
+          "
+
+      - name: 📤 Lưu Artifact báo cáo (Tải về từ GitHub)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bao-cao-${{ inputs.ma }}
+          path: Kết quả/
+          retention-days: 30
+
+      - name: 🔄 Commit và Push báo cáo mới vào Repository
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "Kết quả/"
+          if git diff --staged --quiet; then
+            echo "Không có thay đổi mới để commit."
+          else
+            git commit -m "chore(report): Tự động xuất báo cáo ${{ inputs.ma }} [skip ci]"
+            git pull --rebase origin main || git pull --rebase
+            git push
+          fi

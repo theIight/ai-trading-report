@@ -1,0 +1,20 @@
+services:
+  ai-trading:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ai-trading:latest
+    container_name: ai-trading-agent
+    stdin_open: true
+    tty: true
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
+      - GEMINI_QUICK=${GEMINI_QUICK:-gemini-3.5-flash-lite}
+      - GEMINI_DEEP=${GEMINI_DEEP:-gemini-3.8-flash}
+    volumes:
+      - ./Kết quả:/app/Kết quả
+      - ./cache:/app/cache
+      - ./khoa-gemini.txt:/app/khoa-gemini.txt:ro
